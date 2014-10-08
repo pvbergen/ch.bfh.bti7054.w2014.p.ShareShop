@@ -1,0 +1,73 @@
+Introduction:
+- The project uses PHP 5.3 or above.
+- The project follows the PSR-0 and PSR-1 specifications concerning coding guidelines and class naming and structuring.
+- The project follows a reduced variant the Zend Framework directory structure.
+
+PHP Basics:
+- Namespaces in PHP are written above the namespaced code.
+- Namespaces are seperated by \ (backslash)
+
+PSR-0/PSR-1:
+Projects following PSR-1 are also PSR-0 compliant. 
+
+PSR-0 specifies a standard to name classes:
+VENDORNAME\NAMESPACE\NAMESPACE\...\CLASSNAME
+This maps to VENDORNAME/NAMESPACE/NAMESPACE/CLASSNAME.php on the file system. Hence, namespace seperators 
+are replaced with directory seperators.
+Underscores (_) in class names are also replaced with directory seperators (e.g. NAMESPACE\CLASS_NAME maps 
+to NAMESPACE/CLASS/NAME.php)
+This allows automated loading of classes from the library, the model etc.
+Full explanation: http://www.php-fig.org/psr/psr-0/
+In this project, self created library code has the VENDORNAME Shareshop and application code lives 
+in the namespace Application.
+
+PSR-1 describes coding guidelines:
+- Use <?php (or <?=) to declare php code.
+- Files must be in UTF-8.
+- Seperate definition (classes, constants, functions etc.) and execution 
+  (generate output, change ini files etc).
+- Use camelCase for functions/methods, StudlyCase for classes. 
+- Class constants must be all UPPERCASE and use underscore as seperator.
+Full explanation: http://www.php-fig.org/psr/psr-1/
+
+- Additionally, properties are also written in camelCase and protected or private members 
+  should be started with an underscore (not part of PSR-1).
+- Additionally, Type Hinting should be used when possible (not part of PSR-1).
+- Additionally, omit the end php tag (not part of PSR-1).
+
+Example for PSR-0 and PSR-1:
+---
+<?php \\ Start with full tag (instead <?)
+namespace Shareshop\Db\Connection \\ Declare namespace at top of file
+
+class MyslqConnection extends AbstractConnection { \\ Use StudlyCase for class names
+	
+	const MAX_CONNECTIONS = 4; \\ Use uppercase and _ for constants.
+	
+	public $versionNumber = 0; \\ Use camelCase for properties.
+	
+	protected $_pointer = null; \\ Prepend protected property with _
+	
+	public function __construct($options) { \\ Magic function (Constructor)
+	}
+
+	public function writeObject(\Shareshop\Db\CompliantObject $object) { \\Use camelCase and Type Hinting 
+	}
+	
+	protected function _resetPointer() \\ Prepend protected method with _
+	{
+	}
+}
+// No end tag
+---
+Directory structure:
+application: All application specific codes lives there, using the MVC principle
+data: Session, cache, logs, uploads go there
+doc: Where everything is documented
+install: Installation files (db scheme, install scripts)
+lib: Multipurpose code (frameworks)
+public: Public entry point and publicly accessable files
+temp: Temporary directory for uploads and file conversion
+tests: Unittests and others
+Full explanation (for original Zend structure): 
+http://framework.zend.com/manual/1.12/de/project-structure.project.html
