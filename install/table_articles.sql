@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `art_name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `art_description` varchar(1000) COLLATE utf8_unicode_ci NOT NULL,
   `art_image` blob,
-  `art_postcode` varchar(4) COLLATE utf8_unicode_ci NOT NULL,
+  `art_postcode` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `art_category` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `art_subcategory` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `art_creation_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
