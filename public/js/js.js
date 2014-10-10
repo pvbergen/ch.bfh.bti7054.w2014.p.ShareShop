@@ -18,14 +18,35 @@ $( document ).ready(function() {
 		Content Elements resize
 	*/
 
- 	window.resize = function() {
+
+	function debounce(func, wait, immediate) {
+		var timeout;
+		return function() {
+			var context = this, args = arguments;
+			var later = function() {
+				timeout = null;
+				if (!immediate) func.apply(context, args);
+			};
+			var callNow = immediate && !timeout;
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+			if (callNow) func.apply(context, args);
+		};
+	};
+	var debouncedResize = debounce(function() {
  		var width = $('.product-list').width();
- 		var numbers = width / 12;
+ 		var numbers = width / 200;
  		numbers = Math.floor(numbers);
+ 		var margins = (numbers - 1) * 20;
+ 		width = width - margins;
  		var productwidth = width / numbers;
- 		$('.product').css('width',numbers + 'em');
- 	}
-	
- 	window.onresize = resize;
+ 		$('.product').attr('style','');
+ 		$('.product').css('width',productwidth);
+ 		$('.product').css('height',productwidth);
+ 		$('.product:nth-child(' + numbers + ')').css('margin-right',0);	
+	}, 500);
+
+	window.addEventListener('resize', debouncedResize);
+	debouncedResize();
 
 });
