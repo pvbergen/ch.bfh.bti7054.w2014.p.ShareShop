@@ -4,6 +4,11 @@ html {
 
 }
 
+a {
+	color: #00FBFF;
+	text-decoration: none;
+}
+
 .clearfix:after {
     content: ".";
     clear: both;
@@ -21,6 +26,16 @@ html {
 	font-family: "Glyphs";
 	content: "\e003";
 }
+
+.glyph-cog:before {
+	font-family: "Glyphs";
+	content: "\e019";
+}
+img {
+	width: 100%;
+	height: 100%;
+}
+
 
 
 /*img {
@@ -44,9 +59,8 @@ html {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=1 ); /* IE6-8 fallback on horizontal gradient */
 }
 
-.dynamic {
-	margin-left: 16em;
-}
+
+
 
 .logo {
 	width: 16em;
@@ -58,9 +72,15 @@ html {
 	width: 5.5em
 }
 
+.dynamic {
+	margin-left: 16em;
+	position: relative;
+}
+
 
 .search {
 	width: 80%;
+	float: left;
 }
 
 .searchbutton {
@@ -78,9 +98,13 @@ html {
 	border-radius: 1.5em;
 }
 
-.navigaion {
-	width: 20%;
+.navigation {
+	padding: 1em;
+	font-size:30px;
+	float: right;
 }
+
+
 
 .navigation ul {
 
@@ -166,10 +190,34 @@ html {
 .product {
 	width: 12em;
 	height: 12em;
-	background-color: violet;
 	float: left;
+	overflow: hidden;
+	/*border: 1px solid black;*/
+	box-sizing: border-box;
+	box-shadow: 3px 3px 10px 3px #CFCFCF;
+    margin: 0 20px 20px 0;
 }
 
-.porduct img {
 
+.productinfo {
+	height: 20%;
+	background-color: #E8E8E8;
+	padding: 0.45em;
+}
+
+.product a {
+	color: #4A4A4A;
+}
+
+.productinfo .name {
+	font-size: 14px;
+}
+
+
+.productinfo .location {
+	font-size: 12px;
+}
+
+.product img {
+	height: 80%
 }
