@@ -1,26 +1,26 @@
 ﻿<?php
-namespace shareshop\models;
+namespace Application\Models\Db;
 /**
  * ****************************************************************************
  * Article class - represents an object in the shop that wants to be shared
  * ****************************************************************************
  */
 class Article {
-	protected $id;
-	protected $name;
-	protected $description;
-	protected $image;
-	protected $location;
-	protected $categories = new array();
-	protected $creationTimestamp;
+	private $id;
+	private $name;
+	private $description;
+	private $image;
+	private $locationId;
+	private $categoryId;
+	private $creationTimestamp;
 	
-	public function __construct($id, $name, $description, $image, $location, $categories) {
+	public function __construct($id, $name, $description, $image, $locationId, $categoryId) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->description = $description;
 		$this->image = $image;
-		$this->location = $location;
-		$this->categories = $categories;
+		$this->locationId = $locationId;
+		$this->categoryId = $categoryId;
 		$this->creationTimestamp = time();
 	}
 	
@@ -42,12 +42,12 @@ class Article {
 		return $this->image;
 	}
 	
-	public function getLocation () {
-		return $this->location;
+	public function getLocationId () {
+		return $this->locationId;
 	}
 	
-	public function getCategories () {
-		return $this->categories;
+	public function getCategoryId () {
+		return $this->categoryId;
 	}
 	
 	public function getCreationTimestamp () {
@@ -68,12 +68,12 @@ class Article {
 		$this->image=$image;
 	}
 	
-	public function setLocation ($location) {
-		$this->location=$location;
+	public function setLocationId ($locationId) {
+		$this->locationId=$locationId;
 	}
 	
-	public function setCategories ($categories) {
-		$this->categories=$categories;
+	public function setCategoryId ($categoryId) {
+		$this->categoryId=$categoryId;
 	}
 }
 ?>

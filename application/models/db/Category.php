@@ -1,14 +1,15 @@
 ﻿<?php
-namespace shareshop\models;
+namespace Application\Models\Db;
+
 /**
  * ****************************************************************************
  * Category class - represents a article category. Can have a parent category.
  * ****************************************************************************
  */
 class Category {
-	protected $id;
-	protected $name;
-	protected $parentId;
+	private $id;
+	private $name;
+	private $parentId;
 	
 	public function __construct($id, $name, $parentId) {
 		$this->id = $id;

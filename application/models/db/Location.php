@@ -1,13 +1,13 @@
 ﻿<?php
-postcodespace shareshop\models;
+namespace Application\Models\Db;
 /**
  * ****************************************************************************
  * Location class - represents a place where articles can be located
  * ****************************************************************************
  */
 class Location {
-	protected $id;
-	protected $postcode;
+	private $id;
+	private $postcode;
 	
 	public function __construct($id, $postcode) {
 		$this->id = $id;
