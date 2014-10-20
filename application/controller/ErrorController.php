@@ -1,11 +1,18 @@
 <?php
 namespace Application\Controller;
 
-class ErrorController {
+use Shareshop\Controller;
+class ErrorController extends Controller {
+	
+	protected $_e = null;
+	
+	public function __construct(\Exception $e) {
+		$this->_e = $e;
+	}
 	
 	public function indexAction() {
-		$this->_view->register('error/index', array());
-		$this->_view->render();
+		$this->view->register('error/index', array('exception' => $this->_e, 'backtrace' => debug_backtrace()));
+		$this->view->render();
 	}
 	
 }

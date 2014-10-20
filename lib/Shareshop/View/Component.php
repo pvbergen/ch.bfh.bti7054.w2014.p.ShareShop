@@ -1,7 +1,7 @@
 <?php
 namespace Shareshop\View;
 
-class SingleView {
+class Component {
 	
 	protected $_path;
 	

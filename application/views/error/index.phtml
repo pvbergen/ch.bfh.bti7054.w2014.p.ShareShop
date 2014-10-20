@@ -2,8 +2,21 @@
 	Uncaught exception
 </h1>
 <div>
+	<h2>Exception data</h2>
+	<div>
+		<h3>Message</h3> 
+		<span><?php echo $this->_data['exception']->getMessage(); ?></span>
+		<h3>Code</h3> 
+		<span><?php echo $this->_data['exception']->getCode(); ?></span>
+	</div>
 	<h2>Backtrace</h2>
-	<p>
-		Placeholder for Backtrace
-	</p>
+	<ol>
+		<?php
+		foreach($this->_data['backtrace'] as $step) {
+		?>
+			<li><?php echo $step['file']; ?>(<?php echo $step['line']?>): <?php echo $step['class'];?>-><?php echo $step['function']?></li>
+		<?php  
+		} 
+		?>
+	</ol>
 </div>

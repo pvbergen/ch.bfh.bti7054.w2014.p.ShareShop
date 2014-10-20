@@ -4,21 +4,24 @@ namespace Shareshop;
 class Controller {
 	
 	/**
+	 * The view object.
 	 * 
 	 * @var View
 	 */
-	protected $_view = null;
+	public $view = null;
 
 	/**
+	 * The request object.
 	 * 
 	 * @var Request
 	 */
-	protected $_request = null;
+	public $request = null;
 
-	public function __construct(View $view)
+	/**
+	 * 
+	 */
+	public function __construct()
 	{
-		$this->_request = new Request();
-		$this->_view = $view;
 	}
 	
 }
