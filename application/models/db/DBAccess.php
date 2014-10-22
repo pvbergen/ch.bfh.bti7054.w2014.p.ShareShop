@@ -20,9 +20,11 @@ class DBAccess {
 	public function __construct() {
 		$this->connect ();
 	}
+	
+	
 	private function connect() {
 		try {
-			$this->_conn = new PDO ( 'mysql:host=' . $this->_HOST . ';dbname=' . $this->_DB, $this->_USER, $this->_PASS );
+			$this->_conn = new \PDO ( 'mysql:host=' . $this->_HOST . ';dbname=' . $this->_DB, $this->_USER, $this->_PASS );
 			$this->_conn->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 		} catch ( PDOException $e ) {
 			echo $e->getMessage ();

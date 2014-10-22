@@ -8,9 +8,24 @@ class Application {
 	protected $_controller = 'index';
 	protected $_action = 'index';
 	protected $_bootstrap = null;
+	protected static $_config = null;
 	
 	public function __construct() {
 		$this->_bootstrap = new Bootstrap();
+	}
+	
+	/**
+	 * Returns the application configuration (as set in application.ini) as an object.
+	 * Access any property as $config->key1->key2->key3 (equals key1.key2.key3 in the ini file).
+	 * 
+	 * @return \Shareshop\Config
+	 */
+	public static function getConfig()
+	{
+		if (self::$_config == null) {
+			self::$_config = new Config(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+		}
+		return self::$_config;
 	}
 	
 	public function route()
@@ -50,6 +65,8 @@ class Application {
 			call_user_func(array($controllerObj, $request->getAction() . "Action"));
 			
 		} catch(\Exception $e) {
+			$view = new View();
+			$view->setLayout('error');
 			$controllerObj = new ErrorController($e);
 			$controllerObj->view = $view;
 			$controllerObj->request = $request;
