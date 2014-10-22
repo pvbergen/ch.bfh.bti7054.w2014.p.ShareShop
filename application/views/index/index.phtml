@@ -1,54 +1,23 @@
 <div class="product-list">
+	
+<?php
+	/* @var $article Application\Models\Db\Article2 */ 
+	foreach($data['articles'] as $article) { 
+?>
 	<div class="product">
-		<a href="detail.htm">
+		<a href="/product/detail/item/<?php echo $article->getId(); ?>">
 			<img src="./images/product.jpg" />
 			<div class="productinfo">
 				<div class="name">
-					Name
+					<?php echo $article->getName(); ?>
 				</div>
 				<div class="location">
-					Ort
+					<?php echo $article->getLocationId(); ?>
 				</div>
 			</div>
 		</a>
 	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>					
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
-	<div class="product">
-		<img src="./images/product.jpg" />
-	</div>
+<?php 
+}
+?>
 </div>

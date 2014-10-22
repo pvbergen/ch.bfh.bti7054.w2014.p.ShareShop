@@ -1,5 +1,6 @@
 ﻿<?php
 namespace Application\Models\Db;
+
 /**
  * ****************************************************************************
  * Article class - represents an object in the shop that wants to be shared
@@ -76,4 +77,3 @@ class Article {
 		$this->categoryId=$categoryId;
 	}
 }
-?>

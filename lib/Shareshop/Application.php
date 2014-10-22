@@ -60,7 +60,7 @@ class Application {
 			$controllerObj->request = $request;
 						
 			if (!method_exists($controllerObj, $request->getAction() . "Action")) {
-				throw new \Exception('Missing action');
+				throw new \Exception('Missing action method');
 			}
 			call_user_func(array($controllerObj, $request->getAction() . "Action"));
 			

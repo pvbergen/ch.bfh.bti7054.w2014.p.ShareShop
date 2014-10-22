@@ -24,9 +24,9 @@ class DBAccess {
 	
 	private function connect() {
 		try {
-			$this->_conn = new \PDO ( 'mysql:host=' . $this->_HOST . ';dbname=' . $this->_DB, $this->_USER, $this->_PASS );
-			$this->_conn->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
-		} catch ( PDOException $e ) {
+			$this->_conn = new \PDO( 'mysql:host=' . $this->_HOST . ';dbname=' . $this->_DB, $this->_USER, $this->_PASS );
+			$this->_conn->setAttribute ( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+		} catch (\PDOException $e ) {
 			echo $e->getMessage ();
 		}
 	}
@@ -41,15 +41,15 @@ class DBAccess {
 	public function getAllArticles() {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles' );
-			$stmt->setFetchMode(PDO::FETCH_OBJ);
+			$stmt->setFetchMode(\PDO::FETCH_OBJ);
 			$stmt->execute();
 			
 			while ( $row = $stmt->fetch() ) {
-				$articles [] = $this->createArticleFromDBRow($row);
+				$articles[] = $this->createArticleFromDBRow($row);
 			}
 			return $articles;
 			
-		} catch ( PDOException $e ) {
+		} catch (\PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
@@ -57,7 +57,7 @@ class DBAccess {
 	public function getArticleById($id) {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles WHERE art_id=:id' );
-			$stmt->setFetchMode(PDO::FETCH_OBJ);
+			$stmt->setFetchMode(\PDO::FETCH_OBJ);
 			$stmt->bindParam ( ':id', $id );
 
 			$stmt->execute();
@@ -66,7 +66,7 @@ class DBAccess {
 			$article=$this->createArticleFromDBRow($row);
 			return $article;
 			
-		} catch ( PDOException $e ) {
+		} catch (\PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
@@ -77,7 +77,7 @@ class DBAccess {
 	public function getCategoryById($id) {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_id=:id' );
-			$stmt->setFetchMode(PDO::FETCH_OBJ);
+			$stmt->setFetchMode(\PDO::FETCH_OBJ);
 			$stmt->bindParam ( ':id', $id );
 
 			$stmt->execute();
@@ -86,7 +86,7 @@ class DBAccess {
 			$category=new Category($row->cat_id, $row->cat_name, $row->cat_parent_id);
 			
 			return $category;
-		} catch ( PDOException $e ) {
+		} catch (\PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
@@ -95,7 +95,7 @@ class DBAccess {
 	public function getLocationById($id) {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_locations WHERE loc_id=:id' );
-			$stmt->setFetchMode(PDO::FETCH_OBJ);
+			$stmt->setFetchMode(\PDO::FETCH_OBJ);
 			$stmt->bindParam ( ':id', $id );
 
 			$stmt->execute();
@@ -104,10 +104,8 @@ class DBAccess {
 			$location=new Location($row->loc_id, $row->loc_postcode);
 			
 			return $location;
-		} catch ( PDOException $e ) {
+		} catch (\PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
-
 }
-?>
