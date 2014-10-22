@@ -1,0 +1,12 @@
+<?php 
+/* @var $article Application\Models\DB\Article2 */
+$article = $data['article'];
+?>
+
+<div>
+	<h3>Produkt: <?php echo $article->getName(); ?></h3>
+	<h4>Ort: <?php echo $article->getLocationId(); ?></h4>
+	<div>
+		<?php echo $article->getDescription(); ?>
+	</div>
+</div>

@@ -26,4 +26,15 @@ class IndexController extends \Shareshop\Controller {
 		$this->view->register('index/index', array('teststring' => 'das ist eine liste'));
 		$this->view->render();
 	}
+	
+	public function detailAction()
+	{
+		$params = $this->request->getParameters();
+		if (!isset($params['item']) || empty($params['item'])) {
+			$this->view->redirect('index', 'index');
+		}
+		$article = new Article2($params['item'], substr(md5($params['item']), rand(0, 10), 10), md5($params['item']), md5($params['item']), md5($params['item']), md5($params['item']));
+		$this->view->register('index/detail', array('article' => $article));
+		$this->view->render();
+	}
 }

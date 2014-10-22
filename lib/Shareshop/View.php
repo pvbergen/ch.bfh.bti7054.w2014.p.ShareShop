@@ -108,4 +108,15 @@ class View {
 	{
 		return $this->_isAjax;
 	}
+	
+	/**
+	 * Redirects to the given action in the given controller.
+	 * 
+	 * @param String $controller
+	 * @param String $action
+	 */
+	public function redirect($controller, $action) 
+	{
+		header('Location: /' . strtolower($controller) . '/' . strtolower($action));
+	}
 }
