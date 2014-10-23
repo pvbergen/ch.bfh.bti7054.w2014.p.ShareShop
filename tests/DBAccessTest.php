@@ -1,24 +1,31 @@
 ﻿<?php
 use Application\Models\Db\DBAccess;
+use Application\Models\Db\Article;
+use Application\Models\Db\Location;
+use Application\Models\Db\Category;
 
-$dbAccess = new DBAccess();
+$article = Article::create()->setName('Zahnbürste')
+							->setDescription('999 Borsten')
+							->setLocationId('1')
+							->setCategoryId('1');
+$article->save();
 
-$article = $dbAccess->getArticleById(4);
-printObjectArray('getArticleById', array($article));
+$article = Article::readById( 4 );
+printObjectArray ('getArticleById', array ($article));
 
-$articles = $dbAccess->getAllArticles();
-printObjectArray('getAllArticles', $articles);
+$articles = Article::readAll();
+printObjectArray ( 'getAllArticles', $articles );
 
-$location = $dbAccess->getLocationById(1);
-printObjectArray('getLocationById', array($location));
+$location = Location::readById( 1 );
+printObjectArray ( 'getLocationById', array ($location));
 
-$category = $dbAccess->getCategoryById(1);
-printObjectArray('getCategoryById', array($category));
-	
+$category = Category::readById(1);
+printObjectArray ( 'getCategoryById', array ($category));
+
 function printObjectArray($functionName, $objectArr) {
 	echo '<h1>' . $functionName . '</h1>';
-	foreach($objectArr as $obj){
-		print_r($obj);
+	foreach ( $objectArr as $obj ) {
+		print_r ( $obj );
 	}
 }
 ?>

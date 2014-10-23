@@ -1,5 +1,6 @@
 ﻿<?php
 namespace Application\Models\Db;
+use Application\Models\Db\DBAccess;
 
 /**
  * ****************************************************************************
@@ -23,6 +24,26 @@ class Article {
 		$this->locationId = $locationId;
 		$this->categoryId = $categoryId;
 		$this->creationTimestamp = time();
+	}
+	
+	/**
+	 * Static constructor / factory
+	 */
+	public static function create() {
+		$instance = new self(null,null,null,null,null,null);
+		return $instance;
+	}
+	
+	public static function save() {
+		DBAccess::getInstance()->saveArticle($this);
+	}
+	
+	public static function readById($id) {
+		return DBAccess::getInstance()->readArticleById($id);
+	}
+	
+	public static function readAll() {
+		return DBAccess::getInstance()->readAllArticles();
 	}
 	
 	// ------------------------ GETTER ---------------------------- //
@@ -57,23 +78,34 @@ class Article {
 	
 	// ------------------------ SETTER ---------------------------- //
 	
+	public function setId ($id) {
+		$this->id=$id;
+		return $this;
+	}
+	
 	public function setName ($name) {
 		$this->name=$name;
+		return $this;
 	}
 	
 	public function setDescription ($description) {
 		$this->description=$description;
+		return $this;
 	}
 	
 	public function setImage ($image) {
 		$this->image=$image;
+		return $this;
 	}
 	
 	public function setLocationId ($locationId) {
 		$this->locationId=$locationId;
+		return $this;
 	}
 	
 	public function setCategoryId ($categoryId) {
 		$this->categoryId=$categoryId;
+		return $this;
 	}
 }
+?>

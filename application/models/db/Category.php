@@ -17,6 +17,26 @@ class Category {
 		$this->parentId = $parentId;
 	}
 	
+	/**
+	 * Static constructor / factory
+	 */
+	public static function create() {
+		$instance = new self(null,null,null);
+		return $instance;
+	}
+	
+	public static function save() {
+		DBAccess::getInstance()->saveCategory($this);
+	}
+	
+	public static function readById($id) {
+		return DBAccess::getInstance()->readCategoryById($id);
+	}
+	
+	public static function readAll() {
+		return DBAccess::getInstance()->readAllCategories();
+	}
+	
 	// ------------------------ GETTER ---------------------------- //
 	
 	public function getId () {
@@ -32,6 +52,11 @@ class Category {
 	}
 	
 	// ------------------------ SETTER ---------------------------- //
+	
+	public function setId ($id) {
+		$this->id=$id;
+		return $this;
+	}
 	
 	public function setName ($name) {
 		$this->name=$name;
