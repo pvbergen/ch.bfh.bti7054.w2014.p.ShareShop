@@ -36,8 +36,16 @@ class DBAccess {
 
 	// ------------------------ Helpers ---------------------------- //
 	
-	private function createArticleFromDBRow($row) {
+	private function createArticleFromDatabaseRow($row) {
 		return new Article($row->art_id, $row->art_name, $row->art_description, $row->art_image, $row->art_loc_id, $row->art_cat_id);
+	}
+	
+	private function createCategoryFromDatabaseRow($row) {
+		return new Category($row->cat_id, $row->cat_name, $row->cat_parent_id);
+	}
+	
+	private function createLocationFromDatabaseRow($row) {
+		return new Location($row->loc_id, $row->loc_postcode);
 	}
 	
 	// ------------------------ Article ---------------------------- //
@@ -50,7 +58,7 @@ class DBAccess {
 			$stmt->execute();
 		    $row = $stmt->fetch();
 			
-			$article=$this->createArticleFromDBRow($row);
+			$article=$this->createArticleFromDatabaseRow($row);
 			return $article;
 			
 		} catch ( \PDOException $e ) {
@@ -84,7 +92,7 @@ class DBAccess {
 			$stmt->execute();
 				
 			while ( $row = $stmt->fetch() ) {
-				$articles [] = $this->createArticleFromDBRow($row);
+				$articles [] = $this->createArticleFromDatabaseRow($row);
 			}
 			return $articles;
 				
@@ -103,7 +111,7 @@ class DBAccess {
 			$stmt->execute();
 		    $row = $stmt->fetch();
 			
-			$category=new Category($row->cat_id, $row->cat_name, $row->cat_parent_id);
+			$category=$this->createCategoryFromDatabaseRow($row);
 			return $category;
 			
 		} catch ( \PDOException $e ) {
@@ -112,6 +120,19 @@ class DBAccess {
 	}
 	
 	public function saveCategory($category) {
+		try {
+			$stmt = $this->_conn->prepare('INSERT INTO sha_categories VALUES(:id, :name, :parentId)');
+			$stmt->execute(array(
+					':id' 			=> 	$category->getId(),
+					':name' 		=> 	$category->getName(),
+					':parentId'  => 	$category->getParentId()
+			));
+		
+			# Affected Rows?
+			echo $stmt->rowCount(); // 1
+		} catch ( \PDOException $e ) {
+		echo 'Error: ' . $e->getMessage ();
+		}
 	}
 	
 	public function readAllCategories(){
@@ -127,7 +148,7 @@ class DBAccess {
 			$stmt->execute();
 		    $row = $stmt->fetch();
 			
-			$location=new Location($row->loc_id, $row->loc_postcode);
+			$location=$this->createLocationFromDatabaseRow($row);
 			return $location;
 			
 		} catch ( \PDOException $e ) {
@@ -136,6 +157,18 @@ class DBAccess {
 	}
 	
 	public function saveLocation($location) {
+		try {
+			$stmt = $this->_conn->prepare('INSERT INTO sha_locations VALUES(:id, :postcode)');
+			$stmt->execute(array(
+					':id' 			=> 	$location->getId(),
+					':postcode' 	=> 	$location->getPostcode(),
+			));
+		
+			# Affected Rows?
+			echo $stmt->rowCount(); // 1
+		} catch ( \PDOException $e ) {
+		echo 'Error: ' . $e->getMessage ();
+		}
 	}
 	
 	public function readAllLocations() {

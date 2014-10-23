@@ -60,10 +60,12 @@ class Category {
 	
 	public function setName ($name) {
 		$this->name=$name;
+		return $this;
 	}
 	
 	public function setParentId ($parentId) {
 		$this->parentId=$parentId;
+		return $this;
 	}
 }
 ?>

@@ -53,6 +53,7 @@ class Location {
 	
 	public function setPostcode ($postcode) {
 		$this->postcode=$postcode;
+		return $this;
 	}
 }
 ?>
