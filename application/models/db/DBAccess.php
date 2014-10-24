@@ -16,12 +16,13 @@ class DBAccess {
 	protected $_DB = 'shareshop';
 	protected $_USER = 'root';
 	protected $_PASS = '';
+	protected static $_instance = null;
 	
 	public static function getInstance() {
-		if (self::$instance === null) {
-			self::$instance = new self ();
+		if (self::$_instance === null) {
+			self::$_instance = new self ();
 		}
-		return self::$instance;
+		return self::$_instance;
 	}
 	
 	private function __construct() {
