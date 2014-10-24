@@ -1,4 +1,6 @@
 <?php
+mb_internal_encoding('UTF-8');
+
 use Shareshop\Application;
 define("BASE_PATH", dirname(dirname(__FILE__)));
 define("APPLICATION_PATH", BASE_PATH . '\application');
