@@ -22,7 +22,7 @@ class Location {
 		return $instance;
 	}
 	
-	public static function save() {
+	public function save() {
 		DBAccess::getInstance()->saveLocation($this);
 	}
 	

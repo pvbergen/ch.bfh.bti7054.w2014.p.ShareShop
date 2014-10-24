@@ -25,7 +25,7 @@ class Category {
 		return $instance;
 	}
 	
-	public static function save() {
+	public function save() {
 		DBAccess::getInstance()->saveCategory($this);
 	}
 	

@@ -34,7 +34,7 @@ class Article {
 		return $instance;
 	}
 	
-	public static function save() {
+	public function save() {
 		DBAccess::getInstance()->saveArticle($this);
 	}
 	
