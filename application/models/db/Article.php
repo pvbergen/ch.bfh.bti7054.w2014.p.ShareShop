@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Application\Models\Db;
 use Application\Models\Db\DBAccess;
 
