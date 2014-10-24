@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Application\Models\Db;
 
 /**
@@ -25,7 +25,7 @@ class Category {
 		return $instance;
 	}
 	
-	public function save() {
+	public static function save() {
 		DBAccess::getInstance()->saveCategory($this);
 	}
 	
@@ -68,4 +68,3 @@ class Category {
 		return $this;
 	}
 }
-?>

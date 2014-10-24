@@ -36,12 +36,75 @@ img {
 	height: 100%;
 }
 
+html h1 {
+	font-size: 2em;
+	font-weight: 700;
+}
 
 
-/*img {
+/************* General Form ***************/
+
+
+
+form {
+	width: 60%;
+}
+
+form .input-wrapper {
 	width: 100%;
-	height: 100%;
+	margin-bottom: 2em;
+}
+
+form, form input, form select {
+	box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 60%;
+}
+
+
+
+form label, form input, form select {
+    display: inline-block;
+}
+
+form input, form select {
+	border-radius: 15px;
+	padding: 1em;
+	height: 7em;
+}
+
+form select {
+	overflow: hidden;
+	border-radius: 15px;
+}
+
+form label {
+	width: 20%;
+	vertical-align: top;
+	padding: 0.7em;
+}
+
+form input {
+	height: 3em;
+	padding: 1em;
+}
+
+.button {
+	border-radius: 5px;
+}
+
+
+/*form label {
+	width: 200px;
+	float: left;
+}
+
+form input {
+	width: 400px;
+	margin-left: 200px; 
 }*/
+
 
 
 /************* SiteHeader ***************/
@@ -175,7 +238,7 @@ img {
 
 #content {
 	margin-left: 16em;
-	background-color: blue;
+	
 }
 
 #bodysection {
@@ -220,4 +283,10 @@ img {
 
 .product img {
 	height: 80%
+}
+
+/************* Product Upload ***************/
+
+.product-upload {
+	padding: 3em;
 }

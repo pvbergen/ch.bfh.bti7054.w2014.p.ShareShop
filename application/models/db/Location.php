@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Application\Models\Db;
 /**
  * ****************************************************************************
@@ -22,7 +22,7 @@ class Location {
 		return $instance;
 	}
 	
-	public function save() {
+	public static function save() {
 		DBAccess::getInstance()->saveLocation($this);
 	}
 	
@@ -56,4 +56,3 @@ class Location {
 		return $this;
 	}
 }
-?>
