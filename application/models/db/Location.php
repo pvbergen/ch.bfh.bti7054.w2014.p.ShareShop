@@ -9,29 +9,26 @@ class Location {
 	private $id;
 	private $postcode;
 	
-	public function __construct($id, $postcode) {
-		$this->id = $id;
-		$this->postcode = $postcode;
+	private function __construct() {
 	}
 	
 	/**
 	 * Static constructor / factory
 	 */
 	public static function create() {
-		$instance = new self(null, null);
-		return $instance;
+		return new self();
 	}
 	
-	public static function save() {
+	public function save() {
 		DBAccess::getInstance()->saveLocation($this);
 	}
 	
-	public static function readById($id) {
-		return DBAccess::getInstance()->readLocationById($id);
+	public static function findById($id) {
+		return DBAccess::getInstance()->findLocationById($id);
 	}
 	
-	public static function readAll() {
-		return DBAccess::getInstance()->readAllLocations();
+	public static function findAll() {
+		return DBAccess::getInstance()->findAllLocations();
 	}
 	
 	// ------------------------ GETTER ---------------------------- //

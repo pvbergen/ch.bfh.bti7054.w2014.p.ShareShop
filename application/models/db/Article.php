@@ -12,17 +12,11 @@ class Article {
 	private $name;
 	private $description;
 	private $image;
-	private $locationId;
-	private $categoryId;
+	private $location;
+	private $categories = array();
 	private $creationTimestamp;
 	
-	public function __construct($id, $name, $description, $image, $locationId, $categoryId) {
-		$this->id = $id;
-		$this->name = $name;
-		$this->description = $description;
-		$this->image = $image;
-		$this->locationId = $locationId;
-		$this->categoryId = $categoryId;
+	private function __construct() {
 		$this->creationTimestamp = time();
 	}
 	
@@ -30,20 +24,23 @@ class Article {
 	 * Static constructor / factory
 	 */
 	public static function create() {
-		$instance = new self(null,null,null,null,null,null);
-		return $instance;
+		return new self();
 	}
 	
-	public static function save() {
+	public function save() {
 		DBAccess::getInstance()->saveArticle($this);
 	}
 	
-	public static function readById($id) {
+	public static function findById($id) {
 		return DBAccess::getInstance()->readArticleById($id);
 	}
 	
-	public static function readAll() {
+	public static function findAll() {
 		return DBAccess::getInstance()->readAllArticles();
+	}
+	
+	public static function findByText() {
+			
 	}
 	
 	// ------------------------ GETTER ---------------------------- //
@@ -64,12 +61,12 @@ class Article {
 		return $this->image;
 	}
 	
-	public function getLocationId () {
-		return $this->locationId;
+	public function getLocation () {
+		return $this->location;
 	}
 	
-	public function getCategoryId () {
-		return $this->categoryId;
+	public function getCategories () {
+		return $this->categories;
 	}
 	
 	public function getCreationTimestamp () {
@@ -98,13 +95,13 @@ class Article {
 		return $this;
 	}
 	
-	public function setLocationId ($locationId) {
-		$this->locationId=$locationId;
+	public function setLocation ($location) {
+		$this->location=$location;
 		return $this;
 	}
 	
-	public function setCategoryId ($categoryId) {
-		$this->categoryId=$categoryId;
+	public function setCategories ($categories) {
+		$this->categories[]=$categories;
 		return $this;
 	}
 }
