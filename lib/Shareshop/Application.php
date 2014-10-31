@@ -2,17 +2,22 @@
 namespace Shareshop;
 
 use Application\Controller\ErrorController;
-use Application\Bootstrap;
+use Application\Hooks;
 class Application {
 	
-	protected $_bootstrap = null;
+	protected $_hooks = null;
 	protected $_view = null;
 	protected $_request = null;
 	
 	protected static $_config = null;
 	
+	/**
+	 * Constructs a new Application object,
+	 * parses request URI, determines requested route and
+	 * initializes request and view object.
+	 */	
 	public function __construct() {
-		$this->_bootstrap = new Bootstrap();
+		$this->_hooks = new Hooks();
 		$uriParts = explode('?', $_SERVER['REQUEST_URI']);
 		$uriParts = explode('/', $uriParts[0]);
 		array_shift($uriParts);
@@ -46,10 +51,16 @@ class Application {
 		return self::$_config;
 	}
 	
+	/**
+	 * Routes the request.
+	 * Initialises controller with view and request and executes action, both corresponding to request.
+	 * 
+	 * @throws \Exception
+	 */
 	public function route()
 	{		
 		try {	
-			$this->_bootstrap->preDispatch($this->_request, $this->_view);
+			$this->_hooks->preDispatch($this->_request, $this->_view);
 			
 			$controllerFile = APPLICATION_PATH . '/controller/' . $this->_request->getController() . 'Controller.php';
 			if (!file_exists($controllerFile)) {
@@ -73,6 +84,6 @@ class Application {
 			$controllerObj->request = $this->_request;
 			$controllerObj->indexAction(); 
 		}
-		$this->_bootstrap->postDispatch($this->_request, $this->_view);
+		$this->_hooks->postDispatch($this->_request, $this->_view);
 	}
 }
