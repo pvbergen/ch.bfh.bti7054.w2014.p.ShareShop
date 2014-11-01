@@ -38,19 +38,39 @@ class DBAccess {
 	// ------------------------ Helpers ---------------------------- //
 	
 	private function createArticleFromDatabaseRow($row) {
-		return new Article($row->art_id, $row->art_name, $row->art_description, $row->art_image, $row->art_loc_id, $row->art_cat_id);
+		$article = Article::create()
+		->setId($row->art_id)
+		->setName($row->art_name)
+		->setDescription($row->art_description)
+		->setImage($row->art_image)
+		->setLocation($this->readLocationById($row->art_loc_id));
+		
+		$catId = $row->art_cat_id;
+		while ($catId != null ) {
+			$category =  $this->readCategoryById($catId);
+			$categories [] = $category;
+			$catId = $category->getParentId();
+		}
+		return $article;
 	}
 	
 	private function createCategoryFromDatabaseRow($row) {
-		return new Category($row->cat_id, $row->cat_name, $row->cat_parent_id);
+		$category = Category::create()
+		->setId($row->cat_id)
+		->setName($row->cat_name)
+		->setParentId($row->cat_parent_id);
+		return $category;
 	}
 	
 	private function createLocationFromDatabaseRow($row) {
-		return new Location($row->loc_id, $row->loc_postcode);
+		$location = Location::create()
+		->setId($row->loc_id)
+		->setPostcode($row->loc_postcode);
+		return $location;
 	}
 	
 	// ------------------------ Article ---------------------------- //
-	public function readArticleById($id) {
+	public function findArticleById($id) {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles WHERE art_id=:id' );
 			$stmt->setFetchMode(\PDO::FETCH_OBJ);
@@ -70,14 +90,22 @@ class DBAccess {
 	public function saveArticle($article) {
 		try {
 		$stmt = $this->_conn->prepare('INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :locationId, :categoryId, null)');
-		$stmt->execute(array(
-				':id' 			=> 	$article->getId(),
-				':name' 		=> 	$article->getName(),
-				':description'  => 	$article->getDescription(),
-				':image'        => 	$article->getImage(),
-				':locationId'   => 	$article->getLocationId(),
-				':categoryId'   => 	$article->getCategoryId(),
-		));
+		
+		$mostSpecificCategoryId;
+		foreach ( $article->getCategories() as $cat ) {
+			if ($cat->getParentId() == $mostSpecificCategoryId || $mostSpecificCategoryId == null) {
+				$mostSpecificCategoryId = $cat->getId();		
+			}
+		}
+		
+		$stmt->bindParam ( ':id', $article->getId());
+		$stmt->bindParam ( ':name', $article->getName());
+		$stmt->bindParam ( ':description', $article->getDescription());
+		$stmt->bindParam ( ':image', $article->getImage());
+		$stmt->bindParam ( ':locationId', $article->getLocation()->getId());
+		$stmt->bindParam ( ':categoryId', $mostSpecificCategoryId);
+
+		$stmt->execute();
 		
 		# Affected Rows?
 		echo $stmt->rowCount(); // 1
@@ -86,7 +114,7 @@ class DBAccess {
 		}
 	}
 	
-	public function readAllArticles() {
+	public function findAllArticles() {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles' );
 			$stmt->setFetchMode(\PDO::FETCH_OBJ);
@@ -103,7 +131,7 @@ class DBAccess {
 	}
 	
 	// ------------------------ Category ---------------------------- //
-	public function readCategoryById($id) {
+	public function findCategoryById($id) {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_id=:id' );
 			$stmt->setFetchMode(\PDO::FETCH_OBJ);
@@ -136,11 +164,24 @@ class DBAccess {
 		}
 	}
 	
-	public function readAllCategories(){
+	public function findAllCategories(){
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories' );
+			$stmt->setFetchMode(\PDO::FETCH_OBJ);
+			$stmt->execute();
+		
+			while ( $row = $stmt->fetch() ) {
+				$categories [] = $this->createCategoryFromDatabaseRow($row);
+			}
+			return $categories;
+		
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
 	}
 	
 	// ------------------------ Location ---------------------------- //
-	public function readLocationById($id) {
+	public function findLocationById($id) {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_locations WHERE loc_id=:id' );
 			$stmt->setFetchMode(\PDO::FETCH_OBJ);
@@ -172,7 +213,20 @@ class DBAccess {
 		}
 	}
 	
-	public function readAllLocations() {
+	public function findAllLocations() {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_locations' );
+			$stmt->setFetchMode(\PDO::FETCH_OBJ);
+			$stmt->execute();
+		
+			while ( $row = $stmt->fetch() ) {
+				$locations [] = $this->createLocationFromDatabaseRow($row);
+			}
+			return $locations;
+		
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
 	}
 }
 ?>

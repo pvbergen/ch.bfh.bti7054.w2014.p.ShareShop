@@ -17,11 +17,4 @@ class Controller {
 	 */
 	public $request = null;
 
-	/**
-	 * 
-	 */
-	public function __construct()
-	{
-	}
-	
 }

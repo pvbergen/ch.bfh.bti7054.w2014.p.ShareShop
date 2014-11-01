@@ -11,30 +11,26 @@ class Category {
 	private $name;
 	private $parentId;
 	
-	public function __construct($id, $name, $parentId) {
-		$this->id = $id;
-		$this->name = $name;
-		$this->parentId = $parentId;
+	private function __construct() {
 	}
 	
 	/**
 	 * Static constructor / factory
 	 */
 	public static function create() {
-		$instance = new self(null,null,null);
-		return $instance;
+		return new self();
 	}
 	
-	public static function save() {
+	public function save() {
 		DBAccess::getInstance()->saveCategory($this);
 	}
 	
-	public static function readById($id) {
-		return DBAccess::getInstance()->readCategoryById($id);
+	public static function findById($id) {
+		return DBAccess::getInstance()->findCategoryById($id);
 	}
 	
-	public static function readAll() {
-		return DBAccess::getInstance()->readAllCategories();
+	public static function findAll() {
+		return DBAccess::getInstance()->findAllCategories();
 	}
 	
 	// ------------------------ GETTER ---------------------------- //

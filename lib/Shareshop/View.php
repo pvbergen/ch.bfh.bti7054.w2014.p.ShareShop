@@ -1,8 +1,21 @@
 <?php
 namespace Shareshop;
 
+/**
+ * Shareshop library: View
+ * 
+ * @author Philippe von Bergen
+ */
+
 use Shareshop\View\Component;
+
+/**
+ * View provides methods to register view templates, render the view and set the layout. 
+ * 
+ * @author Philippe von Bergen
+ */
 class View {
+	
 	/**
 	 * The default component area of the layout.
 	 * 
@@ -53,7 +66,7 @@ class View {
 	/**
 	 * The layout to render.
 	 * 
-	 * @param string $layout
+	 * @param string $layout 	Path relative to the layout directory, without file extension.
 	 */
 	public function setLayout($layout)
 	{
@@ -63,7 +76,7 @@ class View {
 	/**
 	 * Register a new component for a location in the layout.
 	 * 
-	 * @param string $view 		The view to render.
+	 * @param string $view 		The view to render as a path relative to the layout directory, without file extension.
 	 * @param unknown $data 	The data provided to the view.
 	 * @param unknown $location	Optional. The location to render the view.
 	 */
@@ -91,9 +104,9 @@ class View {
 	}
 
 	/**
-	 * Define, whether to render the content as AJAX or not.
+	 * Define, whether to render the content as a response to an AJAX request.
 	 * 
-	 * @param string $isAjax 	True, if rendering is for AJAX, false otherwise.
+	 * @param string $isAjax 	True, if rendering is for an AJAX request, false otherwise.
 	 */
 	public function renderAsAjax($isAjax = false)
 	{
@@ -101,7 +114,7 @@ class View {
 	}
 	
 	/**
-	 * Whether the rendering is AJAX or not.
+	 * Whether the rendering is for an AJAX request.
 	 * @return boolean
 	 */
 	public function isAjax()
