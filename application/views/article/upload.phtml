@@ -1,0 +1,50 @@
+<div class="product-upload">
+	<h1>Neues Produkt hinzugf&uuml;gen</h1>
+	<form action="/Article/save/" method="post" accept-charset="utf-8">
+		<div class="input-wrapper">
+			<label for="productName">Name</label>
+			<input type="text" id="productName" name="productName" placeholder="Name" />
+		</div>
+
+		<div class="input-wrapper">
+			<label for="productDescription">Beschreibung</label>
+			<input type="text" id="productDescription" name="productDescription" placeholder="Beschreibung" />
+		</div>
+
+		<div class="input-wrapper"><label for="productCategory">Oberkategorie</label>
+			<select name="productCategory" id="productCategory" multiple>
+			<?php
+				foreach ($data['categories'] as $category)
+				{
+					?>
+						<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
+					<?php 
+				} 
+			?>
+			</select>
+		</div>
+
+		<div class="input-wrapper">
+			<label for="productSubCategory">Unterkategorie</label>
+			<select name="productSubCategory" id="productSubCategory" multiple>
+				<option value="1">Fun</option>
+				<option value="2">Sadness</option>
+				<option value="3">Business</option>
+			</select>
+		</div>
+
+		<div class="input-wrapper">
+			<label for="location">Standort</label>
+			<input type="text" id="location" name="location" placeholder="Standort">
+		</div>
+
+		<div class="input-wrapper">
+			<label for="productDescription">Beschreibung</label>
+			<input type="text" id="productName" name="" placeholder="Beschreibung">
+		</div>
+		<div class="input-wrapper">
+			<input type="submit" class="button" name="submit" value="Speichern">
+		</div>
+
+	</form>
+</div>
