@@ -13,7 +13,7 @@ class Location {
 	}
 	
 	/**
-	 * Static constructor / factory
+	 * Do not use. Locations must exist in database.
 	 */
 	public static function create() {
 		return new self();
@@ -43,13 +43,13 @@ class Location {
 	
 	// ------------------------ SETTER ---------------------------- //
 	
-	public function setId ($id) {
-		$this->id=$id;
+	public function setId ($intId) {
+		$this->id=$intId;
 		return $this;
 	}
 	
-	public function setPostcode ($postcode) {
-		$this->postcode=$postcode;
+	public function setPostcode ($strPostcode) {
+		$this->postcode=$strPostcode;
 		return $this;
 	}
 }

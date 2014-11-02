@@ -15,7 +15,7 @@ class Category {
 	}
 	
 	/**
-	 * Static constructor / factory
+	 * Do not use. Categories must exist in database.
 	 */
 	public static function create() {
 		return new self();
@@ -49,18 +49,18 @@ class Category {
 	
 	// ------------------------ SETTER ---------------------------- //
 	
-	public function setId ($id) {
-		$this->id=$id;
+	public function setId ($intId) {
+		$this->id=$intId;
 		return $this;
 	}
 	
-	public function setName ($name) {
-		$this->name=$name;
+	public function setName ($strName) {
+		$this->name=$strName;
 		return $this;
 	}
 	
-	public function setParentId ($parentId) {
-		$this->parentId=$parentId;
+	public function setParentId ($intParentId) {
+		$this->parentId=$intParentId;
 		return $this;
 	}
 }
