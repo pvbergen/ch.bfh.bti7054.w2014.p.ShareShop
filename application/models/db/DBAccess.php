@@ -29,7 +29,7 @@ class DBAccess {
 		try {
 			$this->_conn = new \PDO ( 'mysql:host=' . $this->_HOST . ';dbname=' . $this->_DB, $this->_USER, $this->_PASS );
 			$this->_conn->setAttribute ( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
-			echo 'connection established.';
+			$this->_conn->exec("set names utf8");
 		} catch ( \PDOException $e ) {
 			echo $e->getMessage ();
 		}
@@ -43,11 +43,11 @@ class DBAccess {
 		->setName($row->art_name)
 		->setDescription($row->art_description)
 		->setImage($row->art_image)
-		->setLocation($this->readLocationById($row->art_loc_id));
+		->setLocation($this->findLocationById($row->art_loc_id));
 		
 		$catId = $row->art_cat_id;
 		while ($catId != null ) {
-			$category =  $this->readCategoryById($catId);
+			$category =  $this->findCategoryById($catId);
 			$categories [] = $category;
 			$catId = $category->getParentId();
 		}
@@ -91,7 +91,7 @@ class DBAccess {
 		try {
 		$stmt = $this->_conn->prepare('INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :locationId, :categoryId, null)');
 		
-		$mostSpecificCategoryId;
+		$mostSpecificCategoryId=null;
 		foreach ( $article->getCategories() as $cat ) {
 			if ($cat->getParentId() == $mostSpecificCategoryId || $mostSpecificCategoryId == null) {
 				$mostSpecificCategoryId = $cat->getId();		
@@ -106,9 +106,6 @@ class DBAccess {
 		$stmt->bindParam ( ':categoryId', $mostSpecificCategoryId);
 
 		$stmt->execute();
-		
-		# Affected Rows?
-		echo $stmt->rowCount(); // 1
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}

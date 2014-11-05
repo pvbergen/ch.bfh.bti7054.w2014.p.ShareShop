@@ -21,7 +21,7 @@ class Article {
 	}
 	
 	/**
-	 * Static constructor / factory
+	 * Create an empty Article object.
 	 */
 	public static function create() {
 		return new self();
@@ -32,11 +32,11 @@ class Article {
 	}
 	
 	public static function findById($id) {
-		return DBAccess::getInstance()->readArticleById($id);
+		return DBAccess::getInstance()->findArticleById($id);
 	}
 	
 	public static function findAll() {
-		return DBAccess::getInstance()->readAllArticles();
+		return DBAccess::getInstance()->findAllArticles();
 	}
 	
 	public static function findByText() {
@@ -75,18 +75,18 @@ class Article {
 	
 	// ------------------------ SETTER ---------------------------- //
 	
-	public function setId ($id) {
-		$this->id=$id;
+	public function setId ($intId) {
+		$this->id=$intId;
 		return $this;
 	}
 	
-	public function setName ($name) {
-		$this->name=$name;
+	public function setName ($strName) {
+		$this->name=$strName;
 		return $this;
 	}
 	
-	public function setDescription ($description) {
-		$this->description=$description;
+	public function setDescription ($strDescription) {
+		$this->description=$strDescription;
 		return $this;
 	}
 	
@@ -95,13 +95,25 @@ class Article {
 		return $this;
 	}
 	
-	public function setLocation ($location) {
-		$this->location=$location;
+	/*
+	 * Set the location for this article
+	*
+	*  $objLocation Location object (must exist in database).
+	*
+	* */
+	public function setLocation ($objLocation) {
+		$this->location=$objLocation;
 		return $this;
 	}
 	
-	public function setCategories ($categories) {
-		$this->categories[]=$categories;
+	/*
+	 * Set all categories for this article
+	 * 
+	 *  $arrCategory array of Category objects (must exist in database).
+	 * 
+	 * */
+	public function setCategories ($arrCategory) {
+		$this->categories=$arrCategory;
 		return $this;
 	}
 }
