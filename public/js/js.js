@@ -49,4 +49,11 @@ $( document ).ready(function() {
 	window.addEventListener('resize', debouncedResize);
 	debouncedResize();
 
+	// Ajax inject Productlist
+	
+	var htmlContent = $.getJson("/article/list").done(function() {
+		$('#content').insertBefore(htmlConetnt);
+	});
+	
+	
 });

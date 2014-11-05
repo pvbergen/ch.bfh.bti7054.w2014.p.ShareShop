@@ -11,10 +11,10 @@ class IndexController extends \Shareshop\Controller {
 		//$db = DBAccess::getInstance();
 		
 		//print_r($db->getAllArticles());
-		$articles = array();
-		for($i = 0; $i < 50; $i++) {
-			$articles[] = new Article($i, substr(md5($i), rand(0, 10), 10), md5($i), md5($i), md5($i), md5($i));
-		}
+// 		$articles = array();
+// 		for($i = 0; $i < 50; $i++) {
+// 			$articles[] = new Article($i, substr(md5($i), rand(0, 10), 10), md5($i), md5($i), md5($i), md5($i));
+// 		}
 		
 		$this->view->register('index/index', array('articles' => $articles));
 		$this->view->render();
