@@ -79,11 +79,8 @@ class DBAccess {
 			$stmt->execute();
 		    $row = $stmt->fetch();
 			
-		    if ($row != null) {
-				return $this->createArticleFromDatabaseRow($row);
-		    }
-		    
-		    return null;
+			$article=$this->createArticleFromDatabaseRow($row);
+			return $article;
 			
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -140,10 +137,8 @@ class DBAccess {
 			$stmt->execute();
 		    $row = $stmt->fetch();
 			
-		    if ($row != null) {
-				$category=$this->createCategoryFromDatabaseRow($row);
-		    }
-			return null;
+			$category=$this->createCategoryFromDatabaseRow($row);
+			return $category;
 			
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -153,13 +148,14 @@ class DBAccess {
 	public function saveCategory($category) {
 		try {
 			$stmt = $this->_conn->prepare('INSERT INTO sha_categories VALUES(:id, :name, :parentId)');
-			
 			$stmt->execute(array(
 					':id' 			=> 	$category->getId(),
 					':name' 		=> 	$category->getName(),
 					':parentId'  => 	$category->getParentId()
 			));
 		
+			# Affected Rows?
+			echo $stmt->rowCount(); // 1
 		} catch ( \PDOException $e ) {
 		echo 'Error: ' . $e->getMessage ();
 		}
@@ -191,10 +187,9 @@ class DBAccess {
 			$stmt->execute();
 		    $row = $stmt->fetch();
 			
-			if ($row != null) {
-		    	return $this->createLocationFromDatabaseRow($row);
-			}
-			return null;
+			$location=$this->createLocationFromDatabaseRow($row);
+			return $location;
+			
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
@@ -203,12 +198,13 @@ class DBAccess {
 	public function saveLocation($location) {
 		try {
 			$stmt = $this->_conn->prepare('INSERT INTO sha_locations VALUES(:id, :postcode)');
-			
 			$stmt->execute(array(
 					':id' 			=> 	$location->getId(),
 					':postcode' 	=> 	$location->getPostcode(),
 			));
-			
+		
+			# Affected Rows?
+			echo $stmt->rowCount(); // 1
 		} catch ( \PDOException $e ) {
 		echo 'Error: ' . $e->getMessage ();
 		}

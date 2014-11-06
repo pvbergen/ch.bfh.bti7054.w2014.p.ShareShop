@@ -7,7 +7,6 @@ namespace Application\Models\Db;
  */
 class Location {
 	private $id;
-	private $name;
 	private $postcode;
 	
 	private function __construct() {
@@ -24,16 +23,8 @@ class Location {
 		DBAccess::getInstance()->saveLocation($this);
 	}
 	
-	/**
-	 * Find a location by its unique database id.
-	*
-	*  @param integer $intId the id of the location to find.
-	*
-	*  @return a Location object or null if not found.
-	*
-	* */
-	public static function findById($intId) {
-		return DBAccess::getInstance()->findLocationById($intId);
+	public static function findById($id) {
+		return DBAccess::getInstance()->findLocationById($id);
 	}
 	
 	public static function findAll() {
@@ -46,10 +37,6 @@ class Location {
 		return $this->id;
 	}
 	
-	public function getName () {
-		return $this->name;
-	}
-	
 	public function getPostcode () {
 		return $this->postcode;
 	}
@@ -58,11 +45,6 @@ class Location {
 	
 	public function setId ($intId) {
 		$this->id=$intId;
-		return $this;
-	}
-	
-	public function setName ($strName) {
-		$this->name=$strName;
 		return $this;
 	}
 	
