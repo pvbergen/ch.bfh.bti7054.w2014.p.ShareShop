@@ -31,8 +31,16 @@ class Article {
 		DBAccess::getInstance()->saveArticle($this);
 	}
 	
-	public static function findById($id) {
-		return DBAccess::getInstance()->findArticleById($id);
+	/**
+	 * Find an article by its unique database id.
+	*
+	*  @param integer $intId the id of the article to find.
+	*  
+	*  @return an Article object or null if not found.
+	*
+	* */
+	public static function findById($intId) {
+		return DBAccess::getInstance()->findArticleById($intId);
 	}
 	
 	public static function findAll() {
@@ -95,10 +103,10 @@ class Article {
 		return $this;
 	}
 	
-	/*
-	 * Set the location for this article
+	/**
+	 * Set the location for this article.
 	*
-	*  $objLocation Location object (must exist in database).
+	*  @param Location $objLocation location object (id must exist in database).
 	*
 	* */
 	public function setLocation ($objLocation) {
@@ -106,10 +114,10 @@ class Article {
 		return $this;
 	}
 	
-	/*
-	 * Set all categories for this article
+	/**
+	 * Set all categories for this article.
 	 * 
-	 *  $arrCategory array of Category objects (must exist in database).
+	 *  @param array(Category) $arrCategory array of Category objects (id must exist in database).
 	 * 
 	 * */
 	public function setCategories ($arrCategory) {
