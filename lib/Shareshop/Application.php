@@ -35,6 +35,9 @@ class Application {
 		
 		$this->_view = new View();
 		$this->_request = new Request($controller, $action);
+		if ($this->_request->isAjaxRequest()) {
+			$this->_view->renderAsAjax(true);
+		}
 	}
 	
 	/**
@@ -70,7 +73,7 @@ class Application {
 			$controllerObj = new $controllerName();
 			$controllerObj->view = $this->_view;
 			$controllerObj->request = $this->_request;
-						
+			
 			if (!method_exists($controllerObj, $this->_request->getAction() . "Action")) {
 				throw new \Exception('Missing action method');
 			}

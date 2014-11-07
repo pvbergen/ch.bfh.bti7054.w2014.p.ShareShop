@@ -16,7 +16,7 @@ class IndexController extends \Shareshop\Controller {
 // 			$articles[] = new Article($i, substr(md5($i), rand(0, 10), 10), md5($i), md5($i), md5($i), md5($i));
 // 		}
 		
-		$this->view->register('index/index', array('articles' => $articles));
+		$this->view->register('index/index', array());
 		$this->view->render();
 	}
 	
