@@ -110,7 +110,10 @@ class Request {
 	 */
 	public function isAjaxRequest()
 	{
-		return $this->_headers['X-Requested-With'] == 'XMLHttpRequest';
+		if (isset($this->_headers['X-Requested-With'])) {
+			return $this->_headers['X-Requested-With'] == 'XMLHttpRequest';
+		}
+		return false;
 	}
 	
 	/**
