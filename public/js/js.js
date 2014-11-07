@@ -51,8 +51,8 @@ $( document ).ready(function() {
 
 	// Ajax inject Productlist
 	
-	var htmlContent = $.getJson("/article/list").done(function() {
-		$('#content').insertBefore(htmlConetnt);
+	var htmlContent = $.get("/article/list").done(function(htmlContent) {
+		$('#content').append(htmlContent);
 	});
 	
 	
