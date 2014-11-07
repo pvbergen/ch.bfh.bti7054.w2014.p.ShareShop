@@ -141,7 +141,7 @@ class DBAccess {
 		    $row = $stmt->fetch();
 			
 		    if ($row != null) {
-				$category=$this->createCategoryFromDatabaseRow($row);
+				return $this->createCategoryFromDatabaseRow($row);
 		    }
 			return null;
 			
