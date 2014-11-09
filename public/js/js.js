@@ -1,5 +1,13 @@
 $( document ).ready(function() {
     
+	$(window).on('scroll', function() {
+		if($(window).scrollTop() > 0) {
+			$('#header').addClass('fixed');
+		} else {
+			$('#header').removeClass('fixed');	
+		}
+	});
+	
 	/*
 		Navigation Toggle
 	*/
@@ -51,8 +59,8 @@ $( document ).ready(function() {
 
 	// Ajax inject Productlist
 	
-	var htmlContent = $.getJson("/article/list").done(function() {
-		$('#content').insertBefore(htmlConetnt);
+	var htmlContent = $.get("/article/list").done(function(htmlContent) {
+		$('#content').append(htmlContent);
 	});
 	
 	

@@ -44,9 +44,11 @@ img {
 	height: 100%;
 }
 
-html h1 {
-	font-size: 2em;
+h1 {
+	font-size: 1.5em;
 	font-weight: 700;
+	margin:0.5em 0;
+	color:#f08a4a;
 }
 
 
@@ -74,14 +76,12 @@ form label, form input, form select {
 }
 
 form input, form select {
-	border-radius: 5px;
 	padding: 1em;
 	height: 7em;
 }
 
 form select {
 	overflow: hidden;
-	border-radius: 5px;
 }
 
 form label {
@@ -96,7 +96,9 @@ form input {
 }
 
 .button {
-	border-radius: 5px;
+	color:#fff;
+	background:#f08a4a;
+	border:none;
 }
 
 
@@ -134,42 +136,37 @@ form input {
 	color:#f08a4a;
 }
 
+
 .dynamic {
-	margin-left: 16em;
+	margin-left: 20%;
 	position: relative;
 }
-
 
 .search {
 	width: 80%;
 	float: left;
-	margin-top:10px;
+	margin-top:30px;
 }
 
 .searchbutton {
-	left: -3.3em;
+	left: -2em;
 	top: 0.2em;
 	position: relative;
 	cursor: pointer;
-	padding: 1em;
 }
 
 .searchfield {
-	margin: 2em 0 0 10%;
+	margin: 0 0 0 10%;
 	width: 80%;
-	height: 3em;
-	border:1px solid #000;
-	border-radius:3px;
-	
+	height: 3em;	
 }
 
 .navigation {
-	padding: 1em;
 	font-size:30px;
 	float: right;
-	margin-top:8px;
+	margin-top:35px;
+	margin-right:5%;
 }
-
 
 
 .navigation ul {
@@ -180,20 +177,49 @@ form input {
 	
 }
 
+#header.fixed {
+	background-color:#fff;
+	height:60px;
+	position:fixed;
+	top:0;
+	left:0;
+}
+
+#header.fixed .logo {
+	margin-top:23px;
+}
+
+#header.fixed .search {
+	margin-top:10px;
+}
+
+#header.fixed .navigation {
+	margin-top:15px;
+}
+
+#header.fixed .logo a {
+	font-size:3em;
+	transform: none;
+}
+
+#header.fixed + div {
+	margin-top:70px;
+}
 
 /************* Subnavigation ***************/
 
 #subnavigation {
-	width: 16em;
+	width: 20%;
 	float: left;
 	color:#555;
 }
 
 #subnavigation > span {
 	line-height:3em;
-	font-size:1.2em;
+	font-size:1.1em;
 	padding:0 0 0 10px;
 	font-weight:bold;
+	color:#4B60F0;
 }
 
 #subnavigation ul {
@@ -241,12 +267,13 @@ form input {
 /************* Content ***************/
 
 #content {
-	margin-left: 16em;
-	
+	margin-left: 2%;
+	float: left;
+	width: 78%;
 }
 
 #bodysection {
-
+	padding:1em 0 0 0;
 }
 
 /************* Productlist ***************/
@@ -292,5 +319,29 @@ form input {
 /************* Product Upload ***************/
 
 .product-upload {
-	padding: 3em;
+
+}
+
+
+@media only screen and (max-width: 640px) {
+	#header {
+		height:100px;
+	}
+	
+	#header .logo a {
+		font-size:2em;
+	}
+	
+	#header .dynamic {
+		margin-left:10%;
+	}
+	
+	#header .dynamic .navigation {
+		display:none;
+	}
+	
+	#header.fixed .logo a {
+		font-size:2em;
+	}
+	
 }
