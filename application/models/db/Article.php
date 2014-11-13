@@ -4,7 +4,7 @@ use Application\Models\Db\DBAccess;
 
 /**
  * ****************************************************************************
- * Article class - represents an object in the shop that wants to be shared
+ * Article class - represents an object in the shop that wants to be shared.
  * ****************************************************************************
  */
 class Article {
@@ -47,8 +47,30 @@ class Article {
 		return DBAccess::getInstance()->findAllArticles();
 	}
 	
-	public static function findByText() {
-			
+	/**
+	 * Find articles by a list of search parameters.
+	 *
+	 *  @param array $arrSearchParams array of SearchParameter
+	 *
+	 *  @return array of database ids for Article objects.
+	 */
+	public static function searchForArticles($arrSearchParams) {
+		return DBAccess::getInstance()->searchForArticles($arrSearchParams);
+	}
+	
+	/**
+	 * Load articles by article id.
+	 *
+	 *  @param array $arrArticleIds array of database ids
+	 *
+	 *  @return array of Article objects.
+	 */
+	public static function loadArticles($arrArticleIds) {
+		return DBAccess::getInstance()->loadArticles($arrArticleIds);
+	}
+	
+	public static function deleteAll() {
+		DBAccess::getInstance()->deleteAllArticles();
 	}
 	
 	// ------------------------ GETTER ---------------------------- //

@@ -9,7 +9,7 @@ use Shareshop\Application;
 
 /**
  * ****************************************************************************
- * Database access class - performs all database actions
+ * Database access class - performs all database actions.
  * ****************************************************************************
  */
 class DBAccess {
@@ -57,29 +57,45 @@ class DBAccess {
 	}
 	
 	// ------------------------ Article ---------------------------- //
-	
-	/**
-	 * Find an article by a list of search parameters (NOT IMPLEMENTED YET).
-	 *
-	 *  @param array $arrSearchParams an array of search parameters.
-	 *
-	 *  @return list of database ids for Article objects.
-	 */
-	public function findArticle($arrSearchParams) {
+	public function loadArticles($arrArticleIds) {
 		try {
-			foreach ( $searchParams as $param ) {
-				$sqlString .= $param->getField () . ' LIKE %:' . $param->getField . '%';
-				$stmt->bindParam ( ':' . $param->getField (), $param->getSearchString () );
-				$sqlString .= ' AND ';
-			}
-			
-			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles WHERE ' );
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles WHERE art_id IN (:ids)' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':ids', implode(',', $arrArticleIds) );
 			$stmt->execute ();
+			
+			$articles = array();
 			while ( $row = $stmt->fetch () ) {
-				$articles [] = $this->createArticleFromDatabaseRow ( $row );
+				$articles [] = $this->createArticleFromDatabaseRow ($row);
 			}
 			return $articles;
+			
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	public function searchForArticles($arrSearchParams) {
+		try {
+			$queryString='';
+			foreach ( $arrSearchParams as $param ) {
+				$queryString .= 'art_' . $param->getField() . ' LIKE :' . $param->getField();
+				$queryString .= ' OR ';
+				$paramBindings[':' . $param->getField()] = '%' . $param->getSearchString() . '%';
+			}
+			$queryString = substr($queryString, 0,-3);
+	
+			$stmt = $this->_conn->prepare( 'SELECT * FROM sha_articles WHERE ' . $queryString );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->execute ($paramBindings);
+			
+			$articleIds = array();
+			while ( $row = $stmt->fetch () ) {
+				$articleIds[] = $row->art_id;
+			}
+
+			return $articleIds;
+			
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
@@ -134,10 +150,22 @@ class DBAccess {
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->execute ();
 			
+			$articles = array();
 			while ( $row = $stmt->fetch () ) {
 				$articles [] = $this->createArticleFromDatabaseRow ( $row );
 			}
 			return $articles;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	public function deleteAllArticles() {
+		try {
+			$stmt = $this->_conn->prepare ( 'DELETE FROM sha_articles' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->execute ();
+			
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}

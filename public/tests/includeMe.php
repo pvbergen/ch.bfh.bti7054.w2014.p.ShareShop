@@ -6,7 +6,7 @@ define("APPLICATION_ENV", 'development');
 
 require_once BASE_PATH . '\lib\SplClassLoader.php';
 
-$autoloader = new SplClassLoader('Shareshop', BASE_PATH . 'lib');
+$autoloader = new SplClassLoader('Shareshop', BASE_PATH . '\lib');
 $autoloader->register();
 
 $autoloader = new SplClassLoader('Application', BASE_PATH);

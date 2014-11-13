@@ -2,7 +2,7 @@
 namespace Application\Models\Db;
 /**
  * ****************************************************************************
- * Location class - represents a place where articles can be located
+ * Location class - represents a place where articles can be located.
  * ****************************************************************************
  */
 class Location {

@@ -16,21 +16,21 @@ class SearchParameter {
 	/**
 	 * The string to search for.
 	 *
-	 * @var $query
+	 * @var $searchString
 	 */
-	protected $_query;
+	protected $_searchString;
 	
-	public function __construct($field, $query) {
+	public function __construct($field, $searchString) {
 		$this->_field = $field;
-		$this->_query = $query;
+		$this->_searchString = $searchString;
 	}
 	
 	public function getField () {
 		return $this->_field;
 	}
 	
-	public function getQuery () {
-		return $this->_query;
+	public function getSearchString() {
+		return $this->_searchString;
 	}
 	
 }
