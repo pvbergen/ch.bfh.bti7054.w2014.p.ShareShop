@@ -48,51 +48,39 @@ h1 {
 	font-size: 1.5em;
 	font-weight: 700;
 	margin:0.5em 0;
-	color:#f08a4a;
+	color:#4B60F0;
 }
 
 
 /************* General Form ***************/
-form {
-	width: 60%;
-}
-
 form .input-wrapper {
 	width: 100%;
 	margin-bottom: 2em;
+	height:100px;
 }
 
-form, form input, form select {
+form input, form select, form textarea {
 	box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    width: 60%;
+    width: 80%;
+	padding: 1em;
+	height: 3em;
 }
-
-
 
 form label, form input, form select {
     display: inline-block;
 }
 
-form input, form select {
-	padding: 1em;
+form select, form textarea {
+	overflow: hidden;
 	height: 7em;
 }
 
-form select {
-	overflow: hidden;
-}
-
 form label {
-	width: 20%;
+	width: 30%;
 	vertical-align: top;
-	padding: 0.7em;
-}
-
-form input {
-	height: 3em;
-	padding: 1em;
+	padding: 0.7em 0.7em 0.7em 0;
 }
 
 .button {
@@ -101,18 +89,15 @@ form input {
 	border:none;
 }
 
-
-/*form label {
-	width: 200px;
-	float: left;
+.formLeft, .formRight {
+	float:left;
+	width:49%;
+	margin-right:2%;
 }
 
-form input {
-	width: 400px;
-	margin-left: 200px; 
-}*/
-
-
+.formRight {
+	margin:0;
+}
 
 /************* SiteHeader ***************/
 
@@ -168,6 +153,9 @@ form input {
 	margin-right:5%;
 }
 
+.navigation a {
+	color:#f08a4a;
+}
 
 .navigation ul {
 
@@ -183,6 +171,7 @@ form input {
 	position:fixed;
 	top:0;
 	left:0;
+	z-index:100;
 }
 
 #header.fixed .logo {
@@ -209,7 +198,7 @@ form input {
 /************* Subnavigation ***************/
 
 #subnavigation {
-	width: 20%;
+	width: 25%;
 	float: left;
 	color:#555;
 }
@@ -269,7 +258,7 @@ form input {
 #content {
 	margin-left: 2%;
 	float: left;
-	width: 78%;
+	width: 73%;
 }
 
 #bodysection {
@@ -282,21 +271,27 @@ form input {
 }
 
 .product {
-	width: 12em;
-	height: 12em;
+	width: 19.2%;
 	float: left;
 	overflow: hidden;
-	/*border: 1px solid black;*/
+	/* border: 1px solid black; */
 	box-sizing: border-box;
-	box-shadow: 3px 3px 10px 3px #CFCFCF;
-    margin: 0 20px 20px 0;
+	/* box-shadow: 0px 6px 20px -12px #f08a4a; */
+	margin: 0 1% 20px 0%;
+	border: 1px solid #ddd;
+	border-bottom:none;
 }
 
+.product:nth-child(5n) {
+	margin-right:0;
+	border-right:none;
+}
 
 .productinfo {
 	height: 20%;
-	background-color: #E8E8E8;
-	padding: 0.45em;
+	padding: 0.45em 0.45em 2em;
+	background-color:#f08a4a;
+	color:#fff;
 }
 
 .product a {
@@ -313,7 +308,7 @@ form input {
 }
 
 .product img {
-	height: 80%
+	max-width:100%;
 }
 
 /************* Product Upload ***************/
@@ -322,6 +317,37 @@ form input {
 
 }
 
+@media only screen and (max-width: 1024px) {
+	.product, .product:nth-child(5n) {
+		width:24%;
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	#subnavigation {
+		width: 100%;
+		float:none;
+		position:relative;
+	}
+	
+	#subnavigation > ul {
+		position:absolute;
+		top:3em;
+		display:none;
+		box-shadow:0px 0px 3px 3px #ddd;
+		background-color:#fff;
+		width:50%;
+	}
+	
+	#subnavigation:hover ul {
+		display:block;
+	}
+	
+	#content {
+		width:98%;
+		margin:0 auto;
+	}
+}
 
 @media only screen and (max-width: 640px) {
 	#header {
@@ -344,4 +370,14 @@ form input {
 		font-size:2em;
 	}
 	
+	.product {
+		width:48%;
+	}	
+}
+
+@media only screen and (max-width: 480px) {
+	.product {
+		width:98%;
+		margin-right:auto;
+	}
 }

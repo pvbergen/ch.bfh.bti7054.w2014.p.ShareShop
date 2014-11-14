@@ -49,13 +49,13 @@ $( document ).ready(function() {
  		width = width - margins;
  		var productwidth = width / numbers;
  		$('.product').attr('style','');
- 		$('.product').css('width',productwidth);
- 		$('.product').css('height',productwidth);
+ 		$('.product').css('width',productwidth-1);
+ 		$('.product').css('height',productwidth-1);
  		$('.product:nth-child(' + numbers + ')').css('margin-right',0);	
 	}, 500);
 
-	window.addEventListener('resize', debouncedResize);
-	debouncedResize();
+	//window.addEventListener('resize', debouncedResize);
+	//debouncedResize();
 
 	// Ajax inject Productlist
 	

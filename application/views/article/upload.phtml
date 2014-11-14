@@ -1,55 +1,52 @@
 <div class="product-upload">
-	<h1>Neues Produkt hinzugf&uuml;gen</h1>
-	<form action="/Article/save/" method="post" accept-charset="utf-8">
-		<div class="input-wrapper">
-			<label for="productName">Name</label>
-			<input type="text" id="productName" name="productName" placeholder="Name" />
+	<h1>Neues Produkt hinzuf&uuml;gen</h1>
+	<form action="/Article/save/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+		<div class="formLeft">
+			<div class="input-wrapper">
+				<label for="productName">Name</label>
+				<input type="text" id="productName" name="productName" placeholder="Name" />
+			</div>
+	
+			<div class="input-wrapper">
+				<label for="productDescription">Beschreibung</label>
+				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" /></textarea>
+			</div>
+			
+			<div class="input-wrapper">
+				<label for="location">Standort</label>
+				<input type="text" id="location" name="location" placeholder="Standort">
+			</div>		
 		</div>
-
-		<div class="input-wrapper">
-			<label for="productDescription">Beschreibung</label>
-			<input type="text" id="productDescription" name="productDescription" placeholder="Beschreibung" />
+		<div class="formRight">
+			<div class="input-wrapper"><label for="productCategory">Oberkategorie</label>
+				<select name="productCategory[]" id="productCategory" multiple="multiple">
+				<?php
+					foreach ($data['categories'] as $category)
+					{
+						?>
+							<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
+						<?php 
+					} 
+				?>
+				</select>
+			</div>
+			<div class="input-wrapper">
+				<label for="productSubCategory">Unterkategorie</label>
+				<select name="productSubCategory[]" id="productSubCategory" multiple="multiple">
+					<option value="1">Fun</option>
+					<option value="2">Sadness</option>
+					<option value="3">Business</option>
+				</select>
+			</div>
+			<div class="input-wrapper">
+				<label for="picture">Bild</label>
+				<input type="file" id="picture" name="picture">
+			</div>	
+			<div class="input-wrapper">
+				<label></label>
+				<input type="submit" class="button" name="submit" value="Speichern">
+			</div>
 		</div>
-
-		<div class="input-wrapper"><label for="productCategory">Oberkategorie</label>
-			<select name="productCategory[]" id="productCategory" multiple="multiple">
-			<?php
-				foreach ($data['categories'] as $category)
-				{
-					?>
-						<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
-					<?php 
-				} 
-			?>
-			</select>
-		</div>
-
-		<div class="input-wrapper">
-			<label for="productSubCategory">Unterkategorie</label>
-			<select name="productSubCategory[]" id="productSubCategory" multiple="multiple">
-				<option value="1">Fun</option>
-				<option value="2">Sadness</option>
-				<option value="3">Business</option>
-			</select>
-		</div>
-
-		<div class="input-wrapper">
-			<label for="location">Standort</label>
-			<input type="text" id="location" name="location" placeholder="Standort">
-		</div>
-		
-		<div class="input-wrapper">
-			<label for="picture">Bild</label>
-			<input type="file" id="picture" name="picture">
-		</div>
-
-		<div class="input-wrapper">
-			<label for="productDescription">Beschreibung</label>
-			<input type="text" id="productName" name="" placeholder="Beschreibung">
-		</div>
-		<div class="input-wrapper">
-			<input type="submit" class="button" name="submit" value="Speichern">
-		</div>
-
+		<div class="clearfix"></div>
 	</form>
 </div>
