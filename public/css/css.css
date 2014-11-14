@@ -56,7 +56,7 @@ h1 {
 form .input-wrapper {
 	width: 100%;
 	margin-bottom: 2em;
-	height:100px;
+	min-height:122px;
 }
 
 form input, form select, form textarea {
@@ -87,6 +87,8 @@ form label {
 	color:#fff;
 	background:#f08a4a;
 	border:none;
+	width:39.2%;
+	margin-left:51%;
 }
 
 .formLeft, .formRight {
@@ -97,6 +99,10 @@ form label {
 
 .formRight {
 	margin:0;
+}
+
+.product-upload + .product-list {
+	display:none;
 }
 
 /************* SiteHeader ***************/
