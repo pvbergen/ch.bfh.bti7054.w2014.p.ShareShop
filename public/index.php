@@ -1,4 +1,6 @@
 <?php
+error_reporting(1);
+
 mb_internal_encoding('UTF-8');
 
 use Shareshop\Application;

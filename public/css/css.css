@@ -206,6 +206,7 @@ form label {
 	width: 25%;
 	float: left;
 	color:#555;
+	min-height:1px;
 }
 
 #subnavigation > span {
