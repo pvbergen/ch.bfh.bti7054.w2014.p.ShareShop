@@ -39,7 +39,6 @@ class ArticleController extends \Shareshop\Controller {
 		$article = Article::create();
 		$article->setDescription($post['productDescription']);
 		$article->setName($post['productName']);
-		print_r($resArray);
 		$article->setCategories($resArray);
 		$article->setLocation($location);
 		$article->setImage($image);
@@ -57,7 +56,6 @@ class ArticleController extends \Shareshop\Controller {
 		$articles = Article::loadArticles($result);
 		$categories = array();
 		foreach ($articles as $article) {
-			print_r(count($article->getCategories()));
 			$categories = array_merge($categories, $article->getCategories());
 		}
 		$categories = array_unique($categories);

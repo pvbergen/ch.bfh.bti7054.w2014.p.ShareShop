@@ -279,12 +279,11 @@ form label {
 	width: 19.2%;
 	float: left;
 	overflow: hidden;
-	/* border: 1px solid black; */
 	box-sizing: border-box;
-	/* box-shadow: 0px 6px 20px -12px #f08a4a; */
 	margin: 0 1% 20px 0%;
 	border: 1px solid #ddd;
 	border-bottom:none;
+	box-shadow:0px 9px 10px -6px #f08a4a;
 }
 
 .product:nth-child(5n) {
