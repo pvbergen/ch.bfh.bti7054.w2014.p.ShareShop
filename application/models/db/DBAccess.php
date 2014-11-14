@@ -43,6 +43,8 @@ class DBAccess {
 			$categories [] = $category;
 			$catId = $category->getParentId ();
 		}
+		$article->setCategories($categories);
+		
 		return $article;
 	}
 	
@@ -77,6 +79,7 @@ class DBAccess {
 	
 	public function searchForArticles($arrSearchParams) {
 		try {
+			$paramBindings=array();
 			$queryString='';
 			foreach ( $arrSearchParams as $param ) {
 				$queryString .= 'art_' . $param->getField() . ' LIKE :' . $param->getField();
