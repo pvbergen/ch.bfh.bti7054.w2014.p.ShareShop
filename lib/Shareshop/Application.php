@@ -24,13 +24,13 @@ class Application {
 		if (!empty($uriParts[0])) {
 			$controller = ucfirst(strtolower($uriParts[0]));
 		} else {
-			$controller = 'Index';
+			$controller = 'Article';
 		}
 		
 		if (!empty($uriParts[1])) {
 			$action = strtolower($uriParts[1]);
 		} else {
-			$action = 'index';
+			$action = 'list';
 		}
 		
 		$this->_view = new View();
