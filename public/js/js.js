@@ -59,9 +59,9 @@ $( document ).ready(function() {
 
 	// Ajax inject Productlist
 	
-	var htmlContent = $.get("/article/list").done(function(htmlContent) {
-		$('#content').append(htmlContent);
-	});
-	
+//	var htmlContent = $.get("/article/list").done(function(htmlContent) {
+//		$('#content').append(htmlContent);
+//	});
+//	
 	
 });

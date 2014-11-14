@@ -1,0 +1,19 @@
+<?php 
+/* @var $article Application\Models\DB\Article2 */
+$categories = $data['categories'];
+?>
+<span>
+	Gefundene Kategorien
+</span>
+<ul class="level-1">
+<?php foreach( $categories as $cat) {?>
+	<li>
+		<span><?php echo $cat->getName(); ?></span>
+		<ul class="level-2" toggled="false">
+			<li><span>Unterkategorie1</span></li>
+			<li><span>Unterkategorie2</span></li>
+			<li><span>Unterkategorie3</span></li>
+		</ul>
+	</li>
+<?php } ?>
+</ul>

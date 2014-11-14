@@ -15,10 +15,12 @@
 				<a href="/">Sharely</a>
 			</div>
 			<div class="dynamic clearfix">
-				<div class="search">
-						<input class="searchfield" type="text" name="search" placeholder="Produktsuche, z.B. Toaster, Schnautzbart">
-						<span class="searchbutton glyph-search" value="send">
-				</div>
+				<form id="searchForm" action="/Article/search/" method="get" accept-charset="utf-8">
+					<div class="search">
+							<input class="searchfield" type="text" name="search" placeholder="Produktsuche, z.B. Toaster, Schnautzbart">
+							<span onclick="document.getElementById('searchForm').submit();" class="searchbutton glyph-search" value="send">
+					</div>
+				</form>
 				<div class="navigation">				
 						<a href="/article/upload/"><span class="glyph-cog"></span></a> 		
 				</div>
@@ -27,35 +29,7 @@
 		</div>
 		<div id="bodysection">
 			<div id="subnavigation">
-				<span>
-					Gefundene Kategorien
-				</span>
-				<ul class="level-1">
-					<li>
-						<span>Oberkategorie1</span>
-						<ul class="level-2" toggled="false">
-							<li><span>Unterkategorie1</span></li>
-							<li><span>Unterkategorie2</span></li>
-							<li><span>Unterkategorie3</span></li>
-						</ul>
-					</li>
-					<li>
-						<span>Oberkategorie2</span>
-						<ul class="level-2" toggled="false">
-							<li><span>Unterkategorie</span></li>
-							<li><span>Unterkategorie2</span></li>
-							<li><span>Unterkategorie3</span></li>
-						</ul>
-					</li>
-					<li>
-						<span>Oberkategorie3</span>
-						<ul class="level-2">
-							<li><span>Unterkategorie</span></li>
-							<li><span>Unterkategorie2</span></li>
-							<li><span>Unterkategorie3</span></li>
-						</ul>
-					</li>
-				</ul>
+				<?php echo $components['subnavigation']; ?>
 			</div>
 
 			<div id="content">
