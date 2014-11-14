@@ -66,7 +66,11 @@ class ArticleController extends \Shareshop\Controller {
 	}
 	
 	public function getimageAction() {
-			
+		$params = $this->request->getParameters();
+		$article = Article::findById($params['id']);
+		header('Content-Type: image/jpeg');
+		//header('Content-Transfer-Encoding: BASE64');
+		echo $article->getImage();
 	}
 	
 	public function uploadAction()
