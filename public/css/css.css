@@ -55,8 +55,7 @@ h1 {
 /************* General Form ***************/
 form .input-wrapper {
 	width: 100%;
-	margin-bottom: 2em;
-	min-height:122px;
+	margin-bottom: 1em;
 }
 
 form input, form select, form textarea {
@@ -331,9 +330,14 @@ form label {
 
 @media only screen and (max-width: 768px) {
 	#subnavigation {
-		width: 100%;
+		width: 95%;
 		float:none;
 		position:relative;
+		margin:0 auto;
+	}
+	
+	#subnavigation > span {
+		padding:0;
 	}
 	
 	#subnavigation > ul {
@@ -350,8 +354,9 @@ form label {
 	}
 	
 	#content {
-		width:98%;
+		width:95%;
 		margin:0 auto;
+		float:none;
 	}
 }
 
@@ -385,5 +390,18 @@ form label {
 	.product {
 		width:98%;
 		margin-right:auto;
+	}
+	
+	.formLeft, .formRight {
+		width:100%;
+		float:none;
+	}
+	
+	form .input-wrapper {
+		min-height:0;
+	}
+	
+	form input, form select, form textarea {
+		width:90%;
 	}
 }

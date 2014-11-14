@@ -7,8 +7,18 @@
 				<input type="text" id="productName" name="productName" placeholder="Name" />
 			</div>
 			<div class="input-wrapper">
+				<label for="productDescription">Beschreibung</label>
+				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" /></textarea>
+			</div>
+			<div class="input-wrapper">
 				<label for="location">Standort</label>
 				<input type="text" id="location" name="location" placeholder="Standort">
+			</div>	
+		</div>
+		<div class="formRight">
+			<div class="input-wrapper">
+				<label for="picture">Bild</label>
+				<input type="file" id="picture" name="picture">
 			</div>
 			<div class="input-wrapper"><label for="productCategory">Oberkategorie</label>
 				<select name="productCategory[]" id="productCategory" multiple="multiple">
@@ -21,16 +31,6 @@
 					} 
 				?>
 				</select>
-			</div>	
-		</div>
-		<div class="formRight">
-			<div class="input-wrapper">
-				<label for="productDescription">Beschreibung</label>
-				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" /></textarea>
-			</div>
-			<div class="input-wrapper">
-				<label for="picture">Bild</label>
-				<input type="file" id="picture" name="picture">
 			</div>
 			<div class="input-wrapper">
 				<label for="productSubCategory">Unterkategorie</label>
