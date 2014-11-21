@@ -24,6 +24,16 @@ class View {
 	const DEFAULT_COMPONENT = 'content';
 	
 	/**
+	 * 
+	 */
+	const VIEW_PRERENDER = "VIEW.PRERENDER";
+	
+	/**
+	 *
+	 */
+	const VIEW_POSTRENDER = "VIEW.POSTRENDER";
+	
+	/**
 	 * The path of the views directory.
 	 * 
 	 * @var string
@@ -92,6 +102,7 @@ class View {
 	 */
 	public function render()
 	{
+		Application::getPluginManager()->inform(self::VIEW_PRERENDER);
 		if ($this->_isAjax) {
 			echo $this->_registeredViews[self::DEFAULT_COMPONENT]->render();
 			return;
@@ -101,6 +112,7 @@ class View {
 			$components[$location] = $singleView->render();
 		}
 		include_once $this->_path . '/layouts/' . $this->_layout;
+		Application::getPluginManager()->inform(self::VIEW_POSTRENDER);
 	}
 
 	/**

@@ -8,7 +8,6 @@ class Tree {
 	
 	public function __construct($data)
 	{
-		
 		foreach($data as $key => $values) {
 			if (!is_array($values)) {
 				$this->_data[$key] = $values;
@@ -22,7 +21,7 @@ class Tree {
 	public function __get($args)
 	{
 		if (!isset($this->_data[$args])) {
-			return new Tree(array());
+			return new Nothing();
 		}
 		return $this->_data[$args];
 	}
