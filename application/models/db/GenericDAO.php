@@ -12,10 +12,12 @@ use ReflectionMethod;
 class GenericDAO {
 	protected $_tableName;	
 	protected $_colPrefix;
+	protected $_dbObject;
 	
-	protected function __construct($tableName, $colPrefix) {
+	protected function __construct($tableName, $colPrefix, $dbObject) {
 		$this->_tableName=$tableName;
 		$this->_colPrefix=$colPrefix;
+		$this->_dbObject=$dbObject;
 	} 
 	
 	public function save($object) {
@@ -31,7 +33,8 @@ class GenericDAO {
 	}
 	
 	public function findById($id) {
-		return DB::findById($this->_tableName,$this->_colPrefix,$id);
+	    $row = DBAccess::getInstance()->findById($this->_tableName,$this->_colPrefix,$id);
+	    return $this->rowToDBObject($row);
 	}
 	
 	public function findByIds($ids) {
@@ -46,8 +49,6 @@ class GenericDAO {
 		DB::deleteAll($this->_tableName,$this->_colPrefix);
 	}
 	
-	private function rowToDBObject() {
-	}
 	
 	private function dbObjectToRow($object) {
 	        $reflect = new ReflectionClass($object);
@@ -59,5 +60,20 @@ class GenericDAO {
 	            $rowData[$prop->getName()] = $reflectionMethod->invoke($object);
 	        }
 	        return $rowData;
+	}
+	
+	private function rowToDBObject($row) {
+	    $reflect = new ReflectionClass($this->_dbObject);
+	    $properties = $reflect->getProperties();
+	    $object = $reflect->newInstance();
+	    
+	    print_r($row); 
+	   
+	    $rowData = array();
+	    foreach ($properties as $prop) {
+	        $reflectionMethod = new ReflectionMethod($object, 'set' . ucfirst($prop->getName()));
+	        $rowData[$prop->getName()] = $reflectionMethod->invoke($object);
+	    }
+	    return $object;
 	}
 }

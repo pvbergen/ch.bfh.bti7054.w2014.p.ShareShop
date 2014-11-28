@@ -1,6 +1,7 @@
 <?php
 namespace Application\Models\Db;
 use Application\Models\Db\DBAccess;
+use Application\Models\Db\Article;
 
 /**
  * ****************************************************************************
@@ -9,14 +10,14 @@ use Application\Models\Db\DBAccess;
  */
 class ArticleDAO extends GenericDAO
 {
-
+    // table name must be equal to entity name
     const TBL_NAME = 'article';
 
     const COL_PREFIX = 'art_';
 
     public function __construct ()
     {
-        parent::__construct(self::TBL_NAME, self::COL_PREFIX);
+        parent::__construct(self::TBL_NAME, self::COL_PREFIX, new Article());
     }
 
     /**

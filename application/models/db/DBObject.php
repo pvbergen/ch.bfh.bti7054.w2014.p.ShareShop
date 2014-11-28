@@ -7,14 +7,21 @@ use ReflectionClass;
 
 /**
  * ****************************************************************************
- * Article class - represents an object in the shop that wants to be shared.
+ *  DBObject
  * ****************************************************************************
  */
 class DBObject {
-	protected function __construct() {
-		
+	protected $_dao;
+    
+    protected function __construct($dao) {
+		$this->_dao = $dao;
 	}
-
 	
-
+	protected function save(){
+	    $this->_dao->save($this);
+	}
+	
+	protected function delete() {
+	    $this->_dao->deleteById($this->getId());
+	}
 }

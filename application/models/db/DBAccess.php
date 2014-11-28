@@ -78,7 +78,7 @@ class DBAccess
      */
     public function update ($tblName, $colPrefix, $data)
     {
-         foreach ($data as $key => $item) {
+        foreach ($data as $key => $item) {
             if ($item == 'id') {
                 $idValue = $colPrefix . $key . '=' . $item;
             } else {
@@ -108,9 +108,23 @@ class DBAccess
      *        
      *        
      */
-    public static function findById ($intId)
+    public function findById ($tblName, $colPrefix, $intId)
     {
-        return DBAccess::getInstance()->findById($intId);
+        try {
+            $stmt = $this->_conn->prepare(
+                    'SELECT * FROM ' . self::TBL_PREFIX . $tblName . ' WHERE ' . $colPrefix . 'id=:id');
+            $stmt->setFetchMode(\PDO::FETCH_OBJ);
+            $stmt->bindParam(':id', $intId);
+            $stmt->execute();
+            
+            if ($row = $stmt->fetch()) {
+                return $row;
+            }
+            
+            return null;
+        } catch (\PDOException $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
     }
 
     /**

@@ -6,30 +6,30 @@ CREATE SCHEMA IF NOT EXISTS `shareshop` DEFAULT CHARACTER SET utf8 COLLATE utf8_
 USE `shareshop` ;
 
 -- -----------------------------------------------------
--- Table `shareshop`.`sha_categories`
+-- Table `shareshop`.`sha_category`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `shareshop`.`sha_categories` ;
+DROP TABLE IF EXISTS `shareshop`.`sha_category` ;
 
-CREATE  TABLE IF NOT EXISTS `shareshop`.`sha_categories` (
+CREATE  TABLE IF NOT EXISTS `shareshop`.`sha_category` (
   `cat_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `cat_name` VARCHAR(255) NOT NULL ,
-  `cat_parent_id` INT(10) UNSIGNED NULL ,
+  `cat_parentId` INT(10) UNSIGNED NULL ,
   PRIMARY KEY (`cat_id`) ,
-  INDEX `sha_cat_cat` (`cat_parent_id` ASC) ,
+  INDEX `sha_cat_cat` (`cat_parentId` ASC) ,
   CONSTRAINT `sha_cat_cat`
-    FOREIGN KEY (`cat_parent_id` )
-    REFERENCES `shareshop`.`sha_categories` (`cat_id` )
+    FOREIGN KEY (`cat_parentId` )
+    REFERENCES `shareshop`.`sha_category` (`cat_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `shareshop`.`sha_locations`
+-- Table `shareshop`.`sha_location`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `shareshop`.`sha_locations` ;
+DROP TABLE IF EXISTS `shareshop`.`sha_location` ;
 
-CREATE  TABLE IF NOT EXISTS `shareshop`.`sha_locations` (
+CREATE  TABLE IF NOT EXISTS `shareshop`.`sha_location` (
   `loc_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `loc_postcode` VARCHAR(10) NOT NULL ,
   PRIMARY KEY (`loc_id`) )
@@ -37,29 +37,29 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `shareshop`.`sha_articles`
+-- Table `shareshop`.`sha_article`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `shareshop`.`sha_articles` ;
+DROP TABLE IF EXISTS `shareshop`.`sha_article` ;
 
-CREATE  TABLE IF NOT EXISTS `shareshop`.`sha_articles` (
+CREATE  TABLE IF NOT EXISTS `shareshop`.`sha_article` (
   `art_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
   `art_name` VARCHAR(255) NOT NULL ,
   `art_description` VARCHAR(1000) NOT NULL ,
   `art_image` BLOB NULL ,
-  `art_loc_id` INT(10) UNSIGNED NOT NULL ,
-  `art_cat_id` INT(10) UNSIGNED NOT NULL ,
-  `art_creation_timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+  `art_locationId` INT(10) UNSIGNED NOT NULL ,
+  `art_categoryId` INT(10) UNSIGNED NOT NULL ,
+  `art_creationTimestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
   PRIMARY KEY (`art_id`) ,
-  INDEX `sha_fk_art_cat` (`art_cat_id` ASC) ,
-  INDEX `sha_fk_art_loc` (`art_loc_id` ASC) ,
+  INDEX `sha_fk_art_cat` (`art_categoryId` ASC) ,
+  INDEX `sha_fk_art_loc` (`art_locationId` ASC) ,
   CONSTRAINT `sha_fk_art_cat`
-    FOREIGN KEY (`art_cat_id` )
-    REFERENCES `shareshop`.`sha_categories` (`cat_id` )
+    FOREIGN KEY (`art_categoryId` )
+    REFERENCES `shareshop`.`sha_category` (`cat_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sha_fk_art_loc`
-    FOREIGN KEY (`art_loc_id` )
-    REFERENCES `shareshop`.`sha_locations` (`loc_id` )
+    FOREIGN KEY (`art_locationId` )
+    REFERENCES `shareshop`.`sha_location` (`loc_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;

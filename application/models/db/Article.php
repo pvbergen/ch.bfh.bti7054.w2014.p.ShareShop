@@ -18,13 +18,13 @@ class Article
 
     private $image;
 
-    private $locationId;
+    private $userId;
 
     private $categoryId;
 
     private $creationTimestamp;
 
-    private function __construct (){}
+    public function __construct (){}
 
     public static function create ()
     {
@@ -52,9 +52,9 @@ class Article
         return $this->image;
     }
 
-    public function getLocationId ()
+    public function getUserId ()
     {
-        return $this->locationId;
+        return $this->userId;
     }
 
     public function getCategoryId ()
@@ -92,15 +92,21 @@ class Article
         return $this;
     }
 
-    public function setLocationId ($id)
+    public function setUserId ($id)
     {
-        $this->locationId = $id;
+        $this->userId = $id;
         return $this;
     }
 
     public function setCategoryId ($id)
     {
         $this->categoryId = $id;
+        return $this;
+    }
+    
+    public function setCreationTimestamp ($timestamp)
+    {
+        $this->creationTimestamp = $timestamp;
         return $this;
     }
 }

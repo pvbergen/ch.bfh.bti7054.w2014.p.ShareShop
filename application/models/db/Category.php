@@ -14,31 +14,8 @@ class Category {
 	private function __construct() {
 	}
 	
-	/**
-	 * Do not use. Categories must exist in database.
-	 */
 	public static function create() {
 		return new self();
-	}
-	
-	public function save() {
-		DBAccess::getInstance()->saveCategory($this);
-	}
-	
-	/**
-	 * Find a category by its unique database id.
-	*
-	*  @param integer $intId the id of the category to find.
-	*
-	*  @return a Category object or null if not found.
-	*
-	* */
-	public static function findById($intId) {
-		return DBAccess::getInstance()->findCategoryById($intId);
-	}
-	
-	public static function findAll() {
-		return DBAccess::getInstance()->findAllCategories();
 	}
 	
 	// ------------------------ GETTER ---------------------------- //

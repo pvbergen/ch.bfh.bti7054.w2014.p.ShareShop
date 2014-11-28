@@ -8,8 +8,12 @@ use Application\Models\Db\Category;
 use Application\Models\Db\SearchParameter;
 use Application\Models\Db\ArticleDAO;
 
-$article = Article::create()->setDescription("Test")->setName("Staubsauger")->setLocationId('1')->setCategoryId('1');
+$article = Article::create()->setDescription("Test")->setName("Staubsauger")->setUserId('1')->setCategoryId('1');
 $articleDAO = new ArticleDAO();
 $articleDAO->save($article);
+$article->setName('Staubsauger II');
+$articleDAO->save($article);
+
+$articleDAO->findById(4);
 
 ?>
