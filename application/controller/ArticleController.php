@@ -42,6 +42,7 @@ class ArticleController extends \Shareshop\Controller {
 		$article->setCategories($resArray);
 		$article->setLocation($location);
 		$article->setImage($image);
+		//$article->setImageType($imageFileType);
 		$article->save();	
 		return $article;	
 	}
@@ -54,24 +55,43 @@ class ArticleController extends \Shareshop\Controller {
 		$paramArr = array( $searchParam1, $searchParam2 );
 		$result = Article::searchForArticles($paramArr);	
 		$articles = Article::loadArticles($result);
-		$categories = array();
-		foreach ($articles as $article) {
-			$categories = array_merge($categories, $article->getCategories());
-		}
-		$categories = array_unique($categories);
+		$categories = $this->fetchFromArticles($articles);
 		
-		$this->view->register('navigation/subnavigation', array('categories' => $categories), 'subnavigation');
+		$final = $this->prepareCategoriesHirarchy($categories);
+				
+		$this->view->register('navigation/subnavigation', array('parentCategories' => $final[0], 'childCategories' => $final[1]), 'subnavigation');
 		$this->view->register('article/list', array('articles' => $articles), 'content');
 		$this->view->render();
+	}
+	
+	public function getbycategoryAction() {
+		$params = $this->request->getParameters();
+		
+		$searchParam1 = new SearchParameter('category', $params['category']);
+		$paramArr = array( $searchParam1);
+		$result = Article::searchForArticles($paramArr);
+		$articles = Article::loadArticles($result);
+
+		$this->view->register('article/list', array('articles' => $articles), 'content');
+		$this->view->render();		
 	}
 	
 	public function getimageAction() {
 		$params = $this->request->getParameters();
 		$article = Article::findById($params['id']);
-		header('Content-Type: image/jpeg');
-		//header('Content-Transfer-Encoding: BASE64');
-		echo $article->getImage();
+		$image = base64_decode($article->getImage());
+		$imageType = $article->getImageType();
+		$imageOutType;
+		if ($imageType == 'jpg' || $imageType == 'jpeg') {
+			$imageOutType = 'jpeg';
+		} else if('png') {
+			$imageOutType = 'png';
+		}
+		header('Content-Type: image/' + $imageOutType);
+		header('Content-Length: ' . strlen($image));
+		echo $image;
 	}
+	
 	
 	public function uploadAction()
 	{
@@ -82,9 +102,11 @@ class ArticleController extends \Shareshop\Controller {
 	}
 	
 	public function listAction()
-	{
-			
+	{		
 		$articles = Article::findAll();
+		$categories = Category::findAll();
+		$final = $this->prepareCategoriesHirarchy($categories);
+		$this->view->register('navigation/subnavigation', array('parentCategories' => $final[0], 'childCategories' => $final[1]), 'subnavigation');
 		$this->view->register('article/list', array('articles' => $articles));
 		$this->view->render();
 	}
@@ -99,5 +121,34 @@ class ArticleController extends \Shareshop\Controller {
 		//$article = new Article($params['item'], substr(md5($params['item']), rand(0, 10), 10), md5($params['item']), md5($params['item']), md5($params['item']), md5($params['item']));
 		$this->view->register('article/show', array('article' => $article));
 		$this->view->render();
+	}
+	
+	private function fetchFromArticles($articles) {
+		$categories = array();
+		foreach ($articles as $article) {
+			$categories = array_merge($categories, $article->getCategories());
+		}
+		$categories = array_unique($categories);
+		return $categories;
+	}
+	
+	private function prepareCategoriesHirarchy($categories) {
+		$result = array();
+		$catParent = array();
+		$catChild = array();
+		$CCounter = 0;
+		$PCounter = 0;
+		foreach ($categories as $category) {
+			if ($category->getParentId() == null) {
+				$catParent[$PCounter] =  $category;
+				$PCounter++;
+			} else {
+				$catChild[$CCounter] =  $category;
+				$CCounter++;
+			}
+		}
+		$result[0] = $catParent;
+		$result[1] = $catChild;
+		return $result;
 	}
 }

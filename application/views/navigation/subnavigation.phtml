@@ -1,18 +1,24 @@
 <?php 
 /* @var $article Application\Models\DB\Article2 */
-$categories = $data['categories'];
+$parentCategories = $data['parentCategories'];
+$childCategories = $data['childCategories'];
+
 ?>
 <span>
 	Gefundene Kategorien
 </span>
 <ul class="level-1">
-<?php foreach( $categories as $cat) {?>
+<?php foreach( $parentCategories as $parCat) {?>
 	<li>
-		<span><?php echo $cat->getName(); ?></span>
+		<span data-id="<?php echo $parCat->getId(); ?>"><?php echo $parCat->getName(); ?></span>
 		<ul class="level-2" toggled="false">
-			<li><span>Unterkategorie1</span></li>
-			<li><span>Unterkategorie2</span></li>
-			<li><span>Unterkategorie3</span></li>
+			<?php foreach( $childCategories as $childCat) {
+				if ($childCat->getParentId() == $parCat->getId()) {
+			?>
+					<li><span data-id="<?php echo $childCat->getId(); ?>"><?php echo $childCat->getName(); ?></span></li>	
+			<?php
+				} 
+			} ?>
 		</ul>
 	</li>
 <?php } ?>

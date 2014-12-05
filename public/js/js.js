@@ -59,9 +59,14 @@ $( document ).ready(function() {
 
 	// Ajax inject Productlist
 	
-//	var htmlContent = $.get("/article/list").done(function(htmlContent) {
-//		$('#content').append(htmlContent);
-//	});
-//	
+	$('.level-1 > li > span').click(function() {
+		var id = $(this).data('id');
+		$.get("/article/getbycategory/category/" + id).done(function(htmlContent) {
+			$('#content').html('');
+			$('#content').append(htmlContent);
+		});	 
+	});
+
+	
 	
 });
