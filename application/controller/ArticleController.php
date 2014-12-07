@@ -28,21 +28,27 @@ class ArticleController extends \Shareshop\Controller {
 		foreach ($arr as $key => $val) {
 			$resArray[$key] = Category::findById($val);
 		}
+		chdir('../data');
 		$fileName = basename($files['picture']['name']);
 		$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
-		$fileContent;
+		$fileURL;
 		if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
 				|| $imageFileType != 'gif' ) {
-				$fileContent = file_get_contents($files['picture']['tmp_name']);
+				$fileURL = getcwd() . '\\' . $fileName;
+				print_r($fileURL);
+				while (file_exists($fileURL)) {
+					$rand = rand(1, 10000);
+					$fileURL = getcwd() . '_' . $rand . '_' . $fileName;
+				}
+				move_uploaded_file($files['picture']['tmp_name'], $fileURL);
 		}
-		$image = base64_encode($fileContent);
+		$image = $fileURL;
 		$article = Article::create();
 		$article->setDescription($post['productDescription']);
 		$article->setName($post['productName']);
 		$article->setCategories($resArray);
 		$article->setLocation($location);
 		$article->setImage($image);
-		//$article->setImageType($imageFileType);
 		$article->save();	
 		return $article;	
 	}
@@ -79,17 +85,17 @@ class ArticleController extends \Shareshop\Controller {
 	public function getimageAction() {
 		$params = $this->request->getParameters();
 		$article = Article::findById($params['id']);
-		$image = base64_decode($article->getImage());
-		$imageType = $article->getImageType();
-		$imageOutType;
-		if ($imageType == 'jpg' || $imageType == 'jpeg') {
-			$imageOutType = 'jpeg';
-		} else if('png') {
-			$imageOutType = 'png';
-		}
-		header('Content-Type: image/' + $imageOutType);
-		header('Content-Length: ' . strlen($image));
-		echo $image;
+		//$image = base64_decode($article->getImage());
+		//$imageType = $article->getImageType();
+		//$imageOutType;
+		//if ($imageType == 'jpg' || $imageType == 'jpeg') {
+			//$imageOutType = 'jpeg';
+		//} else if('png') {
+			//$imageOutType = 'png';
+		//}
+		//header('Content-Type: image/' + $imageOutType);
+		//header('Content-Length: ' . strlen($image));
+		//echo $image;
 	}
 	
 	

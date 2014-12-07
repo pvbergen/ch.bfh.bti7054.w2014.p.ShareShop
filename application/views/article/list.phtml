@@ -6,7 +6,7 @@
 ?>
 	<div class="product">
 		<a href="/article/show/item/<?php echo $article->getId(); ?>">
-			<img src="/article/getimage/id/<?php echo $article->getId(); ?>" />
+			<img src="<?php echo $article->getImage(); ?>" />
 			<div class="productinfo">
 				<div class="name">
 					<?php echo $article->getName(); ?>
