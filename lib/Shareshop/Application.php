@@ -1,23 +1,69 @@
 <?php
 namespace Shareshop;
 
-use Application\Controller\ErrorController;
-use Application\Hooks;
+use Shareshop\Config;
+use Shareshop\Request;
+use Shareshop\View;
+use Shareshop\Plugin\PluginManager;
+
 class Application {
 	
-	protected $_hooks = null;
+	/**
+	 * Event just before controller and action are dispatched.
+	 * 
+	 * @var string
+	 */
+	const ROUTE_PREDISPATCH = "ROUTE.PREDISPATCH";
+
+	/**
+	 * Event just after controller and action have been dispatched.
+	 *
+	 * @var string
+	 */
+	const ROUTE_POSTDISPATCH = "ROUTE.POSTDISPATCH";
+	
+	/**
+	 * 
+	 * @var \Shareshop\View
+	 */
 	protected $_view = null;
+	
+	/**
+	 * 
+	 * @var \Shareshop\Request
+	 */
 	protected $_request = null;
 	
+	/**
+	 * 
+	 * @var \Shareshop\Config
+	 */
 	protected static $_config = null;
+	
+	/**
+	 * 
+	 * @var \Shareshop\Plugin\PluginManager
+	 */
+	protected static $_pluginManager = null;
 	
 	/**
 	 * Constructs a new Application object,
 	 * parses request URI, determines requested route and
 	 * initializes request and view object.
 	 */	
-	public function __construct() {
-		$this->_hooks = new Hooks();
+	public function __construct() 
+	{		
+		$bootstrapClass = Application::getConfig()->bootstrap;
+		if (is_string($bootstrapClass)) {
+			$bootstrap = new $bootstrapClass();
+			$methods = get_class_methods($bootstrap);
+			foreach ($methods as $method) {
+				if (strpos($method, 'init') === 0) {
+					$bootstrap->$method();
+				}
+			}
+		}
+		
 		$uriParts = explode('?', $_SERVER['REQUEST_URI']);
 		$uriParts = explode('/', $uriParts[0]);
 		array_shift($uriParts);
@@ -55,6 +101,19 @@ class Application {
 	}
 	
 	/**
+	 * Returns the application plugin manager.
+	 *
+	 * @return \Shareshop\Plugin\PluginManager
+	 */
+	public static function getPluginManager()
+	{
+		if (self::$_pluginManager == null) {
+			self::$_pluginManager = new PluginManager();
+		}
+		return self::$_pluginManager;
+	}
+	
+	/**
 	 * Routes the request.
 	 * Initialises controller with view and request and executes action, both corresponding to request.
 	 * 
@@ -62,9 +121,8 @@ class Application {
 	 */
 	public function route()
 	{		
-		try {	
-			$this->_hooks->preDispatch($this->_request, $this->_view);
-			
+		Application::getPluginManager()->inform(self::ROUTE_PREDISPATCH);
+		try {
 			$controllerFile = APPLICATION_PATH . '/controller/' . $this->_request->getController() . 'Controller.php';
 			if (!file_exists($controllerFile)) {
 				throw new \Exception('Missing controller file');
@@ -80,13 +138,16 @@ class Application {
 			call_user_func(array($controllerObj, $this->_request->getAction() . "Action"));
 			
 		} catch(\Exception $e) {
-			$this->_view = new View();
-			$this->_view->setLayout('error');
-			$controllerObj = new ErrorController($e);
-			$controllerObj->view = $this->_view;
-			$controllerObj->request = $this->_request;
-			$controllerObj->indexAction(); 
+			$errorControllerClass = Application::getConfig()->errorController;
+			if (is_string($errorControllerClass)) {
+				$this->_view = new View();
+				$this->_view->setLayout('error');
+				$controllerObj = new $errorControllerClass($e);
+				$controllerObj->view = $this->_view;
+				$controllerObj->request = $this->_request;
+				$controllerObj->indexAction();
+			} 
 		}
-		$this->_hooks->postDispatch($this->_request, $this->_view);
+		Application::getPluginManager()->inform(self::ROUTE_POSTDISPATCH);
 	}
 }

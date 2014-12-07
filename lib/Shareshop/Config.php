@@ -30,7 +30,12 @@ class Config extends Tree {
 			unset($helper);
 		}
 		foreach($this->_data as $key => $values) {
-			$this->_data[$key] = new Tree($values);
+			if (is_array($values)) {
+				$this->_data[$key] = new Tree($values);
+			} else {
+				$this->_data[$key] = $values;
+			}
+			
 		}
 	}	
 }
