@@ -12,7 +12,7 @@ class Article {
 	private $name;
 	private $description;
 	private $image;
-	private $location;
+	private $userId;
 	private $categories = array();
 	private $creationTimestamp;
 	
@@ -91,8 +91,8 @@ class Article {
 		return $this->image;
 	}
 	
-	public function getLocation () {
-		return $this->location;
+	public function getUserId () {
+		return $this->userId;
 	}
 	
 	public function getCategories () {
@@ -125,14 +125,8 @@ class Article {
 		return $this;
 	}
 	
-	/**
-	 * Set the location for this article.
-	*
-	*  @param Location $objLocation location object (id must exist in database).
-	*
-	* */
-	public function setLocation ($objLocation) {
-		$this->location=$objLocation;
+	public function setUserId ($UserId) {
+		$this->userId = $UserId;
 		return $this;
 	}
 	

@@ -35,7 +35,7 @@ class DBAccess {
 
 	// ------------------------ Helpers ---------------------------- //
 	private function createArticleFromDatabaseRow($row) {
-		$article = Article::create ()->setId ( $row->art_id )->setName ( $row->art_name )->setDescription ( $row->art_description )->setImage ( $row->art_image )->setLocation ( $this->findLocationById ( $row->art_loc_id ) );
+		$article = Article::create ()->setId ( $row->art_id )->setName ( $row->art_name )->setDescription ( $row->art_description )->setImage ( $row->art_image )->setUserId( $row->art_usr_id );
 		
 		$catId = $row->art_cat_id;
 		while ( $catId != null ) {
@@ -125,7 +125,7 @@ class DBAccess {
 	
 	public function saveArticle($article) {
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :locationId, :categoryId, null)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, :art_cat_id, null)' );
 			
 			$mostSpecificCategoryId = null;
 			foreach ( $article->getCategories () as $cat ) {
@@ -138,8 +138,8 @@ class DBAccess {
 			$stmt->bindParam ( ':name', $article->getName () );
 			$stmt->bindParam ( ':description', $article->getDescription () );
 			$stmt->bindParam ( ':image', $article->getImage () );
-			$stmt->bindParam ( ':locationId', $article->getLocation ()->getId () );
-			$stmt->bindParam ( ':categoryId', $mostSpecificCategoryId );
+			$stmt->bindParam ( ':art_usr_id', $article->getUserId ());
+			$stmt->bindParam ( ':art_cat_id', $mostSpecificCategoryId );
 			
 			$stmt->execute ();
 		} catch ( \PDOException $e ) {

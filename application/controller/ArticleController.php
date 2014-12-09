@@ -22,15 +22,16 @@ class ArticleController extends \Shareshop\Controller {
 	}
 	
 	private function insertArticle($post, $files) {
-		$location = Location::findById(1);
+		//$location = Location::findById(1);
+		print_r($post);
 		$arr = $post['productCategory'];
 		$resArray = array();
 		foreach ($arr as $key => $val) {
 			$resArray[$key] = Category::findById($val);
 		}
-		chdir('../data');
+		chdir('../public/publicImgs');
 		$fileName = basename($files['picture']['name']);
-		$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+		$imageFileType = pathinfo($fileName,PATHINFO_EXTENSION);
 		$fileURL;
 		if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
 				|| $imageFileType != 'gif' ) {
@@ -38,16 +39,17 @@ class ArticleController extends \Shareshop\Controller {
 				print_r($fileURL);
 				while (file_exists($fileURL)) {
 					$rand = rand(1, 10000);
-					$fileURL = getcwd() . '_' . $rand . '_' . $fileName;
+					$fileName = '_' . $rand . '_' . $fileName;
+					$fileURL = getcwd() . '\\' . $fileName;
 				}
 				move_uploaded_file($files['picture']['tmp_name'], $fileURL);
 		}
-		$image = $fileURL;
+		$image = '/publicimgs/' . $fileName;
 		$article = Article::create();
 		$article->setDescription($post['productDescription']);
 		$article->setName($post['productName']);
 		$article->setCategories($resArray);
-		$article->setLocation($location);
+		$article->setUserId(1);
 		$article->setImage($image);
 		$article->save();	
 		return $article;	
@@ -103,6 +105,7 @@ class ArticleController extends \Shareshop\Controller {
 	{
 		$categories = Category::findAll();
 		$this->view->register('article/upload', array('categories' => $categories));
+		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
 		//$this->view->setLayout('static');
 		$this->view->render();
 	}
