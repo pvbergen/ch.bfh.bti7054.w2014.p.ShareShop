@@ -17,11 +17,16 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 		$state = Application::getPluginManager()->getState();
 		/* @var $request \Shareshop\Request */
 		$request = $state['request'];
-		print_r($request);
-		echo '<br />' . $request->getController();
+		//print_r($request);
+		//echo '<br />' . $request->getController();
 		$controller = $request->getController();
 		if (in_array($controller, explode(",", $config->auth->paths))) {
-			echo 'auth path';
+			//echo 'auth path';
 		}
-	}	
+	}
+	
+	public function authorize()
+	{
+		
+	}
 }
