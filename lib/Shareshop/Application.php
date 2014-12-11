@@ -121,7 +121,7 @@ class Application {
 	 */
 	public function route()
 	{		
-		Application::getPluginManager()->inform(self::ROUTE_PREDISPATCH);
+		Application::getPluginManager()->inform(self::ROUTE_PREDISPATCH, array('request' => $this->_request));
 		try {
 			$controllerFile = APPLICATION_PATH . '/controller/' . $this->_request->getController() . 'Controller.php';
 			if (!file_exists($controllerFile)) {
