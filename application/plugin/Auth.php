@@ -19,10 +19,10 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 		$request = $state['request'];
 		//print_r($request);
 		//echo '<br />' . $request->getController();
-		$controller = $request->getController();
-		if (in_array($controller, explode(",", $config->auth->paths))) {
+		//$controller = $request->getController();
+		/*if (in_array($controller, explode(",", $config->auth->paths))) {
 			//echo 'auth path';
-		}
+		}*/
 	}
 	
 	public function authorize()
