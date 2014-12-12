@@ -24,6 +24,11 @@ class Application {
 	
 	/**
 	 * 
+	 */
+	protected static $_instance;
+	
+	/**
+	 * 
 	 * @var \Shareshop\View
 	 */
 	protected $_view = null;
@@ -51,7 +56,7 @@ class Application {
 	 * parses request URI, determines requested route and
 	 * initializes request and view object.
 	 */	
-	public function __construct() 
+	protected function __construct() 
 	{		
 		$bootstrapClass = Application::getConfig()->bootstrap;
 		if (is_string($bootstrapClass)) {
@@ -63,20 +68,20 @@ class Application {
 				}
 			}
 		}
-		
+		$defaultRoute = explode("\\", self::getConfig()->defaultRoute);
 		$uriParts = explode('?', $_SERVER['REQUEST_URI']);
 		$uriParts = explode('/', $uriParts[0]);
 		array_shift($uriParts);
 		if (!empty($uriParts[0])) {
 			$controller = ucfirst(strtolower($uriParts[0]));
 		} else {
-			$controller = 'Article';
+			$controller = $defaultRoute[0];
 		}
 		
 		if (!empty($uriParts[1])) {
 			$action = strtolower($uriParts[1]);
 		} else {
-			$action = 'list';
+			$action = $defaultRoute[1];
 		}
 		
 		$this->_view = new View();
@@ -84,6 +89,19 @@ class Application {
 		if ($this->_request->isAjaxRequest()) {
 			$this->_view->renderAsAjax(true);
 		}
+	}
+	
+	/**
+	 * Returns the application instance.
+	 * 
+	 * @return \Shareshop\Application
+	 */
+	public static function getInstance()
+	{
+		if (Application::$_instance == null) {
+			Application::$_instance = new Application();
+		}
+		return Application::$_instance;
 	}
 	
 	/**
@@ -149,5 +167,15 @@ class Application {
 			} 
 		}
 		Application::getPluginManager()->inform(self::ROUTE_POSTDISPATCH);
+	}
+	
+	public function forward()
+	{
+		header("Location: /" . $this->_request->getController()  . "/" . $this->_request->getAction());
+	}
+	
+	protected function __clone()
+	{
+		
 	}
 }

@@ -45,6 +45,10 @@ class Request {
 	 */
 	protected $_action;
 	
+	protected $_message = "";
+	
+	protected $_error = "";
+	
 	/**
 	 * Creates a new request object.
 	 */
@@ -135,6 +139,16 @@ class Request {
 	{
 		return $this->_action;
 	}
+
+	public function getMessage()
+	{
+		return $this->_message;
+	}
+	
+	public function getError()
+	{
+		return $this->_error;
+	}
 	
 
 	public function setController($controller = 'Index')
@@ -147,6 +161,16 @@ class Request {
 		$this->_action = strtolower($action);
 	}
 	
+	public function setMessage($message)
+	{
+		$this->_message = $message;
+	}
+	
+	public function setError($error)
+	{
+		$this->_error = $error;
+	}
+	
 	/**
 	 * Dispatch the request.
 	 * Initialises controller with view and request and executes action, both corresponding to request.
@@ -155,6 +179,7 @@ class Request {
 	 */
 	public function dispatch()
 	{
+		echo 'dispatch in request';
 		try {
 			$this->_hooks->preDispatch($this, $this->_view);
 				

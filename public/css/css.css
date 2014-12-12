@@ -52,6 +52,14 @@ h1 {
 }
 
 
+h2 {
+	font-size: 1.3em;
+	font-weight: 500;
+	margin:0.4em 0;
+	color:#4B60F0;
+}
+
+
 /************* General Form ***************/
 form .input-wrapper {
 	width: 100%;
@@ -77,16 +85,19 @@ form select, form textarea {
 }
 
 form label {
-	width: 30%;
+	width: 100%;
 	vertical-align: top;
 	padding: 0.7em 0.7em 0.7em 0;
 }
 
-.button {
+.button, .singleButton {
 	color:#fff;
 	background:#f08a4a;
 	border:none;
 	width:39.2%;
+}
+
+.button {
 	margin-left:51%;
 }
 

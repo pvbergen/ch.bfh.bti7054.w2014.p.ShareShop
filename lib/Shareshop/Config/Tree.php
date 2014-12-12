@@ -3,7 +3,6 @@ namespace Shareshop\Config;
 
 class Tree {
 	
-	
 	protected $_data = array();
 	
 	public function __construct($data)
@@ -18,6 +17,12 @@ class Tree {
 		}
 	}
 	
+	/**
+	 * 
+	 * 
+	 * @param string $args
+	 * @return mixed|\Shareshop\Config\Nothing|multitype:
+	 */
 	public function __get($args)
 	{
 		if (!isset($this->_data[$args])) {
@@ -25,5 +30,9 @@ class Tree {
 		}
 		return $this->_data[$args];
 	}
-		
+	
+	public function getArray()
+	{
+		return $this->_data;
+	}
 }

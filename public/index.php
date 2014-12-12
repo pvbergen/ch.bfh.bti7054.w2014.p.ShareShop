@@ -16,5 +16,4 @@ $autoloader->register();
 $autoloader = new SplClassLoader('Application', BASE_PATH);
 $autoloader->register();
 
-$application = new Application();
-$application->route();
+Application::getInstance()->route();
