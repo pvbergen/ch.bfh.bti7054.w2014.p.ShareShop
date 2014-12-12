@@ -67,6 +67,11 @@ $( document ).ready(function() {
 		});	 
 	});
 
+	$('input#adresse').each(function(i, el) {
+		var options = {};
+		autocomplete = new google.maps.places.Autocomplete(el, options);
+	});
+		
 	
 	
 });
