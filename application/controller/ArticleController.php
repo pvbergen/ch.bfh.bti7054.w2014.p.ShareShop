@@ -101,9 +101,38 @@ class ArticleController extends \Shareshop\Controller {
 	
 	public function subcategoriesAction() {
 		$params = $this->request->getParameters();
-		$categories = Category::findAllSubCategories($params['id']);
+		$arr = explode('-', $params['id']);
+		$categories = array();
+		foreach ($arr as $catId) {
+			$categories = $this->helpCategoryArrayMerge($categories, Category::findAllSubCategories($catId));
+		}
 		$this->view->register('article/subCategories', array('categories' => $categories));
 		$this->view->render();
+	}
+	
+	private function helpCategoryArrayMerge($arr1, $arr2) {
+		$identifier = array();
+		$result = array();
+		$i = 0;
+		print_r(count($arr2));
+		foreach($arr1 as $el) {
+			$identifier[$i++] = $el->getId();
+		}
+		$result = $arr1;
+		foreach($arr2 as $el) {
+			if (!(in_array($el->getId(), $identifier))) {
+				$result[$i] = $el;
+				$identifier[$i++] = $el->getId();
+			} 
+		}
+		return $result;
+	}
+	
+	public function submitcategoryAction() {
+		$params = $this->request->getParameters();
+		$params['id'];
+		$params['subCategory'];
+		
 	}
 	
 	public function listAction()

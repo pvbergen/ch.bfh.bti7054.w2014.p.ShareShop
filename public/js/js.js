@@ -66,16 +66,46 @@ $( document ).ready(function() {
 			$('#content').append(htmlContent);
 		});	 
 	});
-	
+
+	// ********* Upload **************
 	// Ajax inject SubCategories List in Upload
 	$('#productCategory').change(function() {
-		var id = $(this).val();
-		$.get("/article/subcategories/id/" + id).done(function(htmlContent) {
+		var arr = [];
+		$('#productCategory :selected').each(function(i, selected) {
+			arr[i] = selected.value;
+		});
+		var id = arr.join('-');
+		$.get('/article/subcategories/id/' + id).done(function(htmlContent) {
 			$('#productSubCategory').html('');
 			$('#productSubCategory').append(htmlContent);
 		});	 
 	});
 
+	// Button Subcategorysubmit
+	
+	$('#newSubCategorySubmit').click(function() {
+		var mainCat = $('#categoryForSub').value();
+		var subCat = $('#newSubCategorySubmit').value();
+		$.get('/article/subcategories?id=' + mainCat + '&subCategory=' + subCat).done(function(htmlContent) {
+			$('#productSubCategory').html('');
+			$('#productSubCategory').append(htmlContent);
+		});	 
+		
+	});
+	$('#toggleCatSubmitDisplay').click(function() {
+		if ($(this).data('visible')) {
+			$(this).prop('value', 'Hinzuf&uuml;gen');
+			$('#input-Category-Submit').addClass( "invisible" );
+			$(this).data('visible',false);
+		} else {
+			$(this).prop('value', 'Entfernen');
+			$('#input-Category-Submit').removeClass( "invisible" );
+			$(this).data('visible',true);
+		}	
+		
+	});
+	
+	
 	$('input#adresse').each(function(i, el) {
 		var options = {};
 		autocomplete = new google.maps.places.Autocomplete(el, options);

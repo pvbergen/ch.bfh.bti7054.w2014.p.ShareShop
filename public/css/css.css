@@ -59,6 +59,9 @@ h2 {
 	color:#4B60F0;
 }
 
+.invisible {
+	display: none;
+}
 
 /************* General Form ***************/
 form .input-wrapper {
@@ -331,6 +334,10 @@ form label {
 
 .product-upload {
 
+}
+
+.smaller-input {
+	height: 2em;
 }
 
 @media only screen and (max-width: 1024px) {

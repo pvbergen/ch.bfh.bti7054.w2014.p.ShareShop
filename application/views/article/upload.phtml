@@ -17,7 +17,7 @@
 				<input type="file" id="picture" name="picture">
 			</div>
 			<div class="input-wrapper"><label for="productCategory">Oberkategorie</label>
-				<select name="productCategory" id="productCategory">
+				<select name="productCategory[]" id="productCategory" multiple="multiple">
 				<?php
 					foreach ($data['categories'] as $category)
 					{
@@ -32,6 +32,24 @@
 				<label for="productSubCategory">Unterkategorie</label>
 				<select name="productSubCategory[]" id="productSubCategory" multiple="multiple">
 				</select>
+			</div>
+			<div class="input-wrapper">
+				<input type="button" data-visible="false" id="toggleCatSubmitDisplay" class="button" value="Hinzuf&uuml;gen">
+			</div>			
+			<div id="input-Category-Submit" class="input-wrapper invisible">
+				<label for="newSubCategory">Neue Unterkategorie hinzuf&uuml;gen</label>
+				<input type="text" id="newSubCategory" name="newSubCategory" placeholder="Name z.B . Stricksocken" />
+				<select name="categoryForSub[]" id="categoryForSub">
+				<?php
+					foreach ($data['categories'] as $category)
+					{
+						?>
+							<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
+						<?php 
+					} 
+				?>
+				</select>				
+				<input type="button" id="newSubCategorySubmit" class="button" value="Hinzuf&uuml;gen">
 			</div>
 		</div>
 		<div class="clearFix">
