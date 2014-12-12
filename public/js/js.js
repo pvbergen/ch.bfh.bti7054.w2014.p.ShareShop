@@ -66,6 +66,15 @@ $( document ).ready(function() {
 			$('#content').append(htmlContent);
 		});	 
 	});
+	
+	// Ajax inject SubCategories List in Upload
+	$('#productCategory').change(function() {
+		var id = $(this).val();
+		$.get("/article/subcategories/id/" + id).done(function(htmlContent) {
+			$('#productSubCategory').html('');
+			$('#productSubCategory').append(htmlContent);
+		});	 
+	});
 
 	$('input#adresse').each(function(i, el) {
 		var options = {};

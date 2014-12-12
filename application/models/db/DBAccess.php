@@ -131,26 +131,41 @@ class DBAccess {
 	
 	public function saveArticle($article) {
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, :art_cat_id, null)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
 			
-			$mostSpecificCategoryId = null;
-			foreach ( $article->getCategories () as $cat ) {
-				if ($cat->getParentId () == $mostSpecificCategoryId || $mostSpecificCategoryId == null) {
-					$mostSpecificCategoryId = $cat->getId ();
-				}
-			}
+			insertCategoryRelation($article->getId (), $article->getCategories ());
 			
 			$stmt->bindParam ( ':id', $article->getId () );
 			$stmt->bindParam ( ':name', $article->getName () );
 			$stmt->bindParam ( ':description', $article->getDescription () );
 			$stmt->bindParam ( ':image', $article->getImage () );
 			$stmt->bindParam ( ':art_usr_id', $article->getUserId ());
-			$stmt->bindParam ( ':art_cat_id', $mostSpecificCategoryId );
 			
 			$stmt->execute ();
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
+	}
+	
+	private function insertCategoryRelation($art_id, $arr) {
+		try {
+			foreach ($arr as $cat) {
+				if ($cat->getParentId() != null) {
+					
+					$stmt = $this->_conn->prepare ( 'INSERT INTO sha_art_cat_rel VALUES(:art_id, :cat_id)' );
+						
+					
+					insertCategoryRelation($article->getCategories ());
+					
+					$stmt->bindParam ( ':art_id', $art_id );
+					$stmt->bindParam ( ':cat_id', $cat );
+					
+					$stmt->execute ();
+				}
+			}
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
 	}
 	
 	public function findAllArticles() {
@@ -199,6 +214,7 @@ class DBAccess {
 		}
 	}
 	
+	
 	public function saveCategory($category) {
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_categories VALUES(:id, :name, :parentId)' );
@@ -227,7 +243,37 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
+	public function findParentCategories() {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_parent_id IS NULL' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->execute ();
+				
+			while ( $row = $stmt->fetch () ) {
+				$categories [] = $this->createCategoryFromDatabaseRow ( $row );
+			}
+			return $categories;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
 	
+	
+	public function findSubCategories($id) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_parent_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+			while ( $row = $stmt->fetch () ) {
+				$categories [] = $this->createCategoryFromDatabaseRow ( $row );
+			}
+			return $categories;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
 	// ------------------------ Location ---------------------------- //
 	public function findLocationById($id) {
 		try {

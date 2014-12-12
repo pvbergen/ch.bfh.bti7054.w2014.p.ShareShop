@@ -17,7 +17,7 @@
 				<input type="file" id="picture" name="picture">
 			</div>
 			<div class="input-wrapper"><label for="productCategory">Oberkategorie</label>
-				<select name="productCategory[]" id="productCategory" multiple="multiple">
+				<select name="productCategory" id="productCategory">
 				<?php
 					foreach ($data['categories'] as $category)
 					{
@@ -31,9 +31,6 @@
 			<div class="input-wrapper">
 				<label for="productSubCategory">Unterkategorie</label>
 				<select name="productSubCategory[]" id="productSubCategory" multiple="multiple">
-					<option value="1">Fun</option>
-					<option value="2">Sadness</option>
-					<option value="3">Business</option>
 				</select>
 			</div>
 		</div>

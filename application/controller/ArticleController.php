@@ -93,10 +93,16 @@ class ArticleController extends \Shareshop\Controller {
 	
 	public function uploadAction()
 	{
-		$categories = Category::findAll();
+		$categories = Category::findAllParents();
 		$this->view->register('article/upload', array('categories' => $categories));
 		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
-		//$this->view->setLayout('static');
+		$this->view->render();
+	}
+	
+	public function subcategoriesAction() {
+		$params = $this->request->getParameters();
+		$categories = Category::findAllSubCategories($params['id']);
+		$this->view->register('article/subCategories', array('categories' => $categories));
 		$this->view->render();
 	}
 	
