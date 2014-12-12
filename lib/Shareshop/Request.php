@@ -44,6 +44,10 @@ class Request {
 	 * @var string
 	 */
 	protected $_action;
+
+	protected $_origController = "";
+	
+	protected $_origAction = "";
 	
 	protected $_message = "";
 	
@@ -54,8 +58,8 @@ class Request {
 	 */
 	public function __construct($controller = 'index', $action = 'index')
 	{
-		$this->_controller = $controller;
-		$this->_action = $action;
+		$this->_controller = $this->_origController = $controller;
+		$this->_action = $this->_origAction = $action;
 		
 		$uriParts = explode('?', $_SERVER['REQUEST_URI']);
 		$this->_parameters = explode('/', $uriParts[0]);
@@ -138,6 +142,26 @@ class Request {
 	public function getAction()
 	{
 		return $this->_action;
+	}
+	
+	/**
+	 * Returns the original controller name of the request.
+	 *
+	 * @return string
+	 */
+	public function getOrigController()
+	{
+		return $this->_origController;
+	}
+	
+	/**
+	 * Returns the original action name of the request.
+	 *
+	 * @return string
+	 */
+	public function getOrigAction()
+	{
+		return $this->_origAction;
 	}
 
 	public function getMessage()

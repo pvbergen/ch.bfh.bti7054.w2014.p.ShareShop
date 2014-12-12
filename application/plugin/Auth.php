@@ -40,14 +40,16 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 		if ($this->isAuthPath($request)) {
 			Auth::$_session = Session::create()->findById($sessionId);
 			$postData = $request->getPost();
-			if (Auth::$_session == null || isset($postData['submitLogin'])) {
-				if (!headers_sent()) {
-					$user = $this->authorize($request);
-					if ($user != null) {
-						Auth::$_session = Session::create()->setUserId($user->getId())->setState(1)->setId($sessionId);
-						Auth::$_session->save();
-					}
+			if (isset($postData['submitLogin'])) {
+				
+				$user = $this->authorize($request);
+				if ($user != null) {
+					Auth::$_session = Session::create()->setUserId($user->getId())->setState(1)->setId($sessionId);
+					Auth::$_session->save();
 				}
+			} elseif (Auth::$_session == null) {
+				$request->setController('Auth');
+				$request->setAction('index');
 			} else {
 				if(Auth::$_session->getState() != 1) {
 					$request->setController('Auth');

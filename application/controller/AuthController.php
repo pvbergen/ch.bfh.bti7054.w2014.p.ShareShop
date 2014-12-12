@@ -10,6 +10,7 @@ use Application\Models\Db\User;
 
 class AuthController extends \Shareshop\Controller {
 	use Authorization;
+	
 	public function indexAction()
 	{
 		$this->view->register('auth/subnavigation', array(), 'subnavigation');
@@ -52,18 +53,29 @@ class AuthController extends \Shareshop\Controller {
 			) {
 				$viewData['error'] = 'Bitte alle Felder ausfüllen.';
 			} else {
-				if ($postData['password'] == $postData['passwordRepeat']) {
-					$password = $this->createHash($postData['password']);
-					User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->save();
-					$viewData['success'] = 'Erfolgreich registriert!';
- 				} else {
-					$viewData['error'] = 'Passwörter stimmen nicht überein.';
+				if (preg_match('/(.^@){1,63}@(.^\.){1,63}\.[a-zA-Z0-9]{2,63}/', $subject)) {
+					if ($postData['password'] == $postData['passwordRepeat']) {
+						$salt = $this->generateString(10);
+						$password = $this->createHash($postData['password']);//, $salt);
+						User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setState(0)->save();
+						$viewData['success'] = 'Erfolgreich registriert!';
+					} else {
+						$viewData['error'] = 'Passwörter stimmen nicht überein.';
+					}
+				} else {
+					$viewData['error'] = 'Ungültige E-Mail-Adresse.';
 				}
+				
 			}
 		}
 		
 		$this->view->register('auth/subnavigation', array(), 'subnavigation');
 		$this->view->register('auth/register', $viewData);
 		$this->view->render();
+	}
+	
+	protected function sendMail()
+	{
+		
 	}
 }

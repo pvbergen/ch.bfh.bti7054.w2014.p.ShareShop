@@ -9,7 +9,9 @@ class User {
 	private $id;
 	private $username;
 	private $password;
+	private $salt;
 	private $email;
+	private $state;
 	
 	private function __construct() {
 	}
@@ -56,10 +58,17 @@ class User {
 		return $this->password;
 	}
 	
+	public function getSalt () {
+		return $this->salt;
+	}
+	
 	public function getEmail () {
 		return $this->email;
 	}
 	
+	public function getState () {
+		return $this->state;
+	}
 	// ------------------------ SETTER ---------------------------- //
 	
 	public function setId ($intId) {
@@ -77,8 +86,18 @@ class User {
 		return $this;
 	}
 	
+	public function setSalt ($strSalt) {
+		$this->salt=$strSalt;
+		return $this;
+	}
+	
 	public function setEmail ($strEmail) {
 		$this->email=$strEmail;
+		return $this;
+	}
+	
+	public function setState ($intState) {
+		$this->state=$intState;
 		return $this;
 	}
 }
