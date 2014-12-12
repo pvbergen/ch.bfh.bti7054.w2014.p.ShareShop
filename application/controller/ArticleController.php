@@ -84,21 +84,11 @@ class ArticleController extends \Shareshop\Controller {
 		$this->view->render();		
 	}
 	
-	public function getimageAction() {
-		$params = $this->request->getParameters();
-		$article = Article::findById($params['id']);
-		//$image = base64_decode($article->getImage());
-		//$imageType = $article->getImageType();
-		//$imageOutType;
-		//if ($imageType == 'jpg' || $imageType == 'jpeg') {
-			//$imageOutType = 'jpeg';
-		//} else if('png') {
-			//$imageOutType = 'png';
-		//}
-		//header('Content-Type: image/' + $imageOutType);
-		//header('Content-Length: ' . strlen($image));
-		//echo $image;
-	}
+// 	public function getimageAction() {
+// 		$params = $this->request->getParameters();
+// 		$article = Article::findById($params['id']);
+
+// 	}
 	
 	
 	public function uploadAction()
