@@ -72,6 +72,9 @@ $( document ).ready(function() {
 		autocomplete = new google.maps.places.Autocomplete(el, options);
 	});
 		
-	
+	/*$('form#registerForm').on('submit', function() {
+		service = new google.maps.places.PlacesService(map);
+		service.textSearch($('input#adresse').value(), callback);
+	});*/
 	
 });
