@@ -328,7 +328,7 @@ class DBAccess {
 	public function saveUser(User $user)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'REPLACE INTO sha_user (usr_username, usr_password, usr_email) VALUES (:username, :password, :email)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email) VALUES (:username, :password, :email)' );
 		
 			$stmt->execute ( array (
 					':username' => $user->getUsername(),
@@ -378,33 +378,17 @@ class DBAccess {
 	public function saveSession(Session $session)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_session (session_id, session_usr_id, session_state) VALUES (:session, :user, :state)' );
+			$stmt = $this->_conn->prepare ( 'REPLACE INTO sha_session (session_id, session_usr_id, session_state, session_update_time) VALUES (:session, :user, :state, :updateTime)' );
 	
 			$stmt->execute ( array (
 					':session' => $session->getId(),
 					':user' => $session->getUserId(),
-					':state' => $session->getState()
+					':state' => $session->getState(),
+					':updateTime' => 'CURRENT_TIMESTAMP'
 			) );
 		} catch ( \PDOException $e ) {
-			if ($e->getCode() == 23000) {
-				$stmt = $this->_conn->prepare ( 
-						'UPDATE sha_session SET session_state = :state, session_update_time = CURRENT_TIMESTAMP' 
-						.' WHERE session_id = :session AND session_usr_id = :user' );
-				
-				$stmt->execute ( array (
-						':session' => $session->getId(),
-						':user' => $session->getUserId(),
-						':state' => $session->getState(),
-				) );
-				if ($stmt->rowCount() !== 1) {
-					echo 'Error: Session intermixed between users!';
-				}
-			} else {
-				echo 'Error: ' . $e->getMessage ();
-			}
+			echo 'Error: ' . $e->getMessage ();
 		}
-		
-		
 	}
 	
 	/**

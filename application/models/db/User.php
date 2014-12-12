@@ -37,6 +37,10 @@ class User {
 	public static function findBySessionId($strId) {
 		return DBAccess::getInstance()->findUserBySession($strId);
 	}
+
+	public static function findByUsername($username) {
+		return DBAccess::getInstance()->findUserByUsername($username);
+	}
 	
 	// ------------------------ GETTER ---------------------------- //
 	

@@ -1,7 +1,7 @@
 <?php
 namespace Shareshop;
 
-trait Auth {
+trait Authorization {
 	
 	protected $_alg = "md5";
 	

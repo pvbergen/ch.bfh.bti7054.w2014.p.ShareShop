@@ -1,0 +1,40 @@
+<div class="product-upload">
+	<h1>Registrierung</h1>
+	<h3 class="error">
+		<?php echo $data['error']; ?>
+	</h3>
+	<?php if (!empty($data['success'])) { ?>
+	<h3 class="success">
+		<?php echo $data['success']; ?>
+	</h3>
+	<?php } else { ?>
+	<h2>
+		Jetzt hier registrieren
+	</h2>
+	<form action="/auth/register" method="post" accept-charset="utf-8">
+		<div class="input-wrapper">
+			<label for="username">Benutzername</label>
+			<input type="text" id="username" name="username" placeholder="Benutzername" value="<?php echo $data['form']['username']; ?>"/>
+		</div>
+		<div class="input-wrapper">
+			<label for="password">Passwort</label>
+			<input type="password" id="password" name="password" placeholder="Passwort">
+		</div>
+		<div class="input-wrapper">
+			<label for="passwordRepeat">Passwort wiederholen</label>
+			<input type="password" id="passwordRepeat" name="passwordRepeat" placeholder="Passwort wiederholen">
+		</div>
+		<div class="input-wrapper">
+			<label for="email">E-Mail</label>
+			<input type="text" id="email" name="email" placeholder="example@example.com" value="<?php echo $data['form']['email']; ?>">
+		</div>
+		<div class="input-wrapper">
+			<label for="adresse">Adresse</label>
+			<input type="text" id="adresse" name="adresse" placeholder="Mustergasse 3, 1000 Musterstadt" value="<?php echo $data['form']['adresse']; ?>">
+		</div>
+		<div class="input-wrapper">
+			<input type="submit" class="singleButton" name="submitRegister" value="Registrieren">
+		</div>
+	</form>
+	<?php } ?>
+</div>

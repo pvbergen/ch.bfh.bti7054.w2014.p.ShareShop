@@ -1,21 +1,25 @@
 <?php
 namespace Application\Plugin;
 
-use \Shareshop\Application;
+use Shareshop\Application;
 use Shareshop\Request;
-use \Application\Models\Db\DBAccess;
-use Shareshop\Auth\Exception;
-use Application\Models\Db\Session;
-use Application\Models\Db\User;
+use Shareshop\Authorization;
+use Shareshop\Authorization\Exception;
 use Shareshop\Config\Nothing;
 use Shareshop\Config;
+use Application\Models\Db\Session;
+use Application\Models\Db\User;
 
 class Auth extends \Shareshop\Plugin\AbstractPlugin {
-	use \Shareshop\Auth;
+	use Authorization;
 	
-	protected $_db = null;
 	protected $_config = null;
-	protected $_state = null;
+	
+	/**
+	 * 
+	 * @var Session
+	 */
+	protected static $_session = null;
 	
 	public function __construct($algorithm = 'md5', $iterations = 1)
 	{
@@ -25,73 +29,77 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 	
 	public function update($event)
 	{
-		$this->_db = DBAccess::getInstance();
-		$this->_config = new Config(APPLICATION_PATH . '/configs/auth.ini');
-		$this->_state = Application::getPluginManager()->getState();
-				
+		$this->_config = new Config(APPLICATION_PATH . '/configs/auth.ini', APPLICATION_ENV);
+		if ($this->_config->auth->disabled == 1) {
+			return;
+		}
 		session_name('shareshop');
 		session_start();
 		$sessionId = session_id();
-		if ($this->isAuthPath()) {
-			$session = Session::create()->findById($sessionId);
-			if ($session == null) {
+		$request = Application::getPluginManager()->getState()['request'];
+		if ($this->isAuthPath($request)) {
+			Auth::$_session = Session::create()->findById($sessionId);
+			$postData = $request->getPost();
+			if (Auth::$_session == null || isset($postData['submitLogin'])) {
 				if (!headers_sent()) {
-					$user = $this->authorize($this->_state['request']);
+					$user = $this->authorize($request);
 					if ($user != null) {
-						Session::create()->setUserId($user->getId())->setState(1)->setId($sessionId)->save();
+						Auth::$_session = Session::create()->setUserId($user->getId())->setState(1)->setId($sessionId);
+						Auth::$_session->save();
 					}
 				}
 			} else {
-				if($session->getState() != 1) {
-						
+				if(Auth::$_session->getState() != 1) {
+					$request->setController('Auth');
+					$request->setAction('index');
+				} else {
+					Auth::$_session->save();
 				}
-				$session->save();
 			}
 		} 	
 	}
 	
+	/**
+	 * 
+	 * @return \Application\Models\Db\Session
+	 */
+	public static function getSession()
+	{
+		return Auth::$_session;
+	}
+	
 	protected function authorize(Request $request)
 	{
-		$error = false;
-		$postData = $request->getPost();
-		if (!empty($postData['submitLogin'])) {
-			if (!empty($postData['username'])) {
-				if (!empty($postData['password'])) {
-					$user = $this->_db->findUserByUsername($postData['username']);
-					if ($user !== null) {
-						if ($user->getPassword() === $this->createHash($postData['password'])) {
-						} else {
-							$request->setError("Password incorrect");
-						}		
-					} else {
-						$error = true;
-						$request->setError("Username unknown");
-					}			
+		$user = null;
+		$postData = $request->getPost(); 
+		if (!empty($postData['username'])) {
+			if (!empty($postData['password'])) {
+				$user = User::create()->findByUsername($postData['username']);
+				if ($user !== null) {
+					if ($user->getPassword() !== $this->createHash($postData['password'])) {
+						$user = null;
+						$request->setError("Password incorrect");
+					}		
 				} else {
-					$error = true;
-					$request->setError("No password provided");
-				}		
+					$request->setError("Username unknown");
+				}			
 			} else {
-				$error = true;
-				$request->setError("No username provided");
-			}
+				$request->setError("No password provided");
+			}		
 		} else {
-			$error = true;
+			$request->setError("No username provided");
 		}
-		if ($error) {
+	
+		if ($user == null) {
 			$request->setController('Auth');
 			$request->setAction('index');
-			$user = null;
 		}
 		return $user;
 		
 	}
 	
-	protected function isAuthPath()
+	protected function isAuthPath(Request $request)
 	{
-		/* @var $request \Shareshop\Request */
-		$request = $this->_state['request'];
-		$controller =
 		$paths = $this->_config->noauth->paths;
 		if ($paths instanceof Nothing) {
 			return true;
