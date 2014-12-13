@@ -23,8 +23,8 @@ class ArticleController extends \Shareshop\Controller {
 	
 	private function insertArticle($post, $files) {
 		//$location = Location::findById(1);
-		print_r($post);
-		$arr = $post['productCategory'];
+		//print_r($post);
+		$arr = $post['productSubCategory'];
 		$resArray = array();
 		foreach ($arr as $key => $val) {
 			$resArray[$key] = Category::findById($val);
@@ -36,7 +36,7 @@ class ArticleController extends \Shareshop\Controller {
 		if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
 				|| $imageFileType != 'gif' ) {
 				$fileURL = getcwd() . '\\' . $fileName;
-				print_r($fileURL);
+				//print_r($fileURL);
 				while (file_exists($fileURL)) {
 					$rand = rand(1, 10000);
 					$fileName = '_' . $rand . '_' . $fileName;
@@ -75,13 +75,28 @@ class ArticleController extends \Shareshop\Controller {
 	public function getbycategoryAction() {
 		$params = $this->request->getParameters();
 		
-		$searchParam1 = new SearchParameter('category', $params['category']);
-		$paramArr = array( $searchParam1);
-		$result = Article::searchForArticles($paramArr);
-		$articles = Article::loadArticles($result);
-
+// 		$searchParam1 = new SearchParameter('category', $params['category']);
+// 		$paramArr = array( $searchParam1);
+// 		$result = Article::searchForArticles($paramArr);
+		$catId = $params['category'];
+		$category = Category::findById($catId);
+		$articles = array();
+		if ($category->getParentId() == null) {
+			$categories = Category::findAllSubCategories($catId);
+			//print_r(count($categories));
+			foreach ($categories as $cat) {
+				$articles = $this->helpArrayMerge($articles, Article::findArticlesByCategoryId($catId));
+				//print_r(count($articles));
+			}			
+			
+		} else {
+			$articles = Article::findArticlesByCategoryId($catId);
+		}
+		
+		//Article::loadArticles($result);
+		
 		$this->view->register('article/list', array('articles' => $articles), 'content');
-		$this->view->render();		
+		$this->view->render();
 	}
 	
 // 	public function getimageAction() {
@@ -104,13 +119,13 @@ class ArticleController extends \Shareshop\Controller {
 		$arr = explode('-', $params['id']);
 		$categories = array();
 		foreach ($arr as $catId) {
-			$categories = $this->helpCategoryArrayMerge($categories, Category::findAllSubCategories($catId));
+			$categories = $this->helpArrayMerge($categories, Category::findAllSubCategories($catId));
 		}
 		$this->view->register('article/subCategories', array('categories' => $categories));
 		$this->view->render();
 	}
 	
-	private function helpCategoryArrayMerge($arr1, $arr2) {
+	private function helpArrayMerge($arr1, $arr2) {
 		$identifier = array();
 		$result = array();
 		$i = 0;
@@ -130,9 +145,11 @@ class ArticleController extends \Shareshop\Controller {
 	
 	public function submitcategoryAction() {
 		$params = $this->request->getParameters();
-		$params['id'];
-		$params['subCategory'];
-		
+		$category = Category::create();
+		$category->setName($params['subCategory']);
+		$category->setParentId($params['id']);
+		$category->save();
+		$this->subcategoriesAction();
 	}
 	
 	public function listAction()

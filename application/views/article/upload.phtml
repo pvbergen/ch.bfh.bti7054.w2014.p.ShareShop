@@ -34,22 +34,28 @@
 				</select>
 			</div>
 			<div class="input-wrapper">
-				<input type="button" data-visible="false" id="toggleCatSubmitDisplay" class="button" value="Hinzuf&uuml;gen">
+				<input type="button" data-visible="false" id="toggleCatSubmitDisplay" class="button subButton" value="Erstellen">
 			</div>			
 			<div id="input-Category-Submit" class="input-wrapper invisible">
 				<label for="newSubCategory">Neue Unterkategorie hinzuf&uuml;gen</label>
-				<input type="text" id="newSubCategory" name="newSubCategory" placeholder="Name z.B . Stricksocken" />
-				<select name="categoryForSub[]" id="categoryForSub">
-				<?php
-					foreach ($data['categories'] as $category)
-					{
-						?>
-							<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
-						<?php 
-					} 
-				?>
-				</select>				
-				<input type="button" id="newSubCategorySubmit" class="button" value="Hinzuf&uuml;gen">
+				<div class="input-wrapper">
+					<label for="categoryForSub">In Hauptklasse</label>
+					<select name="categoryForSub" id="categoryForSub" class="smaller-input">
+					<?php
+						foreach ($data['categories'] as $category)
+						{
+							?>
+								<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
+							<?php 
+						} 
+					?>
+					</select>	
+				</div>
+				<div class="input-wrapper">
+					<label for="newSubCategory">Unterkategorie</label>
+					<input type="text" id="newSubCategory" name="newSubCategory" placeholder="Name z.B . Stricksocken" />
+				</div>							
+				<input type="button" id="newSubCategorySubmit" class="button subButton" value="Hinzuf&uuml;gen">
 			</div>
 		</div>
 		<div class="clearFix">

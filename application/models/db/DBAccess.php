@@ -43,13 +43,13 @@ class DBAccess {
 	private function createArticleFromDatabaseRow($row) {
 		$article = Article::create ()->setId ( $row->art_id )->setName ( $row->art_name )->setDescription ( $row->art_description )->setImage ( $row->art_image )->setUserId( $row->art_usr_id );
 		
-		$catId = $row->art_cat_id;
-		while ( $catId != null ) {
-			$category = $this->findCategoryById ( $catId );
-			$categories [] = $category;
-			$catId = $category->getParentId ();
-		}
-		$article->setCategories($categories);
+// 		$catId = $row->art_cat_id;
+// 		while ( $catId != null ) {
+// 			$category = $this->findCategoryById ( $catId );
+// 			$categories [] = $category;
+// 			$catId = $category->getParentId ();
+// 		}
+// 		$article->setCategories($categories);
 		
 		return $article;
 	}
@@ -129,11 +129,30 @@ class DBAccess {
 		}
 	}
 	
+	public function findArticlesByCategoryId($id) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_art_cat_rel WHERE cat_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+				
+			$stmt->execute ();
+			$row = $stmt->fetch ();
+			
+			if ($row != null) {
+				return $this->createArticleFromDatabaseRow ( $row );
+			}
+				
+			return null;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
+	}
+	
 	public function saveArticle($article) {
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
-			
-			insertCategoryRelation($article->getId (), $article->getCategories ());
+	
+			$this->insertCategoryRelation($article->getId (), $article->getCategories ());
 			
 			$stmt->bindParam ( ':id', $article->getId () );
 			$stmt->bindParam ( ':name', $article->getName () );
@@ -152,13 +171,12 @@ class DBAccess {
 			foreach ($arr as $cat) {
 				if ($cat->getParentId() != null) {
 					
-					$stmt = $this->_conn->prepare ( 'INSERT INTO sha_art_cat_rel VALUES(:art_id, :cat_id)' );
+					$stmt = $this->_conn->prepare ( 'INSERT INTO sha_art_cat_rel VALUES(:id, :art_id, :cat_id)' );
 						
-					
-					insertCategoryRelation($article->getCategories ());
-					
+					$id = '';
+					$stmt->bindParam ( ':id', $id );
 					$stmt->bindParam ( ':art_id', $art_id );
-					$stmt->bindParam ( ':cat_id', $cat );
+					$stmt->bindParam ( ':cat_id', $cat->getId() );
 					
 					$stmt->execute ();
 				}

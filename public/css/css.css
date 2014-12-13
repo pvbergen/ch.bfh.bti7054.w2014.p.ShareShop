@@ -83,9 +83,10 @@ form label, form input, form select {
 }
 
 form select, form textarea {
-	overflow: hidden;
 	height: 7em;
 }
+
+
 
 form label {
 	width: 100%;
@@ -338,6 +339,17 @@ form label {
 
 .smaller-input {
 	height: 2em;
+	padding: 0;
+}
+
+#input-Category-Submit {
+	border: 1px solid black;
+	width: 80%;
+	padding: 1.2em;
+}
+
+form .subButton {
+	margin-left: 0;
 }
 
 @media only screen and (max-width: 1024px) {

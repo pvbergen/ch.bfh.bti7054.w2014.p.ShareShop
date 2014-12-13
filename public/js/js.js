@@ -59,7 +59,7 @@ $( document ).ready(function() {
 
 	// Ajax inject Productlist
 	
-	$('.level-1 > li > span').click(function() {
+	$('.level-1 li > span').click(function() {
 		var id = $(this).data('id');
 		$.get("/article/getbycategory/category/" + id).done(function(htmlContent) {
 			$('#content').html('');
@@ -84,9 +84,9 @@ $( document ).ready(function() {
 	// Button Subcategorysubmit
 	
 	$('#newSubCategorySubmit').click(function() {
-		var mainCat = $('#categoryForSub').value();
-		var subCat = $('#newSubCategorySubmit').value();
-		$.get('/article/subcategories?id=' + mainCat + '&subCategory=' + subCat).done(function(htmlContent) {
+		var mainCat = $('#categoryForSub').val();
+		var subCat = $('#newSubCategory').val();
+		$.get('/article/submitcategory?id=' + mainCat + '&subCategory=' + subCat).done(function(htmlContent) {
 			$('#productSubCategory').html('');
 			$('#productSubCategory').append(htmlContent);
 		});	 
@@ -94,12 +94,12 @@ $( document ).ready(function() {
 	});
 	$('#toggleCatSubmitDisplay').click(function() {
 		if ($(this).data('visible')) {
-			$(this).prop('value', 'Hinzuf&uuml;gen');
-			$('#input-Category-Submit').addClass( "invisible" );
+			$(this).attr('value', 'Erstellen');
+			$('#input-Category-Submit').addClass( 'invisible' );
 			$(this).data('visible',false);
 		} else {
-			$(this).prop('value', 'Entfernen');
-			$('#input-Category-Submit').removeClass( "invisible" );
+			$(this).prop('value', 'Ausblenden');
+			$('#input-Category-Submit').removeClass( 'invisible' );
 			$(this).data('visible',true);
 		}	
 		

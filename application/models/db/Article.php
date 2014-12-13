@@ -58,6 +58,10 @@ class Article {
 		return DBAccess::getInstance()->searchForArticles($arrSearchParams);
 	}
 	
+	public static function findArticlesByCategoryId($id) {
+		return DBAccess::getInstance()->findArticlesByCategoryId($id);
+	}
+	
 	/**
 	 * Load articles by article id.
 	 *
