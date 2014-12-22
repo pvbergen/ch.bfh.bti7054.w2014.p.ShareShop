@@ -56,17 +56,43 @@ $( document ).ready(function() {
 
 	//window.addEventListener('resize', debouncedResize);
 	//debouncedResize();
-
+	
+	// At Least make those elements sqare
+	
+	var makeThemSquare = debounce(function() {
+ 		var width = $('.product').width();
+ 		$('.product img').css('height',width);
+	}, 500);
+	
+	window.addEventListener('resize', makeThemSquare);
+	makeThemSquare();
+	
 	// Ajax inject Productlist
 	
-	$('.level-1 li > span').click(function() {
+	$('.level-2 li > span').click(function() {
 		var id = $(this).data('id');
 		$.get("/article/getbycategory/category/" + id).done(function(htmlContent) {
 			$('#content').html('');
 			$('#content').append(htmlContent);
+			window.history.pushState({},"", "/article/search/?category=" + id + "&categorySearch=true");
+			defineClickOnProduct();
+			makeThemSquare();
 		});	 
 	});
+	
+	// ********* Show Product **************
+	var defineClickOnProduct = function() {
+		$('.product').click(function() {
+			var id = $(this).data('id');
+			$.get("/article/show/item/" + id).done(function(htmlContent) {
+				$('#content').html('');
+				$('#content').append(htmlContent);
+				window.history.pushState({},"", "/article/show/item/" + id);
+			});			
+		});		
+	}
 
+	defineClickOnProduct();
 	// ********* Upload **************
 	// Ajax inject SubCategories List in Upload
 	$('#productCategory').change(function() {

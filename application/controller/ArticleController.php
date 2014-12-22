@@ -21,49 +21,31 @@ class ArticleController extends \Shareshop\Controller {
 		
 	}
 	
-	private function insertArticle($post, $files) {
-		//$location = Location::findById(1);
-		//print_r($post);
-		$arr = $post['productSubCategory'];
-		$resArray = array();
-		foreach ($arr as $key => $val) {
-			$resArray[$key] = Category::findById($val);
-		}
-		chdir('../public/publicImgs');
-		$fileName = basename($files['picture']['name']);
-		$imageFileType = pathinfo($fileName,PATHINFO_EXTENSION);
-		$fileURL;
-		if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
-				|| $imageFileType != 'gif' ) {
-				$fileURL = getcwd() . '\\' . $fileName;
-				//print_r($fileURL);
-				while (file_exists($fileURL)) {
-					$rand = rand(1, 10000);
-					$fileName = '_' . $rand . '_' . $fileName;
-					$fileURL = getcwd() . '\\' . $fileName;
-				}
-				move_uploaded_file($files['picture']['tmp_name'], $fileURL);
-		}
-		$image = '/publicimgs/' . $fileName;
-		$article = Article::create();
-		$article->setDescription($post['productDescription']);
-		$article->setName($post['productName']);
-		$article->setCategories($resArray);
-		$article->setUserId(1);
-		$article->setImage($image);
-		$article->save();	
-		return $article;	
-	}
+
 	
 	public function searchAction() {
 		$params = $this->request->getParameters();
 		
-		$searchParam1 = new SearchParameter('name', $params['search']);
-		$searchParam2 = new SearchParameter('description', $params['search']);
-		$paramArr = array( $searchParam1, $searchParam2 );
-		$result = Article::searchForArticles($paramArr);	
-		$articles = Article::loadArticles($result);
-		$categories = $this->fetchFromArticles($articles);
+		$articles = array();
+		$categories = array();
+		
+		if ($params['categorySearch'] && ($params['categorySearch'] === 'true')) {
+			$categoryId = $params['category'];
+			$articles = $this->getArticlesByCategory($categoryId);
+			$category1 = Category::findById($categoryId);
+			$category2 = Category::findById($category1->getParentId());
+			$categories[0] = $category1;
+			$categories[1] = $category2;
+		} else {
+			$searchParam1 = new SearchParameter('name', $params['search']);
+			$searchParam2 = new SearchParameter('description', $params['search']);
+			$paramArr = array( $searchParam1, $searchParam2 );
+			$result = Article::searchForArticles($paramArr);
+			$articles = Article::loadArticles($result);
+			$categories = $this->fetchFromArticles($articles);			
+		}
+
+
 		
 		$final = $this->prepareCategoriesHirarchy($categories);
 				
@@ -75,35 +57,16 @@ class ArticleController extends \Shareshop\Controller {
 	public function getbycategoryAction() {
 		$params = $this->request->getParameters();
 		
-// 		$searchParam1 = new SearchParameter('category', $params['category']);
-// 		$paramArr = array( $searchParam1);
-// 		$result = Article::searchForArticles($paramArr);
+
 		$catId = $params['category'];
-		$category = Category::findById($catId);
-		$articles = array();
-		if ($category->getParentId() == null) {
-			$categories = Category::findAllSubCategories($catId);
-			//print_r(count($categories));
-			foreach ($categories as $cat) {
-				$articles = $this->helpArrayMerge($articles, Article::findArticlesByCategoryId($catId));
-				//print_r(count($articles));
-			}			
-			
-		} else {
-			$articles = Article::findArticlesByCategoryId($catId);
-		}
-		
-		//Article::loadArticles($result);
-		
+
+		$articles = $this->getArticlesByCategory($catId);
+
 		$this->view->register('article/list', array('articles' => $articles), 'content');
 		$this->view->render();
 	}
 	
-// 	public function getimageAction() {
-// 		$params = $this->request->getParameters();
-// 		$article = Article::findById($params['id']);
 
-// 	}
 	
 	
 	public function uploadAction()
@@ -125,23 +88,6 @@ class ArticleController extends \Shareshop\Controller {
 		$this->view->render();
 	}
 	
-	private function helpArrayMerge($arr1, $arr2) {
-		$identifier = array();
-		$result = array();
-		$i = 0;
-		print_r(count($arr2));
-		foreach($arr1 as $el) {
-			$identifier[$i++] = $el->getId();
-		}
-		$result = $arr1;
-		foreach($arr2 as $el) {
-			if (!(in_array($el->getId(), $identifier))) {
-				$result[$i] = $el;
-				$identifier[$i++] = $el->getId();
-			} 
-		}
-		return $result;
-	}
 	
 	public function submitcategoryAction() {
 		$params = $this->request->getParameters();
@@ -169,10 +115,74 @@ class ArticleController extends \Shareshop\Controller {
 			$this->view->redirect('index', 'index');
 		}
 		$article = Article::findById($params['item']);
-		//$article = new Article($params['item'], substr(md5($params['item']), rand(0, 10), 10), md5($params['item']), md5($params['item']), md5($params['item']), md5($params['item']));
 		$this->view->register('article/show', array('article' => $article));
 		$this->view->render();
 	}
+	
+	private function insertArticle($post, $files) {
+		$arr = $post['productSubCategory'];
+		$resArray = array();
+		foreach ($arr as $key => $val) {
+			$resArray[$key] = Category::findById($val);
+		}
+		chdir('../public/publicImgs');
+		$fileName = basename($files['picture']['name']);
+		$imageFileType = pathinfo($fileName,PATHINFO_EXTENSION);
+		$fileName = "image." + $imageFileType;
+		$fileURL;
+		if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
+				|| $imageFileType != 'gif' ) {
+			$fileURL = getcwd() . '\\' . $fileName;
+			while (file_exists($fileURL)) {
+				$rand = rand(1, 10000);
+				$fileName = '_' . $rand . '_' . $fileName;
+				$fileURL = getcwd() . '\\' . $fileName;
+			}
+			move_uploaded_file($files['picture']['tmp_name'], $fileURL);
+		}
+		$image = '/publicimgs/' . $fileName;
+		$article = Article::create();
+		$article->setDescription($post['productDescription']);
+		$article->setName($post['productName']);
+		$article->setCategories($resArray);
+		$article->setUserId(1);
+		$article->setImage($image);
+		$article->save();
+		return $article;
+	}	
+	
+	private function getArticlesByCategory($catId) {
+		$category = Category::findById($catId);
+		$articles = array();
+		if ($category->getParentId() == null) {
+			$categories = Category::findAllSubCategories($catId);
+			foreach ($categories as $cat) {
+				$articles = $this->helpArrayMerge($articles, Article::findArticlesByCategoryId($cat->getId()));
+			}
+	
+		} else {
+			$articles = Article::findArticlesByCategoryId($catId);
+		}
+		
+		return $articles;
+	}	
+	
+	private function helpArrayMerge($arr1, $arr2) {
+		$identifier = array();
+		$result = array();
+		$i = 0;
+		foreach($arr1 as $el) {
+			$identifier[$i++] = $el->getId();
+		}
+		$result = $arr1;
+		foreach($arr2 as $el) {
+			if (!(in_array($el->getId(), $identifier))) {
+				$result[$i] = $el;
+				$identifier[$i++] = $el->getId();
+			}
+		}
+		return $result;
+	}	
 	
 	private function fetchFromArticles($articles) {
 		$categories = array();

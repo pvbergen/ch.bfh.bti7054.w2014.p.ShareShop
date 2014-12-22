@@ -99,8 +99,10 @@ class DBAccess {
 			$stmt->execute ($paramBindings);
 			
 			$articleIds = array();
+			$index = 0;
 			while ( $row = $stmt->fetch () ) {
-				$articleIds[] = $row->art_id;
+				$articleIds[$index] = $row->art_id;
+				$index++;
 			}
 
 			return $articleIds;
@@ -136,23 +138,24 @@ class DBAccess {
 			$stmt->bindParam ( ':id', $id );
 				
 			$stmt->execute ();
-			$row = $stmt->fetch ();
 			
-			if ($row != null) {
-				return $this->createArticleFromDatabaseRow ( $row );
-			}
-				
-			return null;
+			$articles = array();
+			$index = 0;
+			while ( $row = $stmt->fetch () ) {
+				$articles[$index++] = $this->findArticleById($row->art_id);
+			}			
+			return $articles;
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}		
 	}
 	
 	public function saveArticle($article) {
+		$success = false;
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
 	
-			$this->insertCategoryRelation($article->getId (), $article->getCategories ());
+			//$this->insertCategoryRelation($article->getId (), $article->getCategories ());
 			
 			$stmt->bindParam ( ':id', $article->getId () );
 			$stmt->bindParam ( ':name', $article->getName () );
@@ -160,9 +163,12 @@ class DBAccess {
 			$stmt->bindParam ( ':image', $article->getImage () );
 			$stmt->bindParam ( ':art_usr_id', $article->getUserId ());
 			
-			$stmt->execute ();
+			$success = $stmt->execute ();
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
+		}
+		if ($success) {
+			$this->insertCategoryRelation($this->_conn->lastInsertId(), $article->getCategories ());
 		}
 	}
 	

@@ -4,8 +4,7 @@
 	/* @var $article Application\Models\Db\Article2 */ 
 	foreach($data['articles'] as $article) { 
 ?>
-	<div class="product">
-		<a href="/article/show/item/<?php echo $article->getId(); ?>">
+	<div class="product" data-id="<?php echo $article->getId(); ?>">
 			<img src="<?php echo $article->getImage(); ?>" />
 			<div class="productinfo">
 				<div class="name">
@@ -15,7 +14,6 @@
 					<?php //echo $article->getLocationId(); ?>
 <!-- 				</div> -->
 			</div>
-		</a>
 	</div>
 <?php 
 }
