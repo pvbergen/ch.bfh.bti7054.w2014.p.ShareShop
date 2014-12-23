@@ -6,6 +6,8 @@ use Application\Models\Db\Article;
 use Application\Models\Db\Category;
 use Application\Models\Db\Location;
 use Application\Models\Db\SearchParameter;
+use Application\Plugin\Auth;
+use Application\Models\Db\User;
 
 class ArticleController extends \Shareshop\Controller {
 	
@@ -16,6 +18,7 @@ class ArticleController extends \Shareshop\Controller {
 		$files = $_FILES;
 
 		$article = $this->insertArticle($post, $files);
+		//$this->insertUserName();
 		$this->view->register('article/show',  array('article' => $article));
 		$this->view->render();
 		
@@ -48,7 +51,7 @@ class ArticleController extends \Shareshop\Controller {
 
 		
 		$final = $this->prepareCategoriesHirarchy($categories);
-				
+		$this->insertUserName();
 		$this->view->register('navigation/subnavigation', array('parentCategories' => $final[0], 'childCategories' => $final[1]), 'subnavigation');
 		$this->view->register('article/list', array('articles' => $articles), 'content');
 		$this->view->render();
@@ -71,8 +74,13 @@ class ArticleController extends \Shareshop\Controller {
 	
 	public function uploadAction()
 	{
+		$preDefined = array();
+		$preDefined['name'] = '';
+		$preDefined['description'] = '';
+		$preDefined['id'] = 'none';
 		$categories = Category::findAllParents();
-		$this->view->register('article/upload', array('categories' => $categories));
+		$this->insertUserName();
+		$this->view->register('article/upload', array('categories' => $categories, 'preDefined' => $preDefined));
 		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
 		$this->view->render();
 	}
@@ -99,13 +107,21 @@ class ArticleController extends \Shareshop\Controller {
 	}
 	
 	public function listAction()
-	{		
+	{	
 		$articles = Article::findAll();
 		$categories = Category::findAll();
 		$final = $this->prepareCategoriesHirarchy($categories);
 		$this->view->register('navigation/subnavigation', array('parentCategories' => $final[0], 'childCategories' => $final[1]), 'subnavigation');
 		$this->view->register('article/list', array('articles' => $articles));
 		$this->view->render();
+	}
+	
+	public function userlistAction() {
+		$articles = Article::findArticlesByUserId(Auth::getSession()->getUserId());
+		$this->insertUserName();
+		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
+		$this->view->register('article/list', array('articles' => $articles, 'isUserList' => true));
+		$this->view->render();		
 	}
 	
 	public function showAction()
@@ -115,9 +131,39 @@ class ArticleController extends \Shareshop\Controller {
 			$this->view->redirect('index', 'index');
 		}
 		$article = Article::findById($params['item']);
+
 		$this->view->register('article/show', array('article' => $article));
 		$this->view->render();
 	}
+	
+	public function deleteAction() {
+		$params = $this->request->getParameters();
+		$article = Article::findById($param['id']);
+		
+		if (Auth::getSession()->getUserId() !== $article->getUserId()) {
+			trigger_error("Not your Item!", E_USER_ERROR);
+		}
+		
+	}
+	
+	public function editAction() {
+		$params = $this->request->getParameters();
+		$article = Article::findById($params['id']);
+		$userId = Auth::getSession()->getUserId();
+		if ($userId !== $article->getUserId()) {
+			trigger_error("Not your Item!", E_USER_ERROR);
+		}
+		$preDefined = array();
+		$preDefined['name'] = $article->getName();
+		$preDefined['description'] = $article->getDescription();
+		$preDefined['id'] = $article->getId();
+		$categories = Category::findAllParents();
+		$this->insertUserName();
+		$this->view->register('article/upload', array('categories' => $categories, 'preDefined' => $preDefined));
+		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
+		$this->view->render();		
+	}
+	
 	
 	private function insertArticle($post, $files) {
 		$arr = $post['productSubCategory'];
@@ -145,7 +191,7 @@ class ArticleController extends \Shareshop\Controller {
 		$article->setDescription($post['productDescription']);
 		$article->setName($post['productName']);
 		$article->setCategories($resArray);
-		$article->setUserId(1);
+		$article->setUserId(Auth::getSession()->getUserId());
 		$article->setImage($image);
 		$article->save();
 		return $article;
@@ -211,5 +257,10 @@ class ArticleController extends \Shareshop\Controller {
 		$result[0] = $catParent;
 		$result[1] = $catChild;
 		return $result;
+	}
+	
+	private function insertUserName() {
+		$user = User::findById(Auth::getSession()->getUserId());
+		$this->view->register('auth/username', array('username' => $user->getUsername()), 'username');
 	}
 }

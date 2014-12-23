@@ -1,14 +1,16 @@
+<?php $preDefined = $data['preDefined']; ?>
+
 <div class="product-upload">
 	<h1>Neues Produkt hinzuf&uuml;gen</h1>
-	<form action="/Article/save/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+	<form action="/Article/save/id/<?php echo $preDefined['id']; ?> " method="post" accept-charset="utf-8" enctype="multipart/form-data">
 		<div class="formLeft">
 			<div class="input-wrapper">
 				<label for="productName">Name</label>
-				<input type="text" id="productName" name="productName" placeholder="Name" />
+				<input type="text" id="productName" name="productName" placeholder="Name" value="<?php echo $preDefined['name']; ?>" />
 			</div>
 			<div class="input-wrapper">
 				<label for="productDescription">Beschreibung</label>
-				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" /></textarea>
+				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" value="<?php echo $preDefined['description']; ?>" /></textarea>
 			</div>
 		</div>
 		<div class="formRight">

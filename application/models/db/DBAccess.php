@@ -149,13 +149,30 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}		
 	}
+
+	public function findArticlesByUserId($id) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles WHERE art_usr_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+				
+			$articles = array();
+			while ( $row = $stmt->fetch () ) {
+				$articles [] = $this->createArticleFromDatabaseRow ($row);
+			}
+			return $articles;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}	
 	
 	public function saveArticle($article) {
 		$success = false;
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
 	
-			//$this->insertCategoryRelation($article->getId (), $article->getCategories ());
 			
 			$stmt->bindParam ( ':id', $article->getId () );
 			$stmt->bindParam ( ':name', $article->getName () );
@@ -370,6 +387,25 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
+	
+	public function findUserById($id) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_user WHERE usr_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+			$row = $stmt->fetch ();
+	
+			if ($row != null) {
+				return $this->createUserFromDatabaseRow($row);
+			}
+			return null;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}	
+	
 	
 	public function findUserBySession($id)
 	{

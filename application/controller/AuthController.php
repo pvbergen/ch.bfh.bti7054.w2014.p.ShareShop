@@ -53,7 +53,7 @@ class AuthController extends \Shareshop\Controller {
 			) {
 				$viewData['error'] = 'Bitte alle Felder ausfüllen.';
 			} else {
-				if (preg_match('/(.^@){1,63}@(.^\.){1,63}\.[a-zA-Z0-9]{2,63}/', $subject)) {
+				if (preg_match('/[^@]{1,63}@[^\.]{1,63}\.[a-zA-Z0-9]{2,63}/', $postData['email'])) {
 					if ($postData['password'] == $postData['passwordRepeat']) {
 						$salt = $this->generateString(10);
 						$password = $this->createHash($postData['password']);//, $salt);

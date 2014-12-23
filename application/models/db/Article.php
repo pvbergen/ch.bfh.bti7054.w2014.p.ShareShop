@@ -62,6 +62,10 @@ class Article {
 		return DBAccess::getInstance()->findArticlesByCategoryId($id);
 	}
 	
+	public static function findArticlesByUserId($userid) {
+		return DBAccess::getInstance()->findArticlesByUserId($userid);
+	} 
+	
 	/**
 	 * Load articles by article id.
 	 *

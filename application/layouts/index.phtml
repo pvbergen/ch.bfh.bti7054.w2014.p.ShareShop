@@ -22,7 +22,8 @@
 							<span onclick="document.getElementById('searchForm').submit();" class="searchbutton glyph-search" value="send">
 					</div>
 				</form>
-				<div class="navigation">				
+				<div class="navigation">
+						<?php if (array_key_exists('username', $components)) echo $components['username']; ?>				
 						<a href="/article/upload/"><span class="glyph-cog"></span></a> 		
 				</div>
 			</div>
