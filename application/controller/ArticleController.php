@@ -16,9 +16,15 @@ class ArticleController extends \Shareshop\Controller {
 	{
 		$post = $this->request->getPost();
 		$files = $_FILES;
+		$get = $this->request->getParameters();
+		if (array_key_exists('id', $get)) {
+			$article = $this->modifyArticle($get['id'], $post, $files);
+		} else {
+			$article = $this->insertArticle($post, $files);
+		}
+		
 
-		$article = $this->insertArticle($post, $files);
-		//$this->insertUserName();
+		$this->insertUserName();
 		$this->view->register('article/show',  array('article' => $article));
 		$this->view->render();
 		
@@ -143,7 +149,8 @@ class ArticleController extends \Shareshop\Controller {
 		if (Auth::getSession()->getUserId() !== $article->getUserId()) {
 			trigger_error("Not your Item!", E_USER_ERROR);
 		}
-		
+		$article->delete();
+		$this->userlistAction();
 	}
 	
 	public function editAction() {
@@ -171,22 +178,24 @@ class ArticleController extends \Shareshop\Controller {
 		foreach ($arr as $key => $val) {
 			$resArray[$key] = Category::findById($val);
 		}
-		chdir('../public/publicImgs');
-		$fileName = basename($files['picture']['name']);
-		$imageFileType = pathinfo($fileName,PATHINFO_EXTENSION);
-		$fileName = "image." + $imageFileType;
-		$fileURL;
-		if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
-				|| $imageFileType != 'gif' ) {
-			$fileURL = getcwd() . '\\' . $fileName;
-			while (file_exists($fileURL)) {
-				$rand = rand(1, 10000);
-				$fileName = '_' . $rand . '_' . $fileName;
+		if (array_key_exists('picture', $files)) {
+			chdir('../public/publicImgs');
+			$fileName = basename($files['picture']['name']);
+			$imageFileType = pathinfo($fileName,PATHINFO_EXTENSION);
+			$fileName = "image." + $imageFileType;
+			$fileURL;
+			if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
+					|| $imageFileType != 'gif' ) {
 				$fileURL = getcwd() . '\\' . $fileName;
+				while (file_exists($fileURL)) {
+					$rand = rand(1, 10000);
+					$fileName = '_' . $rand . '_' . $fileName;
+					$fileURL = getcwd() . '\\' . $fileName;
+				}
+				move_uploaded_file($files['picture']['tmp_name'], $fileURL);
 			}
-			move_uploaded_file($files['picture']['tmp_name'], $fileURL);
+			$image = '/publicimgs/' . $fileName;
 		}
-		$image = '/publicimgs/' . $fileName;
 		$article = Article::create();
 		$article->setDescription($post['productDescription']);
 		$article->setName($post['productName']);
@@ -194,6 +203,42 @@ class ArticleController extends \Shareshop\Controller {
 		$article->setUserId(Auth::getSession()->getUserId());
 		$article->setImage($image);
 		$article->save();
+		return $article;
+	}	
+
+	private function modifyArticle($id, $post, $files) {
+		$article = Article::findById($id);
+		if (array_key_exists('productSubCategory', $post)) {
+			$arr = $post['productSubCategory'];
+			$resArray = array();
+			foreach ($arr as $key => $val) {
+				$resArray[$key] = Category::findById($val);
+			}
+			$article->setCategories($resArray);
+		}	
+		if (array_key_exists('picture', $files)) {
+			chdir('../public/publicImgs');
+			$fileName = basename($files['picture']['name']);
+			$imageFileType = pathinfo($fileName,PATHINFO_EXTENSION);
+			$fileName = "image." + $imageFileType;
+			$fileURL;
+			if($imageFileType == 'jpg' || $imageFileType == 'png' || $imageFileType == 'jpeg'
+					|| $imageFileType != 'gif' ) {
+				$fileURL = getcwd() . '\\' . $fileName;
+				while (file_exists($fileURL)) {
+					$rand = rand(1, 10000);
+					$fileName = '_' . $rand . '_' . $fileName;
+					$fileURL = getcwd() . '\\' . $fileName;
+				}
+				move_uploaded_file($files['picture']['tmp_name'], $fileURL);
+			}
+			$image = '/publicimgs/' . $fileName;
+			$article->setImage($image);
+		}
+		$article->setDescription($post['productDescription']);
+		$article->setName($post['productName']);
+		$article->setUserId(Auth::getSession()->getUserId());
+		$article->modify();
 		return $article;
 	}	
 	

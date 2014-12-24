@@ -189,6 +189,45 @@ class DBAccess {
 		}
 	}
 	
+	public function modifyArticle($article) {
+		$success = false;
+		$this->deleteCategoryRelation($article->getId());
+
+		try {
+			$stmt = $this->_conn->prepare ( 'REPLACE INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
+	
+				
+			$stmt->bindParam ( ':id', $article->getId () );
+			$stmt->bindParam ( ':name', $article->getName () );
+			$stmt->bindParam ( ':description', $article->getDescription () );
+			$stmt->bindParam ( ':image', $article->getImage () );
+			$stmt->bindParam ( ':art_usr_id', $article->getUserId ());
+				
+			$success = $stmt->execute ();
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+		if ($success) {
+			$this->insertCategoryRelation($article->getId(), $article->getCategories ());
+		}
+	}	
+
+	public function deleteArticle($id) {
+		$success = false;
+		$this->deleteCategoryRelation($id);
+		try {
+			$stmt = $this->_conn->prepare ( 'DELETE FROM sha_articles WHERE art_id = :id' );
+	
+	
+			$stmt->bindParam ( ':id', $id );
+	
+			$success = $stmt->execute ();
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+
+	}	
+	
 	private function insertCategoryRelation($art_id, $arr) {
 		try {
 			foreach ($arr as $cat) {
@@ -208,6 +247,19 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}		
 	}
+
+	private function deleteCategoryRelation($art_id) {
+		try {
+						
+			$stmt = $this->_conn->prepare ( 'DELETE FROM sha_art_cat_rel WHERE art_id = :id' );
+
+			$stmt->bindParam ( ':id', $art_id );
+				
+			$stmt->execute ();
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}	
 	
 	public function findAllArticles() {
 		try {
