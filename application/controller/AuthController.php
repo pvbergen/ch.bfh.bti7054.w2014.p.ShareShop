@@ -41,7 +41,7 @@ class AuthController extends \Shareshop\Controller {
 			die('already logged in');
 		}
 		
-		$viewData = array('error' => '', 'success' => '', 'form' => array('username' => '', 'email' => '', 'adresse' => ''));
+		$viewData = array('error' => '', 'success' => '', 'form' => array('username' => '', 'email' => '', 'adresse' => '','person_lat' => '', 'person_lng' => '' ));
 		$postData = $this->request->getPost();
 		if (isset($postData['submitRegister'])) {
 			if (
