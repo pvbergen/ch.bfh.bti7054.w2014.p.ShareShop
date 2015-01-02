@@ -169,6 +169,11 @@ $(document).ready(
 						codeAddress();
 					});
 			
+			$('input#adresse').change(
+					function() {
+						codeAddress();
+					});
+			
 			var geocoder;
 			var map;
 
@@ -185,10 +190,10 @@ $(document).ready(
 
 			function codeAddress() {
 				codeAddress.counter = codeAddress.counter || 1;
-				
-				if (codeAddress.counter >= 5) {
-				initialize();
 				var address = document.getElementById('adresse').value;
+				
+				if (address.length >= 10 && codeAddress.counter >= 5) {
+				initialize();
 				geocoder.geocode({
 					'address' : address
 				}, function(results, status) {
@@ -198,8 +203,8 @@ $(document).ready(
 							map : map,
 							position : results[0].geometry.location
 						});
-						document.getElementById('person_lat').value = results[0].geometry.location.lat();
-						document.getElementById('person_lng').value = results[0].geometry.location.lng();
+						document.getElementById('adresse_lat').value = results[0].geometry.location.lat();
+						document.getElementById('adresse_lng').value = results[0].geometry.location.lng();
 					}
 				});
 				codeAddress.counter = 0;

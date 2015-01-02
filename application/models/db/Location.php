@@ -2,20 +2,20 @@
 namespace Application\Models\Db;
 /**
  * ****************************************************************************
- * Location class - represents a place where articles can be located.
+ * Location class - represents a place where articles or users can be located.
  * ****************************************************************************
  */
 class Location {
 	private $id;
-	private $name;
+	private $street;
 	private $postcode;
+	private $town;
+	private $mapLat;
+	private $mapLng;
 	
 	private function __construct() {
 	}
 	
-	/**
-	 * Do not use. Locations must exist in database.
-	 */
 	public static function create() {
 		return new self();
 	}
@@ -46,12 +46,24 @@ class Location {
 		return $this->id;
 	}
 	
-	public function getName () {
-		return $this->name;
+	public function getStreet () {
+		return $this->street;
 	}
 	
 	public function getPostcode () {
 		return $this->postcode;
+	}
+	
+	public function getTown () {
+		return $this->town;
+	}
+	
+	public function getMapLat () {
+		return $this->mapLat;
+	}
+	
+	public function getMapLng () {
+		return $this->mapLng;
 	}
 	
 	// ------------------------ SETTER ---------------------------- //
@@ -61,13 +73,28 @@ class Location {
 		return $this;
 	}
 	
-	public function setName ($strName) {
-		$this->name=$strName;
+	public function setStreet ($strStreet) {
+		$this->street=$strStreet;
 		return $this;
 	}
 	
 	public function setPostcode ($strPostcode) {
 		$this->postcode=$strPostcode;
+		return $this;
+	}
+	
+	public function setTown ($strTown) {
+		$this->town=$strTown;
+		return $this;
+	}
+	
+	public function setMapLat($strLat) {
+		$this->mapLat=$strLat;
+		return $this;
+	}
+	
+	public function setMapLng ($strLng) {
+		$this->mapLng=$strLng;
 		return $this;
 	}
 }

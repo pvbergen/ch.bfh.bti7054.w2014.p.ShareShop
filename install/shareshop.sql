@@ -75,24 +75,19 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `shareshop`.`sha_locations`
+-- Table `shareshop`.`sha_location`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `shareshop`.`sha_locations` ;
+DROP TABLE IF EXISTS `shareshop`.`sha_location` ;
 
-CREATE TABLE IF NOT EXISTS `shareshop`.`sha_locations` (
+CREATE TABLE IF NOT EXISTS `shareshop`.`sha_location` (
   `loc_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `loc_street` VARCHAR(255) NOT NULL,
-  `loc_houseNumber` VARCHAR(10) NOT NULL,
-  `loc_zip_id` INT(10) UNSIGNED NOT NULL,
-  `location_usr_id` INT UNSIGNED NOT NULL,
-  PRIMARY KEY (`loc_id`),
-  INDEX `fk_sha_location_sha_user1_idx` (`location_usr_id` ASC),
-  CONSTRAINT `fk_sha_location_sha_user1`
-    FOREIGN KEY (`location_usr_id`)
-    REFERENCES `shareshop`.`sha_user` (`usr_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+  `loc_postcode` VARCHAR(10) NOT NULL,
+  `loc_town` VARCHAR(255) NOT NULL,
+  `loc_mapLat` VARCHAR(255) NOT NULL,
+  `loc_mapLng` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`loc_id`)
+  );
 
 
 -- -----------------------------------------------------

@@ -34,6 +34,7 @@ class DBAccess {
 		try {
 			$this->_conn = new \PDO ( 'mysql:host=' . $config->db->host . ';dbname=' . $config->db->database, $config->db->user, $config->db->password );
 			$this->_conn->setAttribute ( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+			$this->_conn->exec("set names utf8");
 		} catch ( \PDOException $e ) {
 			echo $e->getMessage ();
 		}
@@ -60,7 +61,7 @@ class DBAccess {
 	}
 	
 	private function createLocationFromDatabaseRow($row) {
-		$location = Location::create ()->setId ( $row->loc_id )->setPostcode ( $row->loc_postcode );
+		$location = Location::create ()->setId( $row->loc_id )->setStreet($row->loc_street)->setPostcode($row->loc_postcode)->setTown($row->loc_town)->setMapLat($row->loc_mapLat)->setMapLng($row->loc_mapLng);
 		return $location;
 	}
 	
@@ -370,7 +371,7 @@ class DBAccess {
 	// ------------------------ Location ---------------------------- //
 	public function findLocationById($id) {
 		try {
-			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_locations WHERE loc_id=:id' );
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_id=:id' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':id', $id );
 			
@@ -388,11 +389,15 @@ class DBAccess {
 	
 	public function saveLocation($location) {
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_locations VALUES(:id, :postcode)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_location VALUES(:id, :street, :postcode, :town, :mapLat, :mapLng)' );
 			
 			$stmt->execute ( array (
 					':id' => $location->getId (),
-					':postcode' => $location->getPostcode () 
+					':street' => $location->getStreet(),
+					':postcode' => $location->getPostcode(),
+					':town' => $location->getTown(),
+					':mapLat' => $location->getMapLat(),
+					':mapLng' => $location->getMapLng() 
 			) );
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -401,7 +406,7 @@ class DBAccess {
 	
 	public function findAllLocations() {
 		try {
-			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_locations' );
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->execute ();
 			

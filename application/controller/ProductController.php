@@ -5,12 +5,12 @@ class ProductController extends \Shareshop\Controller {
 	
 	public function indexAction()
 	{
-		// Übersicht eigene Produkte
+		// Ãœbersicht eigene Produkte
 	}
 	
 	public function formAction()
 	{
-		// Formular für neues Produkt oder bestehendes mit ID
+		// Formular fÃ¼r neues Produkt oder bestehendes mit ID
 	}
 	
 	public function createAction()
