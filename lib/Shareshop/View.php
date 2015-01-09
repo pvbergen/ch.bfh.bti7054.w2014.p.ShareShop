@@ -62,6 +62,13 @@ class View {
 	protected $_registeredViews = array();
 
 	/**
+	 * The translation object.
+	 * 
+	 * @var Language
+	 */
+	protected $_language = null;
+	
+	/**
 	 * Create a new View object.
 	 * @param string $path 		Optional. The path of the application directory.
 	 * @param boolean $isAjax	Optional. True, if call is an ajax call (only DEFAULT_COMPONENT is rendered), 
@@ -71,6 +78,7 @@ class View {
 	{
 		$this->_path = $path;
 		$this->_isAjax = $isAjax;
+		$this->_language = new Language();
 	}
 	
 	/**
@@ -92,7 +100,7 @@ class View {
 	 */
 	public function register($view, $data, $location = self::DEFAULT_COMPONENT)
 	{
-		$singleView = new Component($this->_path, $view, $data);
+		$singleView = new Component($this->_path, $view, $data, $this->_language);
 		$this->_registeredViews[$location] = $singleView;
 	}
 	
