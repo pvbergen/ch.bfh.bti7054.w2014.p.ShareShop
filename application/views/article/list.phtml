@@ -2,10 +2,22 @@
 	
 <?php
 	/* @var $article Application\Models\Db\Article2 */ 
+	$isUserList = false;
+	if(array_key_exists('isUserList', $data)) $isUserList = true; 
+
 	foreach($data['articles'] as $article) { 
 ?>
-	<div class="product">
-		<a href="/article/show/item/<?php echo $article->getId(); ?>">
+	<div class="product" data-id="<?php echo $article->getId(); ?>">
+			<?php if($isUserList) {?>
+			<div class="littleIcons">
+				<a href="/article/edit/id/<?php echo $article->getId(); ?>">
+					<span class="glyph-pencil" >
+				</a>
+				<a href="/article/delete/id/<?php echo $article->getId(); ?>">
+					<span class="glyph-cancle" >
+				</a>								
+			</div>
+			<?php } ?>
 			<img src="<?php echo $article->getImage(); ?>" />
 			<div class="productinfo">
 				<div class="name">
@@ -15,7 +27,6 @@
 					<?php //echo $article->getLocationId(); ?>
 <!-- 				</div> -->
 			</div>
-		</a>
 	</div>
 <?php 
 }

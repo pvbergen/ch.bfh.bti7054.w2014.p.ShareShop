@@ -1,14 +1,16 @@
+<?php $preDefined = $data['preDefined']; ?>
+
 <div class="product-upload">
 	<h1>Neues Produkt hinzuf&uuml;gen</h1>
-	<form action="/Article/save/" method="post" accept-charset="utf-8" enctype="multipart/form-data">
+	<form action="/Article/save/id/<?php echo $preDefined['id']; ?> " method="post" accept-charset="utf-8" enctype="multipart/form-data">
 		<div class="formLeft">
 			<div class="input-wrapper">
 				<label for="productName">Name</label>
-				<input type="text" id="productName" name="productName" placeholder="Name" />
+				<input type="text" id="productName" name="productName" placeholder="Name" value="<?php echo $preDefined['name']; ?>" />
 			</div>
 			<div class="input-wrapper">
 				<label for="productDescription">Beschreibung</label>
-				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" /></textarea>
+				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" value="<?php echo $preDefined['description']; ?>" /></textarea>
 			</div>
 		</div>
 		<div class="formRight">
@@ -31,10 +33,31 @@
 			<div class="input-wrapper">
 				<label for="productSubCategory">Unterkategorie</label>
 				<select name="productSubCategory[]" id="productSubCategory" multiple="multiple">
-					<option value="1">Fun</option>
-					<option value="2">Sadness</option>
-					<option value="3">Business</option>
 				</select>
+			</div>
+			<div class="input-wrapper">
+				<input type="button" data-visible="false" id="toggleCatSubmitDisplay" class="button subButton" value="Erstellen">
+			</div>			
+			<div id="input-Category-Submit" class="input-wrapper invisible">
+				<label for="newSubCategory">Neue Unterkategorie hinzuf&uuml;gen</label>
+				<div class="input-wrapper">
+					<label for="categoryForSub">In Hauptklasse</label>
+					<select name="categoryForSub" id="categoryForSub" class="smaller-input">
+					<?php
+						foreach ($data['categories'] as $category)
+						{
+							?>
+								<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
+							<?php 
+						} 
+					?>
+					</select>	
+				</div>
+				<div class="input-wrapper">
+					<label for="newSubCategory">Unterkategorie</label>
+					<input type="text" id="newSubCategory" name="newSubCategory" placeholder="Name z.B . Stricksocken" />
+				</div>							
+				<input type="button" id="newSubCategorySubmit" class="button subButton" value="Hinzuf&uuml;gen">
 			</div>
 		</div>
 		<div class="clearFix">

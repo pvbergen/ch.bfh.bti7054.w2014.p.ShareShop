@@ -41,6 +41,14 @@ class Category {
 		return DBAccess::getInstance()->findAllCategories();
 	}
 	
+	public static function findAllParents() {
+		return DBAccess::getInstance()->findParentCategories();
+	}
+	
+	public static function findAllSubCategories($id) {
+		return DBAccess::getInstance()->findSubCategories($id);
+	}
+	
 	// ------------------------ GETTER ---------------------------- //
 	
 	public function getId () {

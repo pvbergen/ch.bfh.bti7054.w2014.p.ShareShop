@@ -3,10 +3,18 @@
 $article = $data['article'];
 ?>
 
-<div>
-	<h3>Produkt: <?php echo $article->getName(); ?></h3>
-	<h4>Ort: </h4>
-	<div>
-		<?php echo $article->getDescription(); ?>
+<div class="product-detail">
+	<div class="formLeft">
+		<h1><?php echo $article->getName(); ?></h1>
+		<h2>Beschreibung</h2>
+		<div class="decription">
+			<?php echo $article->getDescription(); ?>
+		</div>	
 	</div>
+	<div class="formRight">
+		<div class="imageContainer">
+			<img src="<?php echo $article->getImage(); ?>" />
+		</div>	
+	</div>
+
 </div>

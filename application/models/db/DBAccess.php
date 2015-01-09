@@ -34,6 +34,7 @@ class DBAccess {
 		try {
 			$this->_conn = new \PDO ( 'mysql:host=' . $config->db->host . ';dbname=' . $config->db->database, $config->db->user, $config->db->password );
 			$this->_conn->setAttribute ( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+			$this->_conn->exec("set names utf8");
 		} catch ( \PDOException $e ) {
 			echo $e->getMessage ();
 		}
@@ -43,13 +44,13 @@ class DBAccess {
 	private function createArticleFromDatabaseRow($row) {
 		$article = Article::create ()->setId ( $row->art_id )->setName ( $row->art_name )->setDescription ( $row->art_description )->setImage ( $row->art_image )->setUserId( $row->art_usr_id );
 		
-		$catId = $row->art_cat_id;
-		while ( $catId != null ) {
-			$category = $this->findCategoryById ( $catId );
-			$categories [] = $category;
-			$catId = $category->getParentId ();
-		}
-		$article->setCategories($categories);
+// 		$catId = $row->art_cat_id;
+// 		while ( $catId != null ) {
+// 			$category = $this->findCategoryById ( $catId );
+// 			$categories [] = $category;
+// 			$catId = $category->getParentId ();
+// 		}
+// 		$article->setCategories($categories);
 		
 		return $article;
 	}
@@ -60,7 +61,7 @@ class DBAccess {
 	}
 	
 	private function createLocationFromDatabaseRow($row) {
-		$location = Location::create ()->setId ( $row->loc_id )->setPostcode ( $row->loc_postcode );
+		$location = Location::create ()->setId( $row->loc_id )->setStreet($row->loc_street)->setPostcode($row->loc_postcode)->setTown($row->loc_town)->setMapLat($row->loc_mapLat)->setMapLng($row->loc_mapLng);
 		return $location;
 	}
 	
@@ -99,8 +100,10 @@ class DBAccess {
 			$stmt->execute ($paramBindings);
 			
 			$articleIds = array();
+			$index = 0;
 			while ( $row = $stmt->fetch () ) {
-				$articleIds[] = $row->art_id;
+				$articleIds[$index] = $row->art_id;
+				$index++;
 			}
 
 			return $articleIds;
@@ -129,29 +132,135 @@ class DBAccess {
 		}
 	}
 	
-	public function saveArticle($article) {
+	public function findArticlesByCategoryId($id) {
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, :art_cat_id, null)' );
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_art_cat_rel WHERE cat_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+				
+			$stmt->execute ();
 			
-			$mostSpecificCategoryId = null;
-			foreach ( $article->getCategories () as $cat ) {
-				if ($cat->getParentId () == $mostSpecificCategoryId || $mostSpecificCategoryId == null) {
-					$mostSpecificCategoryId = $cat->getId ();
-				}
+			$articles = array();
+			$index = 0;
+			while ( $row = $stmt->fetch () ) {
+				$articles[$index++] = $this->findArticleById($row->art_id);
+			}			
+			return $articles;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
+	}
+
+	public function findArticlesByUserId($id) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_articles WHERE art_usr_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+				
+			$articles = array();
+			while ( $row = $stmt->fetch () ) {
+				$articles [] = $this->createArticleFromDatabaseRow ($row);
 			}
+			return $articles;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}	
+	
+	public function saveArticle($article) {
+		$success = false;
+		try {
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
+	
 			
 			$stmt->bindParam ( ':id', $article->getId () );
 			$stmt->bindParam ( ':name', $article->getName () );
 			$stmt->bindParam ( ':description', $article->getDescription () );
 			$stmt->bindParam ( ':image', $article->getImage () );
 			$stmt->bindParam ( ':art_usr_id', $article->getUserId ());
-			$stmt->bindParam ( ':art_cat_id', $mostSpecificCategoryId );
 			
+			$success = $stmt->execute ();
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+		if ($success) {
+			$this->insertCategoryRelation($this->_conn->lastInsertId(), $article->getCategories ());
+		}
+	}
+	
+	public function modifyArticle($article) {
+		$success = false;
+		$this->deleteCategoryRelation($article->getId());
+
+		try {
+			$stmt = $this->_conn->prepare ( 'REPLACE INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
+	
+				
+			$stmt->bindParam ( ':id', $article->getId () );
+			$stmt->bindParam ( ':name', $article->getName () );
+			$stmt->bindParam ( ':description', $article->getDescription () );
+			$stmt->bindParam ( ':image', $article->getImage () );
+			$stmt->bindParam ( ':art_usr_id', $article->getUserId ());
+				
+			$success = $stmt->execute ();
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+		if ($success) {
+			$this->insertCategoryRelation($article->getId(), $article->getCategories ());
+		}
+	}	
+
+	public function deleteArticle($id) {
+		$success = false;
+		$this->deleteCategoryRelation($id);
+		try {
+			$stmt = $this->_conn->prepare ( 'DELETE FROM sha_articles WHERE art_id = :id' );
+	
+	
+			$stmt->bindParam ( ':id', $id );
+	
+			$success = $stmt->execute ();
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+
+	}	
+	
+	private function insertCategoryRelation($art_id, $arr) {
+		try {
+			foreach ($arr as $cat) {
+				if ($cat->getParentId() != null) {
+					
+					$stmt = $this->_conn->prepare ( 'INSERT INTO sha_art_cat_rel VALUES(:id, :art_id, :cat_id)' );
+						
+					$id = '';
+					$stmt->bindParam ( ':id', $id );
+					$stmt->bindParam ( ':art_id', $art_id );
+					$stmt->bindParam ( ':cat_id', $cat->getId() );
+					
+					$stmt->execute ();
+				}
+			}
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
+	}
+
+	private function deleteCategoryRelation($art_id) {
+		try {
+						
+			$stmt = $this->_conn->prepare ( 'DELETE FROM sha_art_cat_rel WHERE art_id = :id' );
+
+			$stmt->bindParam ( ':id', $art_id );
+				
 			$stmt->execute ();
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
-	}
+	}	
 	
 	public function findAllArticles() {
 		try {
@@ -199,6 +308,7 @@ class DBAccess {
 		}
 	}
 	
+	
 	public function saveCategory($category) {
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_categories VALUES(:id, :name, :parentId)' );
@@ -227,11 +337,41 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
+	public function findParentCategories() {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_parent_id IS NULL' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->execute ();
+				
+			while ( $row = $stmt->fetch () ) {
+				$categories [] = $this->createCategoryFromDatabaseRow ( $row );
+			}
+			return $categories;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
 	
+	
+	public function findSubCategories($id) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_parent_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+			while ( $row = $stmt->fetch () ) {
+				$categories [] = $this->createCategoryFromDatabaseRow ( $row );
+			}
+			return $categories;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
 	// ------------------------ Location ---------------------------- //
 	public function findLocationById($id) {
 		try {
-			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_locations WHERE loc_id=:id' );
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_id=:id' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':id', $id );
 			
@@ -249,11 +389,15 @@ class DBAccess {
 	
 	public function saveLocation($location) {
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_locations VALUES(:id, :postcode)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_location VALUES(:id, :street, :postcode, :town, :mapLat, :mapLng)' );
 			
 			$stmt->execute ( array (
 					':id' => $location->getId (),
-					':postcode' => $location->getPostcode () 
+					':street' => $location->getStreet(),
+					':postcode' => $location->getPostcode(),
+					':town' => $location->getTown(),
+					':mapLat' => $location->getMapLat(),
+					':mapLng' => $location->getMapLng() 
 			) );
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -262,7 +406,7 @@ class DBAccess {
 	
 	public function findAllLocations() {
 		try {
-			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_locations' );
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->execute ();
 			
@@ -300,6 +444,25 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
+	
+	public function findUserById($id) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_user WHERE usr_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+			$row = $stmt->fetch ();
+	
+			if ($row != null) {
+				return $this->createUserFromDatabaseRow($row);
+			}
+			return null;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}	
+	
 	
 	public function findUserBySession($id)
 	{

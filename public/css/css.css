@@ -35,6 +35,16 @@ a {
 	content: "\e003";
 }
 
+.glyph-cancle:before {
+	font-family: "Glyphs";
+	content: "\e088";
+}
+
+.glyph-pencil:before {
+	font-family: "Glyphs";
+	content: "\270f";
+}
+
 .glyph-cog:before {
 	font-family: "Glyphs";
 	content: "\e019";
@@ -59,10 +69,19 @@ h2 {
 	color:#4B60F0;
 }
 
+.invisible {
+	display: none;
+}
 
 /************* General Form ***************/
 form .input-wrapper {
 	width: 100%;
+	margin-bottom: 1em;
+}
+
+#map-canvas {
+	width: 80%;
+	height: 200px;
 	margin-bottom: 1em;
 }
 
@@ -71,7 +90,6 @@ form input, form select, form textarea {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     width: 80%;
-	padding: 1em;
 	height: 3em;
 }
 
@@ -80,9 +98,10 @@ form label, form input, form select {
 }
 
 form select, form textarea {
-	overflow: hidden;
 	height: 7em;
 }
+
+
 
 form label {
 	width: 100%;
@@ -296,6 +315,8 @@ form label {
 	border: 1px solid #ddd;
 	border-bottom:none;
 	box-shadow:0px 9px 10px -6px #f08a4a;
+	cursor: pointer;
+	position: relative;
 }
 
 .product:nth-child(5n) {
@@ -327,10 +348,32 @@ form label {
 	max-width:100%;
 }
 
+.product .littleIcons {
+	position: absolute;
+	right: 0;
+	padding: 0.2em;
+	font-size: 1.6em;
+}
+
 /************* Product Upload ***************/
 
 .product-upload {
 
+}
+
+.smaller-input {
+	height: 2em;
+	padding: 0;
+}
+
+#input-Category-Submit {
+	border: 1px solid black;
+	width: 80%;
+	padding: 1.2em;
+}
+
+form .subButton {
+	margin-left: 0;
 }
 
 @media only screen and (max-width: 1024px) {
@@ -369,6 +412,27 @@ form label {
 		margin:0 auto;
 		float:none;
 	}
+}
+
+
+/************* Product Detail ***************/
+
+.product-detail .imageContainer {
+	width: 80%;
+}
+
+.product-detail .description {
+	padding: 1em;
+}
+
+.product-detail h1 {
+	margin-bottom: 1em;
+	font-size: 2.5em;
+}
+
+.product-detail h2 {
+	margin: 1em 0;
+	font-size: 2em;
 }
 
 @media only screen and (max-width: 640px) {

@@ -1,0 +1,8 @@
+<?php
+	foreach ($data['categories'] as $category)
+	{
+		?>
+			<option value="<?php echo($category->getId()); ?>"><?php echo($category->getName()); ?></option>
+		<?php 
+	} 
+?>

@@ -29,12 +29,19 @@
 			<input type="text" id="email" name="email" placeholder="example@example.com" value="<?php echo $data['form']['email']; ?>">
 		</div>
 		<div class="input-wrapper">
-			<label for="adresse">Adresse</label>
+			<label for="adresse" onkeyup="codeAddress()">Adresse</label>
 			<input type="text" id="adresse" name="adresse" placeholder="Mustergasse 3, 1000 Musterstadt" value="<?php echo $data['form']['adresse']; ?>">
 		</div>
+		
+		<div id="map-canvas" ></div>
+		<input id="adresse_lat" name="adresse_lat" value="<?php echo $data['form']['adresse_lat']; ?>" type="hidden">
+		<input id="adresse_lng" name="adresse_lng" value="<?php echo $data['form']['adresse_lng']; ?>" type="hidden">
+		
+		
 		<div class="input-wrapper">
 			<input type="submit" class="singleButton" name="submitRegister" value="Registrieren">
 		</div>
 	</form>
+
 	<?php } ?>
 </div>

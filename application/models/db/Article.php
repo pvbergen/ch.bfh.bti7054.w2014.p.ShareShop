@@ -31,6 +31,14 @@ class Article {
 		DBAccess::getInstance()->saveArticle($this);
 	}
 	
+	public function modify() {
+		DBAccess::getInstance()->modifyArticle($this);
+	}
+	
+	public function delete() {
+		DBAccess::getInstance()->deleteArticle($this);
+	}
+	
 	/**
 	 * Find an article by its unique database id.
 	*
@@ -57,6 +65,14 @@ class Article {
 	public static function searchForArticles($arrSearchParams) {
 		return DBAccess::getInstance()->searchForArticles($arrSearchParams);
 	}
+	
+	public static function findArticlesByCategoryId($id) {
+		return DBAccess::getInstance()->findArticlesByCategoryId($id);
+	}
+	
+	public static function findArticlesByUserId($userid) {
+		return DBAccess::getInstance()->findArticlesByUserId($userid);
+	} 
 	
 	/**
 	 * Load articles by article id.

@@ -7,6 +7,7 @@ use Shareshop\Application;
 use Application\Plugin\Auth;
 use Shareshop\Authorization;
 use Application\Models\Db\User;
+use Application\Models\Db\Location;
 
 class AuthController extends \Shareshop\Controller {
 	use Authorization;
@@ -41,7 +42,7 @@ class AuthController extends \Shareshop\Controller {
 			die('already logged in');
 		}
 		
-		$viewData = array('error' => '', 'success' => '', 'form' => array('username' => '', 'email' => '', 'adresse' => ''));
+		$viewData = array('error' => '', 'success' => '', 'form' => array('username' => '', 'email' => '', 'adresse' => '','adresse_lat' => '', 'adresse_lng' => '' ));
 		$postData = $this->request->getPost();
 		if (isset($postData['submitRegister'])) {
 			if (
@@ -51,19 +52,29 @@ class AuthController extends \Shareshop\Controller {
 					empty($postData['email']) ||
 					empty($postData['adresse'])
 			) {
-				$viewData['error'] = 'Bitte alle Felder ausfüllen.';
+				$viewData['error'] = 'Bitte alle Felder ausfÃ¼llen.';
 			} else {
-				if (preg_match('/(.^@){1,63}@(.^\.){1,63}\.[a-zA-Z0-9]{2,63}/', $subject)) {
-					if ($postData['password'] == $postData['passwordRepeat']) {
-						$salt = $this->generateString(10);
-						$password = $this->createHash($postData['password']);//, $salt);
-						User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setState(0)->save();
-						$viewData['success'] = 'Erfolgreich registriert!';
+				if (preg_match('/[^@]{1,63}@[^\.]{1,63}\.[a-zA-Z0-9]{2,63}/', $postData['email'])) {
+					if ($this->checkAddress($postData['adresse'])) {
+						if ($postData['password'] == $postData['passwordRepeat']) {
+							$salt = $this->generateString(10);
+							$password = $this->createHash($postData['password']);//, $salt);
+							User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setState(0)->save();
+							$address = split(',',$postData['adresse']);
+							$street = trim($address[0]);
+							$plz = split(' ', trim($address[1]))[0];
+							$town = split(' ', trim($address[1]))[1];
+							Location::create()->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($postData['adresse_lat'])->setMapLng($postData['adresse_lng'])->save();
+							$viewData['success'] = 'Erfolgreich registriert!';
+						} else {
+							$viewData['error'] = 'PasswÃ¶rter stimmen nicht Ã¼berein.';
+						}
 					} else {
-						$viewData['error'] = 'Passwörter stimmen nicht überein.';
+						$viewData['error'] = 'Bitte Adresse im folgenden Format eingeben: Strasse, PLZ Ort.';
 					}
+					
 				} else {
-					$viewData['error'] = 'Ungültige E-Mail-Adresse.';
+					$viewData['error'] = 'UngÃ¼ltige E-Mail-Adresse.';
 				}
 				
 			}
@@ -74,6 +85,14 @@ class AuthController extends \Shareshop\Controller {
 		$this->view->render();
 	}
 	
+	private function checkAddress($adresse) {
+		$arrAddress = split(',',$adresse);
+		if (count($arrAddress) != 2 || $arrAddress[0] == null || $arrAddress[1]==null) return false;
+		$plz = split(' ', trim($arrAddress[1]))[0];
+		if (!is_numeric($plz)) return false;
+		return true;
+	}
+	 
 	protected function sendMail()
 	{
 		
