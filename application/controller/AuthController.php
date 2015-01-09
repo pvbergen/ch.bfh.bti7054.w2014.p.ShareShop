@@ -58,7 +58,7 @@ class AuthController extends \Shareshop\Controller {
 					if ($this->checkAddress($postData['adresse'])) {
 						if ($postData['password'] == $postData['passwordRepeat']) {
 							$salt = $this->generateString(10);
-							$password = $this->createHash($postData['password']);//, $salt);
+							$password = $this->createHash($postData['password'], $salt);
 							User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setState(0)->save();
 							$address = split(',',$postData['adresse']);
 							$street = trim($address[0]);

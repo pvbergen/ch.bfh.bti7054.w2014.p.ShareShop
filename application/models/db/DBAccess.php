@@ -491,12 +491,13 @@ class DBAccess {
 	public function saveUser(User $user)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email) VALUES (:username, :password, :email)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt) VALUES (:username, :password, :email, :salt)' );
 		
 			$stmt->execute ( array (
 					':username' => $user->getUsername(),
 					':password' => $user->getPassword(),
 					':email' => $user->getEmail(),
+					':salt' => $user->getSalt()
 			) );
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();

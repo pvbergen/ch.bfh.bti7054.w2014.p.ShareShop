@@ -78,7 +78,7 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 			if (!empty($postData['password'])) {
 				$user = User::create()->findByUsername($postData['username']);
 				if ($user !== null) {
-					if ($user->getPassword() !== $this->createHash($postData['password'])) {
+					if ($user->getPassword() !== $this->createHash($postData['password'], $user->getSalt())) {
 						$user = null;
 						$request->setError("Password incorrect");
 					}		
