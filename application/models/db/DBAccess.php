@@ -43,15 +43,8 @@ class DBAccess {
 	// ------------------------ Helpers ---------------------------- //
 	private function createArticleFromDatabaseRow($row) {
 		$article = Article::create ()->setId ( $row->art_id )->setName ( $row->art_name )->setDescription ( $row->art_description )->setImage ( $row->art_image )->setUserId( $row->art_usr_id );
-		
-// 		$catId = $row->art_cat_id;
-// 		while ( $catId != null ) {
-// 			$category = $this->findCategoryById ( $catId );
-// 			$categories [] = $category;
-// 			$catId = $category->getParentId ();
-// 		}
-// 		$article->setCategories($categories);
-		
+		//print_r($this->findCategoriesByArticle($article->getId()));
+		$article->setCategories($this->findCategoriesByArticle($article->getId()));
 		return $article;
 	}
 	
@@ -213,13 +206,14 @@ class DBAccess {
 		}
 	}	
 
-	public function deleteArticle($id) {
+	public function deleteArticle($article) {
 		$success = false;
+		$id = $article->getId();
 		$this->deleteCategoryRelation($id);
 		try {
 			$stmt = $this->_conn->prepare ( 'DELETE FROM sha_articles WHERE art_id = :id' );
 	
-	
+			
 			$stmt->bindParam ( ':id', $id );
 	
 			$success = $stmt->execute ();
@@ -367,6 +361,26 @@ class DBAccess {
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
+	}
+	
+	private function findCategoriesByArticle($id) {
+		try {
+
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_art_cat_rel WHERE art_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+		
+			$stmt->execute ();
+				
+			$categories = array();
+			$index = 0;
+			while ( $row = $stmt->fetch () ) {
+				$categories[$index++] = $this->findCategoryById($row->cat_id);
+			}
+			return $categories;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
 	}
 	// ------------------------ Location ---------------------------- //
 	public function findLocationById($id) {

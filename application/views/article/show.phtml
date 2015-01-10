@@ -6,10 +6,16 @@ $article = $data['article'];
 <div class="product-detail">
 	<div class="formLeft">
 		<h1><?php echo $article->getName(); ?></h1>
-		<h2>Beschreibung</h2>
+		<h2><?php echo $l->e('Beschreibung');?></h2>
 		<div class="decription">
 			<?php echo $article->getDescription(); ?>
 		</div>	
+		<h2><?php echo $l->e('Kategorien');?></h2>
+		<ul class="categorieList">
+		<?php foreach($article->getCategories() as $cat) {?>
+			<li><?php echo $cat->getName();?></li>
+		<?php }?>
+		</ul>
 	</div>
 	<div class="formRight">
 		<div class="imageContainer">

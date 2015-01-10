@@ -17,7 +17,7 @@ class ArticleController extends \Shareshop\Controller {
 		$post = $this->request->getPost();
 		$files = $_FILES;
 		$get = $this->request->getParameters();
-		if (array_key_exists('id', $get)) {
+		if ($get['id'] !== 'none') {
 			$article = $this->modifyArticle($get['id'], $post, $files);
 		} else {
 			$article = $this->insertArticle($post, $files);
@@ -26,6 +26,7 @@ class ArticleController extends \Shareshop\Controller {
 
 		$this->insertUserName();
 		$this->view->register('article/show',  array('article' => $article));
+		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
 		$this->view->render();
 		
 	}
@@ -37,26 +38,32 @@ class ArticleController extends \Shareshop\Controller {
 		
 		$articles = array();
 		$categories = array();
+		$final = array();
 		
-		if ($params['categorySearch'] && ($params['categorySearch'] === 'true')) {
+		if (array_key_exists('categorySearch',$params) && ($params['categorySearch'] === 'true')) {
 			$categoryId = $params['category'];
 			$articles = $this->getArticlesByCategory($categoryId);
-			$category1 = Category::findById($categoryId);
-			$category2 = Category::findById($category1->getParentId());
-			$categories[0] = $category1;
-			$categories[1] = $category2;
+			$category1[0] = Category::findById($categoryId);
+			$category2[1] = Category::findById($category1[0]->getParentId());
+			$final[0] = $category2;
+			$final[1] = $category1;
 		} else {
 			$searchParam1 = new SearchParameter('name', $params['search']);
 			$searchParam2 = new SearchParameter('description', $params['search']);
 			$paramArr = array( $searchParam1, $searchParam2 );
 			$result = Article::searchForArticles($paramArr);
 			$articles = Article::loadArticles($result);
-			$categories = $this->fetchFromArticles($articles);			
+			$categories = $this->fetchFromArticles($articles);	
+			$catParents = array();
+			$index = 0;
+			foreach($categories as $cat) {
+				$catParents[$index++] = Category::findById($cat->getParentId());
+			}
+			$final[0] = $catParents;
+			$final[1] = $categories;
 		}
 
-
-		
-		$final = $this->prepareCategoriesHirarchy($categories);
+		//$final = $this->prepareCategoriesHirarchy($categories);
 		$this->insertUserName();
 		$this->view->register('navigation/subnavigation', array('parentCategories' => $final[0], 'childCategories' => $final[1]), 'subnavigation');
 		$this->view->register('article/list', array('articles' => $articles), 'content');
@@ -84,6 +91,7 @@ class ArticleController extends \Shareshop\Controller {
 		$preDefined['name'] = '';
 		$preDefined['description'] = '';
 		$preDefined['id'] = 'none';
+		$preDefined['isEdit'] = false;
 		$categories = Category::findAllParents();
 		$this->insertUserName();
 		$this->view->register('article/upload', array('categories' => $categories, 'preDefined' => $preDefined));
@@ -137,14 +145,13 @@ class ArticleController extends \Shareshop\Controller {
 			$this->view->redirect('index', 'index');
 		}
 		$article = Article::findById($params['item']);
-
 		$this->view->register('article/show', array('article' => $article));
 		$this->view->render();
 	}
 	
 	public function deleteAction() {
 		$params = $this->request->getParameters();
-		$article = Article::findById($param['id']);
+		$article = Article::findById($params['id']);
 		
 		if (Auth::getSession()->getUserId() !== $article->getUserId()) {
 			trigger_error("Not your Item!", E_USER_ERROR);
@@ -164,11 +171,18 @@ class ArticleController extends \Shareshop\Controller {
 		$preDefined['name'] = $article->getName();
 		$preDefined['description'] = $article->getDescription();
 		$preDefined['id'] = $article->getId();
+		$preDefined['isEdit'] = true;
+		$preDefined['categories'] = $article->getCategories();
 		$categories = Category::findAllParents();
 		$this->insertUserName();
 		$this->view->register('article/upload', array('categories' => $categories, 'preDefined' => $preDefined));
 		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
 		$this->view->render();		
+	}
+	
+	
+	public function nearbysearchAction() {
+		$params = $this->request->getParameters();
 	}
 	
 	
@@ -216,7 +230,7 @@ class ArticleController extends \Shareshop\Controller {
 			}
 			$article->setCategories($resArray);
 		}	
-		if (array_key_exists('picture', $files)) {
+		if ($files['picture']['size'] !== 0) {
 			chdir('../public/publicImgs');
 			$fileName = basename($files['picture']['name']);
 			$imageFileType = pathinfo($fileName,PATHINFO_EXTENSION);
