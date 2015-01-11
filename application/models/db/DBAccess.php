@@ -289,6 +289,7 @@ class DBAccess {
 		}
 	}
 	
+	
 	// ------------------------ Category ---------------------------- //
 	public function findCategoryById($id) {
 		try {
@@ -582,12 +583,109 @@ class DBAccess {
 	
 	// ------------------------ Exchange ---------------------------- //
 	
+	public function findExchangeByUser($userId)
+	{
+		try {
+			$stmt = $this->_conn->prepare (
+				'SELECT * FROM sha_exchange'
+				.' WHERE answering_user = :id OR requesting_user = :id'
+			);
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $userId );
+		
+			$stmt->execute ();
+			
+			$exchanges = array();
+			if ($stmt->rowCount() > 0) {
+				while (($row = $stmt->fetch()) != null) {
+					$exchanges[] = $this->createExchangeFromDatabaseRow( $row );
+				}
+			}
+			return $exchanges;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
 	
+	public function findActiveExchangeByArticleAndUser($userId, $articleId)
+	{
+		try {
+			$stmt = $this->_conn->prepare (
+				'SELECT e.* FROM sha_exchange AS e JOIN ('
+					.' SELECT s.exchange_id FROM sha_exchange_step AS s JOIN sha_exchange_step_item AS i '
+					.' ON (i.step_id = s.step_id AND i.art_id = :articleId) ) AS si '
+				.' ON (e.exchange_id = si.exchange_id AND e.requesting_user = :userId AND state = 0)'
+			);
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':userId', $userId );
+			$stmt->bindParam ( ':articleId', $articleId );
+		
+			$stmt->execute ();
+			$row = $stmt->fetch ();
+		
+			if ($row != null) {
+				return $this->createExchangeFromDatabaseRow( $row );
+			}
+			return null;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	public function findExchangeStepsByExchange($exchangeId)
+	{
+		try {
+			$stmt = $this->_conn->prepare (
+					'SELECT * FROM sha_exchange_step'
+					.' WHERE exchange_id = :id ORDER BY step_created DESC'
+			);
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $exchangeId );
+	
+			$stmt->execute ();
+				
+			$steps = array();
+			if ($stmt->rowCount() > 0) {
+				while (($row = $stmt->fetch()) != null) {
+					$steps[] = $this->createExchangeStepFromDatabaseRow( $row );
+				}
+			}
+			return $steps;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+
+	public function findArticlesIdByExchangeStep($stepId)
+	{
+		try {
+			$stmt = $this->_conn->prepare (
+					'SELECT a.* FROM sha_articles AS a JOIN sha_exchange_step_item AS es'
+					.' ON (a.art_id = es.art_id AND es.step_id = :id)'
+			);
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $stepId );
+		
+			$stmt->execute ();
+		
+			$articles = array();
+			if ($stmt->rowCount() > 0) {
+				while (($row = $stmt->fetch()) != null) {
+					$articles[] = $this->createArticleFromDatabaseRow( $row );
+				}
+			}
+			return $articles;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
 	
 	/**
 	 * Saves or updates an exchange based on the given Exchange object.
 	 *
 	 * @param Exchange $exchange
+	 * @return int The insert id.
 	 */
 	public function saveExchange(Exchange $exchange)
 	{
@@ -599,8 +697,8 @@ class DBAccess {
 	
 			$stmt->execute ( array (
 					':id' => $exchange->getId(),
-					':requestingUser' => $exchange->getRequestingUser(),
-					':answeringUser' => $exchange->getAnsweringUser(),
+					':requestingUser' => $exchange->getRequestingUser()->getId(),
+					':answeringUser' => $exchange->getAnsweringUser()->getId(),
 					':requestingRating' => $exchange->getRequestingRating(),
 					':answeringRating' => $exchange->getAnsweringRating(),
 					':state' => $exchange->getState()
@@ -608,18 +706,20 @@ class DBAccess {
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
+		return $this->_conn->lastInsertId();
 	}
 	
 	/**
 	 * Saves an exchange step based on the given ExchangeStep object.
 	 *
 	 * @param ExchangeStep $step
+	 * @return int The last insert id.
 	 */
 	public function saveExchangeStep(ExchangeStep $step)
 	{
 		try {
 			$stmt = $this->_conn->prepare ( 
-					'INSERT INTO sha_exchange_step' 
+					'REPLACE INTO sha_exchange_step' 
 					. ' (exchange_id, step_created, step_remark, step_type)' 
 					. ' VALUES (:exchangeId, :created, :remark, :type)' );
 	
@@ -632,29 +732,29 @@ class DBAccess {
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
+		return $this->_conn->lastInsertId();
 	}
 	
 	/**
 	 * Saves the items of an exchange step based on the given ExchangeStep object.
 	 *
 	 * @param ExchangeStep $step
+	 * @param int $articleId
 	 */
-	public function saveExchangeStepArticles(ExchangeStep $step)
+	public function saveExchangeStepArticles(ExchangeStep $step, $articleId)
 	{
-		foreach($step->getArticles() as $article) {
-			try {
-				$stmt = $this->_conn->prepare (
-						'INSERT INTO sha_exchange_step_item'
-						. ' (step_id, art_id)'
-						. ' VALUES (:stepId, :artId)' );
-			
-				$stmt->execute ( array (
-						':stepId' => $step->getId(),
-						':artId' => $article,
-				) );
-			} catch ( \PDOException $e ) {
-				echo 'Error: ' . $e->getMessage ();
-			}	
+		try {
+			$stmt = $this->_conn->prepare (
+					'INSERT INTO sha_exchange_step_item'
+					. ' (step_id, art_id)'
+					. ' VALUES (:stepId, :artId)' );
+		
+			$stmt->execute ( array (
+					':stepId' => $step->getId(),
+					':artId' => $articleId,
+			) );
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
 		}
 	}
 	

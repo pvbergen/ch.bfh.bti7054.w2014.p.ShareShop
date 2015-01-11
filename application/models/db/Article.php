@@ -44,7 +44,7 @@ class Article {
 	*
 	*  @param integer $intId the id of the article to find.
 	*  
-	*  @return an Article object or null if not found.
+	*  @return Article An Article object or null if not found.
 	*
 	* */
 	public static function findById($intId) {

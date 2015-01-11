@@ -3,17 +3,21 @@ namespace Application\Models\Db;
 
 class ExchangeStep {
 	
-	const REQUEST = 1;
-	const PICK = 2;
-	const REOFFER = 4;
-	const EXCHANGE = 8;
+	const TYPE_REQUEST = 1;
+	const TYPE_PICK = 2;
+	const TYPE_REOFFER = 4;
+	const TYPE_EXCHANGE = 8;
 	
 	protected $_stepId = -1;
 	protected $_exchangeId = -1;
 	protected $_created = 0;
 	protected $_remark = "";
-	protected $_type = self::REQUEST;
+	protected $_type = self::TYPE_REQUEST;
 	
+	/**
+	 * 
+	 * @var int[]
+	 */
 	protected $_articles;
 	
 	private function __construct() {
@@ -29,18 +33,27 @@ class ExchangeStep {
 	
 	public static function findByExchangeId($id)
 	{
+		return DBAccess::getInstance()->findExchangeStepsByExchange($id);
+	}
+	
+	public function save()
+	{
+		$this->_stepId = DBAccess::getInstance()->saveExchangeStep($this);
 		
+		foreach ($this->_articles as $article) {
+			DBAccess::getInstance()->saveExchangeStepArticles($this, $article);
+		}
 	}
 	
 	public function setId($id)
 	{
-		this->_stepId = $id;
+		$this->_stepId = $id;
 		return $this;
 	}
 	
 	public function setExchangeId($id)
 	{
-		this->_exchangeId = $id;
+		$this->_exchangeId = $id;
 		return $this;
 	}
 	
@@ -56,7 +69,7 @@ class ExchangeStep {
 		return $this;
 	}
 	
-	public function setType($type = self::REQUEST)
+	public function setType($type = self::TYPE_REQUEST)
 	{
 		$this->_type = $type;
 		return $this;
@@ -74,7 +87,7 @@ class ExchangeStep {
 
 	public function getExchangeId()
 	{
-		return this->_exchangeId;
+		return $this->_exchangeId;
 	}
 	
 	public function getCreated()
@@ -94,6 +107,9 @@ class ExchangeStep {
 	
 	public function getArticles()
 	{
+		if (count($this->_articles) == 0) {
+			$this->_articles = DBAccess::getInstance()->findArticlesIdByExchangeStep($this->getId());
+		}
 		return $this->_articles;
 	}
 }

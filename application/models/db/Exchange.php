@@ -3,17 +3,51 @@ namespace Application\Models\Db;
 
 class Exchange {
 	
+	const STATE_ACTIVE = 0;
+	const STATE_COMPLETED = 1;
+	const STATE_CANCELLED = 2;
+	
 	protected $_exchangeId = -1;
 	protected $_requestingUser = -1;
 	protected $_answeringUser = -1;
 	protected $_requestingRating = null;
 	protected $_answeringRating = null;
-	protected $_state = 0;
+	protected $_state = self::STATE_ACTIVE;
 	
+	/**
+	 * 
+	 * @var ExchangeStep[]
+	 */
 	protected $_steps = array();
 	
 	private function __construct() {
 		
+	}
+
+	/**
+	 * 
+	 * Returns an active Exchange for the article and the user,
+	 * where the given article is requested and the given user is the requesting user 
+	 * or null.
+	 *  
+	 * @param Article $article	The article.
+	 * @param User $user		The user.
+	 * @return Exchange 		The active exchange or null, if no active Exchange can be found.
+	 */
+	public static function findActiveByArticleAndUser(Article $article, User $user)
+	{
+		return DBAccess::getInstance()->findActiveExchangeByArticleAndUser($user->getId(), $article->getId());
+	}
+	
+	/**
+	 * Returns all exchanges (active, cancelled or completed) the given user is taking part in.
+	 *
+	 * @param User $user		The user.
+	 * @return Exchange[]		All exchanges the user is participating in.
+	 */
+	public static function findByUser(User $user)
+	{
+		return DBAccess::getInstance()->findExchangeByUser($user->getId());
 	}
 	
 	/**
@@ -22,12 +56,13 @@ class Exchange {
 	public static function create() {
 		return new self();
 	}
-	
+
 	public function save() {
-		if ($this->_exchangeId == -1) {
-			DBAccess::getInstance()->saveExchange($this);
-		} else {
-			DBAccess::getInstance()->modifiyExchange($this);
+		$this->_exchangeId = DBAccess::getInstance()->saveExchange($this);
+		
+		foreach($this->_steps as $step) {
+			$step->setExchangeId($this->_exchangeId);
+			$step->save();
 		}
 	}
 	
@@ -47,7 +82,7 @@ class Exchange {
 	
 	public function setRequestingUser($id)
 	{
-		$this->_requestingUser = id;
+		$this->_requestingUser = $id;
 		return $this;
 	}
 	
@@ -69,13 +104,13 @@ class Exchange {
 		return $this;
 	}
 	
-	public function setState($bitmask)
+	public function setState($bitmask = self::STATE_ACTIVE)
 	{
 		$this->_state = $bitmask;
 		return $this;
 	}
 	
-	public function addStep(RequestStep $step) {
+	public function addStep(ExchangeStep $step) {
 		$this->_steps[] = $step;
 		return $this;
 	}
@@ -110,7 +145,15 @@ class Exchange {
 		return $this->_state;
 	}
 	
+	/**
+	 * Returns all initiated steps of this exchange.
+	 * 
+	 * @return ExchangeStep[]
+	 */
 	public function getSteps() {
+		if (count($this->_steps) == 0) {
+			$this->_steps = ExchangeStep::findByExchangeId($this->_exchangeId);
+		}
 		return $this->_steps;
 	}
 }

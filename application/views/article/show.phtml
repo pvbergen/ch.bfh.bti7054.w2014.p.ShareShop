@@ -18,6 +18,7 @@ $user = $data['user'];
 			<li><?php echo $cat->getName();?></li>
 		<?php }?>
 		</ul>
+		<?php if ($location != null) {?>
 		<h2><?php echo $l->e('Adresse Besitzer');?></h2>
 		<ul>
 			<li><?php echo $l->e('Benutzer: ');?> <?php echo $user->getUsername();?></li>
@@ -26,11 +27,24 @@ $user = $data['user'];
 			<li><?php echo $l->e('Ort: ');?> <?php echo $location->getTown();?></li>
 			
 		</ul>
+		<?php } ?>
 	</div>
 	<div class="formRight">
 		<div class="imageContainer">
 			<img src="<?php echo $article->getImage(); ?>" />
 		</div>	
+		<div class="exchangeContainer">
+			<h2><?php $l->e("Produkt anfragen"); ?></h2>
+			<div class="exchangeForm">
+				<div class="input-wrapper">
+					<label for="exchange_remark"><?php $l->e("Bemerkung"); ?></label> 
+					<textarea name="exchange_remark" placeholder="<?php $l->e("Bemerkung"); ?>"></textarea>
+				</div>
+				<div class="input-wrapper">
+					<input type="submit" class="button" name="submit" value="<?php $l->e("Absenden"); ?>">
+				</div>
+			</div>
+		</div>
 	</div>
 
 </div>
