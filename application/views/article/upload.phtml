@@ -1,24 +1,31 @@
 <?php $preDefined = $data['preDefined']; ?>
 
 <div class="product-upload">
-	<h1>Neues Produkt hinzuf&uuml;gen</h1>
+	<h1>
+	<?php if ($preDefined['isEdit']) {
+		$l->e('Produkt bearbeiten');
+	} else { 
+		$l->e('Neues Produkt hinzuf&uuml;gen');
+	}
+	?>
+	</h1>
 	<form action="/Article/save/id/<?php echo $preDefined['id']; ?> " method="post" accept-charset="utf-8" enctype="multipart/form-data">
 		<div class="formLeft">
 			<div class="input-wrapper">
-				<label for="productName">Name</label>
+				<label for="productName"><?php echo $l->e('Name');?></label>
 				<input type="text" id="productName" name="productName" placeholder="Name" value="<?php echo $preDefined['name']; ?>" />
 			</div>
 			<div class="input-wrapper">
-				<label for="productDescription">Beschreibung</label>
-				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" value="<?php echo $preDefined['description']; ?>" /></textarea>
+				<label for="productDescription"><?php echo $l->e('Beschreibung');?></label>
+				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" /><?php echo $preDefined['description']; ?></textarea>
 			</div>
 		</div>
 		<div class="formRight">
 			<div class="input-wrapper">
-				<label for="picture">Bild</label>
+				<label for="picture"><?php echo $l->e('Bild');?></label>
 				<input type="file" id="picture" name="picture">
 			</div>
-			<div class="input-wrapper"><label for="productCategory">Oberkategorie</label>
+			<div class="input-wrapper"><label for="productCategory"><?php echo $l->e('Oberkategorie')?></label>
 				<select name="productCategory[]" id="productCategory" multiple="multiple">
 				<?php
 					foreach ($data['categories'] as $category)
@@ -31,17 +38,20 @@
 				</select>
 			</div>
 			<div class="input-wrapper">
-				<label for="productSubCategory">Unterkategorie</label>
+				<label for="productSubCategory"><?php echo $l->e('Unterkategorie');?></label>
 				<select name="productSubCategory[]" id="productSubCategory" multiple="multiple">
+				<?php foreach($preDefined['categories'] as $cat) { ?>
+					<option value="<?php echo($cat->getId()); ?>" selected="selected"><?php echo($cat->getName()); ?></option>
+				<?php }?>
 				</select>
 			</div>
 			<div class="input-wrapper">
 				<input type="button" data-visible="false" id="toggleCatSubmitDisplay" class="button subButton" value="Erstellen">
 			</div>			
 			<div id="input-Category-Submit" class="input-wrapper invisible">
-				<label for="newSubCategory">Neue Unterkategorie hinzuf&uuml;gen</label>
+				<label for="newSubCategory"><?php echo $l->e('Neue Unterkategorie hinzuf&uuml;gen');?></label>
 				<div class="input-wrapper">
-					<label for="categoryForSub">In Hauptklasse</label>
+					<label for="categoryForSub"><?php echo $l->e('In Hauptklasse');?></label>
 					<select name="categoryForSub" id="categoryForSub" class="smaller-input">
 					<?php
 						foreach ($data['categories'] as $category)
@@ -54,7 +64,7 @@
 					</select>	
 				</div>
 				<div class="input-wrapper">
-					<label for="newSubCategory">Unterkategorie</label>
+					<label for="newSubCategory"><?php echo $l->e('Unterkategorie');?></label>
 					<input type="text" id="newSubCategory" name="newSubCategory" placeholder="Name z.B . Stricksocken" />
 				</div>							
 				<input type="button" id="newSubCategorySubmit" class="button subButton" value="Hinzuf&uuml;gen">

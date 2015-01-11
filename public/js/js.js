@@ -22,7 +22,15 @@ $(document).ready(
 					el.css('display', 'block');
 				}
 			});
+			
+			/*
+			 * General
+			 */
 
+			String.prototype.replaceAll = function(find, replace) {
+				  return this.replace(new RegExp(find, 'g'), replace);
+			}
+			
 			/*
 			 * Content Elements resize
 			 */
@@ -151,6 +159,71 @@ $(document).ready(
 				}
 
 			});
+			
+			
+			// ********* Search Type Toggle *******
+			
+			$('.searchTypeToggle').click(function() {
+				var type = $(this).data('type');
+				
+				switch (type) {
+				case 1: 
+					$(this).data('type', 2);
+					$(this).attr('value', 'Umkreissuche');
+					prepareNearBySearch();
+					$('#searchForm').attr('action', '/Article/nearbysearch/');
+					break;
+				case 2: 
+					removeNearBySearch();
+					$(this).data('type', 3);
+					$(this).attr('value', 'Postleitzahl');
+					$('input.searchfield').attr('placeholder', 'PLZ');
+					$('#searchForm').attr('action', '/Article/plzsearch/');
+					break;					
+				case 3: 
+					$(this).data('type', 1);
+					$(this).attr('value', 'Produktsuche');
+					$('input.searchfield').attr('placeholder', 'Produktsuche');
+					$('#searchForm').attr('action', '/Article/search/');
+					break;	
+				}
+			});
+			var prepareNearBySearch = function() {
+				$('input.searchfield').remove();
+				$('#searchForm .search').prepend('<input class="googleSearch searchfield" type="text" name="search" placeholder="Adresse">');
+				$('#searchForm').attr('onsubmit','return searchBeforeSubmit();');
+				$('input.googleSearch').each(function(i, el) {
+					var options = {};
+					window.autocomplete = new google.maps.places.Autocomplete(el, options);	
+				});				
+			};  
+			
+			window.searchBeforeSubmit = function() {
+				var lat;
+				var lng;
+				//var address = $('input.googleSearch').val().replaceAll(' ', '+');
+				address = encodeURIComponent($('input.googleSearch').val());
+				$.get('http://maps.googleapis.com/maps/api/geocode/json?address='+ address).done(function(json) {
+					if (json.status === 'OK') {
+						lat  = json.results[0].geometry.location.lat;
+						lng = json.results[0].geometry.location.lng;
+						$('#searchForm .search').prepend('<input type="hidden" name="lat" value="'+ lat + '">');
+						$('#searchForm .search').prepend('<input type="hidden" name="lng" value="'+ lng	 + '">');
+						$('#searchForm').removeAttr('onsubmit');
+						document.getElementById('searchForm').submit();
+					}
+				});
+				return false;
+			}
+			
+			var removeNearBySearch = function() {
+				$('#searchForm').removeAttr('onsubmit');
+				$('input.googleSearch').remove();
+				$('#searchForm .search').prepend('<input class="searchfield" type="text" name="search" placeholder="Produktsuche">');
+			}
+			
+
+			
 
 			// ********* Google Maps **************
 			

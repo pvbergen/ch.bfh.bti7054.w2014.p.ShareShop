@@ -181,6 +181,14 @@ form label {
 	height: 3em;	
 }
 
+.searchTypeToggle {
+	width: 100px;
+	position: absolute;
+	margin: 0;
+	margin-top: 30px;
+	height: 3em;
+}
+
 .navigation {
 	font-size:30px;
 	float: right;
@@ -355,6 +363,14 @@ form label {
 	font-size: 1.6em;
 }
 
+.productImage {
+	background-size: cover;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	width: 100%;
+	height: 200px;
+} 
+
 /************* Product Upload ***************/
 
 .product-upload {
@@ -419,10 +435,17 @@ form .subButton {
 
 .product-detail .imageContainer {
 	width: 80%;
+		
 }
+
 
 .product-detail .description {
 	padding: 1em;
+}
+
+.product-detail .categorieList {
+	list-style-type: circle;
+	padding-left: 2em;
 }
 
 .product-detail h1 {

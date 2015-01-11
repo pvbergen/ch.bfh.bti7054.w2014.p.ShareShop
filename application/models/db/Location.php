@@ -21,7 +21,9 @@ class Location {
 	}
 	
 	public function save() {
-		DBAccess::getInstance()->saveLocation($this);
+		$id = DBAccess::getInstance()->saveLocation($this);
+		$this->setId($id);
+		return $this;
 	}
 	
 	/**
@@ -36,9 +38,19 @@ class Location {
 		return DBAccess::getInstance()->findLocationById($intId);
 	}
 	
+	public static function findByPostCode($postcode) {
+		return DBAccess::getInstance()->findLocationByPostCode($postcode);
+	}
+	 
+	public static function findNearBy($lng, $lat) {
+		return DBAccess::getInstance()->findLocationNearBy($lng, $lat);
+	}
+	
 	public static function findAll() {
 		return DBAccess::getInstance()->findAllLocations();
 	}
+	
+
 	
 	// ------------------------ GETTER ---------------------------- //
 	
