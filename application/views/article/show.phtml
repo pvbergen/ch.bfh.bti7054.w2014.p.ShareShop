@@ -1,6 +1,8 @@
 <?php 
 /* @var $article Application\Models\DB\Article2 */
 $article = $data['article'];
+$location = $data['location'];
+$user = $data['user'];
 ?>
 
 <div class="product-detail">
@@ -15,6 +17,14 @@ $article = $data['article'];
 		<?php foreach($article->getCategories() as $cat) {?>
 			<li><?php echo $cat->getName();?></li>
 		<?php }?>
+		</ul>
+		<h2><?php echo $l->e('Adresse Besitzer');?></h2>
+		<ul>
+			<li><?php echo $l->e('Benutzer: ');?> <?php echo $user->getUsername();?></li>
+			<li><?php echo $l->e('Strasse: ');?> <?php echo $location->getStreet();?></li>
+			<li><?php echo $l->e('PLZ: ');?> <?php echo $location->getPostcode();?></li>
+			<li><?php echo $l->e('Ort: ');?> <?php echo $location->getTown();?></li>
+			
 		</ul>
 	</div>
 	<div class="formRight">

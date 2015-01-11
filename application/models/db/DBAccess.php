@@ -92,14 +92,13 @@ class DBAccess {
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->execute ($paramBindings);
 			
-			$articleIds = array();
+			$articles = array();
 			$index = 0;
 			while ( $row = $stmt->fetch () ) {
-				$articleIds[$index] = $row->art_id;
-				$index++;
+				$articles[$index++] = $this->createArticleFromDatabaseRow ( $row );
 			}
 
-			return $articleIds;
+			return $articles;
 			
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -400,11 +399,51 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
+
+	public function findLocationByPostCode($postcode) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_postcode=:postcode' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':postcode', $postcode );
+		
+			$stmt->execute ();
+			$locations = array();
+			while ( $row = $stmt->fetch () ) {
+				$locations [] = $this->createLocationFromDatabaseRow ( $row );
+			}
+			return $locations;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
+	}
+	
+	public function findLocationNearBy($lng, $lat) {
+		try {
+			$lngFrom = $lng - 0.07;
+			$lngTo = $lng + 0.07;
+			$latFrom = $lat - 0.07;
+			$latTo = $lat + 0.07;			
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_mapLng BETWEEN :lngFrom AND :lngTo AND loc_mapLat BETWEEN :latFrom AND :latTo ' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':lngFrom', $lngFrom );
+			$stmt->bindParam ( ':lngTo', $lngTo );
+			$stmt->bindParam ( ':latFrom', $latFrom );
+			$stmt->bindParam ( ':latTo', $latTo );
+			$stmt->execute ();
+			$locations = array();
+			while ( $row = $stmt->fetch () ) {
+				$locations [] = $this->createLocationFromDatabaseRow ( $row );
+			}
+			return $locations;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
+	}
+	
 	
 	public function saveLocation($location) {
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_location VALUES(:id, :street, :postcode, :town, :mapLat, :mapLng)' );
-			
 			$stmt->execute ( array (
 					':id' => $location->getId (),
 					':street' => $location->getStreet(),
@@ -413,6 +452,7 @@ class DBAccess {
 					':mapLat' => $location->getMapLat(),
 					':mapLng' => $location->getMapLng() 
 			) );
+			return $this->_conn->lastInsertId();
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
@@ -497,6 +537,24 @@ class DBAccess {
 		}
 	}
 	
+	public function findUserByLocId($locid) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_user WHERE usr_loc_id=:locid' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':locid', $locid );
+		
+			$stmt->execute ();
+			$row = $stmt->fetch ();
+		
+			if ($row != null) {
+				return $this->createUserFromDatabaseRow($row);
+			}
+			return null;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
+	}
+	
 	/**
 	 * Saves or updates a user based on the given User object.
 	 * 
@@ -505,12 +563,14 @@ class DBAccess {
 	public function saveUser(User $user)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email) VALUES (:username, :password, :email)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt, usr_loc_id) VALUES (:username, :password, :email, :salt, :usr_loc_id)' );
 		
 			$stmt->execute ( array (
 					':username' => $user->getUsername(),
 					':password' => $user->getPassword(),
 					':email' => $user->getEmail(),
+					':salt' => $user->getSalt(),
+					':usr_loc_id' => $user->getLocId()
 			) );
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -524,7 +584,7 @@ class DBAccess {
 	 * @return User
 	 */
 	private function createUserFromDatabaseRow($row) {
-		$user = User::create()->setId($row->usr_id)->setUsername($row->usr_username)->setPassword($row->usr_password)->setEmail($row->usr_email);
+		$user = User::create()->setId($row->usr_id)->setUsername($row->usr_username)->setPassword($row->usr_password)->setEmail($row->usr_email)->setLocationId($row->usr_loc_id);
 		return $user;
 	}
 	

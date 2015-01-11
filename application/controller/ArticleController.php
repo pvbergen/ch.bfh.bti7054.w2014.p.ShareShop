@@ -25,7 +25,9 @@ class ArticleController extends \Shareshop\Controller {
 		
 
 		$this->insertUserName();
-		$this->view->register('article/show',  array('article' => $article));
+		$user = User::findById($article->getUserId());
+		$location = Location::findById($user->getLocId());
+		$this->view->register('article/show', array('article' => $article, 'location' => $location, 'user' => $user));
 		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
 		$this->view->render();
 		
@@ -51,8 +53,7 @@ class ArticleController extends \Shareshop\Controller {
 			$searchParam1 = new SearchParameter('name', $params['search']);
 			$searchParam2 = new SearchParameter('description', $params['search']);
 			$paramArr = array( $searchParam1, $searchParam2 );
-			$result = Article::searchForArticles($paramArr);
-			$articles = Article::loadArticles($result);
+			$articles = Article::searchForArticles($paramArr);
 			$categories = $this->fetchFromArticles($articles);	
 			$catParents = array();
 			$index = 0;
@@ -145,7 +146,9 @@ class ArticleController extends \Shareshop\Controller {
 			$this->view->redirect('index', 'index');
 		}
 		$article = Article::findById($params['item']);
-		$this->view->register('article/show', array('article' => $article));
+		$user = User::findById($article->getUserId());
+		$location = Location::findById($user->getLocId());
+		$this->view->register('article/show', array('article' => $article, 'location' => $location, 'user' => $user));
 		$this->view->render();
 	}
 	
@@ -180,9 +183,75 @@ class ArticleController extends \Shareshop\Controller {
 		$this->view->render();		
 	}
 	
+	public function plzsearchAction() {
+		$params = $this->request->getParameters();
+		$plz = $params['search'];
+		$articles = array();
+		$categories = array();
+		$final = array();
+		$users = array();
+		
+		$result = Location::findByPostCode($plz);
+		$index = 0;
+		foreach($result as $loc) {
+			$users[$index++] = User::findByLocId($loc->getId());
+		}		
+		foreach($users as $user) {
+			$articles = $this->helpArrayMerge($articles, Article::findArticlesByUserId($user->getId()));
+		}	
+
+		$categories = $this->fetchFromArticles($articles);
+		$catParents = array();
+		$index = 0;
+		foreach($categories as $cat) {
+			$catParents[$index++] = Category::findById($cat->getParentId());
+		}
+		$final[0] = $catParents;
+		$final[1] = $categories;
+
+		
+		//$final = $this->prepareCategoriesHirarchy($categories);
+		$this->insertUserName();
+		$this->view->register('navigation/subnavigation', array('parentCategories' => $final[0], 'childCategories' => $final[1]), 'subnavigation');
+		$this->view->register('article/list', array('articles' => $articles), 'content');
+		$this->view->render();		
+	}
+	
 	
 	public function nearbysearchAction() {
 		$params = $this->request->getParameters();
+		$lng = $params['lng'];
+		$lat = $params['lat'];
+		$articles = array();
+		$categories = array();
+		$final = array();
+		$users = array();
+		
+		$result = Location::findNearBy($lng, $lat);
+		$index = 0;
+		foreach($result as $loc) {
+			$users[$index++] = User::findByLocId($loc->getId());
+		}
+		foreach($users as $user) {
+			$articles = $this->helpArrayMerge($articles, Article::findArticlesByUserId($user->getId()));
+		}
+		
+		$categories = $this->fetchFromArticles($articles);
+		$catParents = array();
+		$index = 0;
+		foreach($categories as $cat) {
+			$catParents[$index++] = Category::findById($cat->getParentId());
+		}
+		$final[0] = $catParents;
+		$final[1] = $categories;
+		
+		
+		//$final = $this->prepareCategoriesHirarchy($categories);
+		$this->insertUserName();
+		$this->view->register('navigation/subnavigation', array('parentCategories' => $final[0], 'childCategories' => $final[1]), 'subnavigation');
+		$this->view->register('article/list', array('articles' => $articles), 'content');
+		$this->view->render();
+		
 	}
 	
 	
@@ -292,9 +361,9 @@ class ArticleController extends \Shareshop\Controller {
 	private function fetchFromArticles($articles) {
 		$categories = array();
 		foreach ($articles as $article) {
-			$categories = array_merge($categories, $article->getCategories());
+			$categories = $this->helpArrayMerge($categories, $article->getCategories());
 		}
-		$categories = array_unique($categories);
+		//$categories = array_unique($categories);
 		return $categories;
 	}
 	

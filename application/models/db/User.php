@@ -12,6 +12,7 @@ class User {
 	private $salt;
 	private $email;
 	private $state;
+	private $locId;
 	
 	private function __construct() {
 	}
@@ -44,6 +45,10 @@ class User {
 		return DBAccess::getInstance()->findUserByUsername($username);
 	}
 	
+	public static function findByLocId($locid) {
+		return DBAccess::getInstance()->findUserByLocId($locid);
+	}
+	
 	// ------------------------ GETTER ---------------------------- //
 	
 	public function getId () {
@@ -68,6 +73,10 @@ class User {
 	
 	public function getState () {
 		return $this->state;
+	}
+	
+	public function getLocId() {
+		return $this->locId;
 	}
 	// ------------------------ SETTER ---------------------------- //
 	
@@ -98,6 +107,11 @@ class User {
 	
 	public function setState ($intState) {
 		$this->state=$intState;
+		return $this;
+	}
+	
+	public function setLocationId($locId) {
+		$this->locId = $locId;
 		return $this;
 	}
 }

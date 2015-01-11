@@ -22,7 +22,15 @@ $(document).ready(
 					el.css('display', 'block');
 				}
 			});
+			
+			/*
+			 * General
+			 */
 
+			String.prototype.replaceAll = function(find, replace) {
+				  return this.replace(new RegExp(find, 'g'), replace);
+			}
+			
 			/*
 			 * Content Elements resize
 			 */
@@ -169,11 +177,13 @@ $(document).ready(
 					removeNearBySearch();
 					$(this).data('type', 3);
 					$(this).attr('value', 'Postleitzahl');
+					$('input.searchfield').attr('placeholder', 'PLZ');
 					$('#searchForm').attr('action', '/Article/plzsearch/');
 					break;					
 				case 3: 
 					$(this).data('type', 1);
 					$(this).attr('value', 'Produktsuche');
+					$('input.searchfield').attr('placeholder', 'Produktsuche');
 					$('#searchForm').attr('action', '/Article/search/');
 					break;	
 				}
@@ -184,20 +194,24 @@ $(document).ready(
 				$('#searchForm').attr('onsubmit','return searchBeforeSubmit();');
 				$('input.googleSearch').each(function(i, el) {
 					var options = {};
-					autocomplete = new google.maps.places.Autocomplete(el, options);	
+					window.autocomplete = new google.maps.places.Autocomplete(el, options);	
 				});				
 			};  
 			
 			window.searchBeforeSubmit = function() {
 				var lat;
 				var lng;
-				$.get('http://maps.googleapis.com/maps/api/geocode/json?address='+ $('input.searchfield').value).done(function(json) {
-					lat  = json.results[0].geometry.location.lat;
-					lng = json.results[0].geometry.location.lng;
-					$('#searchForm .search').prepend('<input type="hidden" name="lat" value="'+ lat + '">');
-					$('#searchForm .search').prepend('<input type="hidden" name="lng" value="'+ lng	 + '">');
-					$('#searchForm').removeAttr('onsubmit');
-					document.getElementById('searchForm').submit();
+				//var address = $('input.googleSearch').val().replaceAll(' ', '+');
+				address = encodeURIComponent($('input.googleSearch').val());
+				$.get('http://maps.googleapis.com/maps/api/geocode/json?address='+ address).done(function(json) {
+					if (json.status === 'OK') {
+						lat  = json.results[0].geometry.location.lat;
+						lng = json.results[0].geometry.location.lng;
+						$('#searchForm .search').prepend('<input type="hidden" name="lat" value="'+ lat + '">');
+						$('#searchForm .search').prepend('<input type="hidden" name="lng" value="'+ lng	 + '">');
+						$('#searchForm').removeAttr('onsubmit');
+						document.getElementById('searchForm').submit();
+					}
 				});
 				return false;
 			}
