@@ -515,6 +515,14 @@ class DBAccess {
 		return $user;
 	}
 	
+	// ------------------------ Session ---------------------------- //
+	
+	/**
+	 * Retrieves session by its session id.
+	 * 
+	 * @param string $id
+	 * @return \Application\Models\Db\Session|NULL
+	 */
 	public function findSessionById($id)
 	{
 		try {
@@ -570,5 +578,116 @@ class DBAccess {
 			->setUserId($row->session_usr_id);
 		return $session;
 	}
+	
+	
+	// ------------------------ Exchange ---------------------------- //
+	
+	
+	
+	/**
+	 * Saves or updates an exchange based on the given Exchange object.
+	 *
+	 * @param Exchange $exchange
+	 */
+	public function saveExchange(Exchange $exchange)
+	{
+		try {
+			$stmt = $this->_conn->prepare (
+					'REPLACE INTO sha_exchange'
+					. ' (exchange_id, requesting_user, answering_user, requesting_rating, answering_rating, state)'
+					. ' VALUES (:id, :requestingUser, :answeringUser, :requestingRating, :answeringRating, :state)' );
+	
+			$stmt->execute ( array (
+					':id' => $exchange->getId(),
+					':requestingUser' => $exchange->getRequestingUser(),
+					':answeringUser' => $exchange->getAnsweringUser(),
+					':requestingRating' => $exchange->getRequestingRating(),
+					':answeringRating' => $exchange->getAnsweringRating(),
+					':state' => $exchange->getState()
+			) );
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	/**
+	 * Saves an exchange step based on the given ExchangeStep object.
+	 *
+	 * @param ExchangeStep $step
+	 */
+	public function saveExchangeStep(ExchangeStep $step)
+	{
+		try {
+			$stmt = $this->_conn->prepare ( 
+					'INSERT INTO sha_exchange_step' 
+					. ' (exchange_id, step_created, step_remark, step_type)' 
+					. ' VALUES (:exchangeId, :created, :remark, :type)' );
+	
+			$stmt->execute ( array (
+					':exchangeId' => $step->getExchangeId(),
+					':created' => $step->getCreated(),
+					':remark' => $step->getRemark(),
+					':type' => $step->getType()
+			) );
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	/**
+	 * Saves the items of an exchange step based on the given ExchangeStep object.
+	 *
+	 * @param ExchangeStep $step
+	 */
+	public function saveExchangeStepArticles(ExchangeStep $step)
+	{
+		foreach($step->getArticles() as $article) {
+			try {
+				$stmt = $this->_conn->prepare (
+						'INSERT INTO sha_exchange_step_item'
+						. ' (step_id, art_id)'
+						. ' VALUES (:stepId, :artId)' );
+			
+				$stmt->execute ( array (
+						':stepId' => $step->getId(),
+						':artId' => $article,
+				) );
+			} catch ( \PDOException $e ) {
+				echo 'Error: ' . $e->getMessage ();
+			}	
+		}
+	}
+	
+	/**
+	 * Creates an Exchange object from a database row.
+	 *
+	 * @param \stdClass $row
+	 * @return Exchange
+	 */
+	private function createExchangeFromDatabaseRow($row) {
+		$exchange = Exchange::create()
+		->setId($row->exchange_id)
+		->setRequestingUser($row->requesting_user)
+		->setAnsweringUser($row->answering_user)
+		->setRequestingRating($row->requesting_rating)
+		->setAnsweringRating($row->answering_rating)
+		->setState($row->state);
+		return $exchange;
+	}
+	
+	/**
+	 * Creates an ExchangeStep object from a database row.
+	 *
+	 * @param \stdClass $row
+	 * @return ExchangeStep
+	 */
+	private function createExchangeStepFromDatabaseRow($row) {
+		$step = ExchangeStep::create()
+		->setId($row->step_id)
+		->setExchangeId($row->exchange_id)
+		->setCreated($row->step_created)
+		->setRemark($row->step_remark)
+		->setType($row->step_type);
+		return $step;
+	}
 }
-?>
