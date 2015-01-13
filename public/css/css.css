@@ -69,6 +69,16 @@ h2 {
 	color:#4B60F0;
 }
 
+h3 {
+	margin: 10px 0;
+	font-size: 1.2em;
+}
+
+h4 {
+	margin: 5px 0;
+	font-size: 1.1em;
+}
+
 .invisible {
 	display: none;
 }
@@ -314,7 +324,7 @@ form label {
 .product-list {
 }
 
-.product, .exchange {
+.product, .exchange, .exchangeSelection {
 	width: 19.2%;
 	float: left;
 	overflow: hidden;
@@ -325,6 +335,20 @@ form label {
 	box-shadow:0px 9px 10px -6px #f08a4a;
 	cursor: pointer;
 	position: relative;
+}
+
+.exchangeSelection {
+	width: 49%;
+	margin-right:2%;
+}
+
+
+.exchangeSelection.selected {
+	border:1px solid #4B60F0;
+}
+
+.exchangeSelection:nth-child(2n) {
+	margin-right:0;
 }
 
 .product:nth-child(5n), .exchange:nth-child(5n) {
@@ -363,7 +387,7 @@ form label {
 	font-size: 1.6em;
 }
 
-.productImage {
+.productImage, .exchangeImage {
 	background-size: cover;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
