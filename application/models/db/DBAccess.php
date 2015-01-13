@@ -43,15 +43,8 @@ class DBAccess {
 	// ------------------------ Helpers ---------------------------- //
 	private function createArticleFromDatabaseRow($row) {
 		$article = Article::create ()->setId ( $row->art_id )->setName ( $row->art_name )->setDescription ( $row->art_description )->setImage ( $row->art_image )->setUserId( $row->art_usr_id );
-		
-// 		$catId = $row->art_cat_id;
-// 		while ( $catId != null ) {
-// 			$category = $this->findCategoryById ( $catId );
-// 			$categories [] = $category;
-// 			$catId = $category->getParentId ();
-// 		}
-// 		$article->setCategories($categories);
-		
+		//print_r($this->findCategoriesByArticle($article->getId()));
+		$article->setCategories($this->findCategoriesByArticle($article->getId()));
 		return $article;
 	}
 	
@@ -99,14 +92,13 @@ class DBAccess {
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->execute ($paramBindings);
 			
-			$articleIds = array();
+			$articles = array();
 			$index = 0;
 			while ( $row = $stmt->fetch () ) {
-				$articleIds[$index] = $row->art_id;
-				$index++;
+				$articles[$index++] = $this->createArticleFromDatabaseRow ( $row );
 			}
 
-			return $articleIds;
+			return $articles;
 			
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -195,8 +187,9 @@ class DBAccess {
 		$this->deleteCategoryRelation($article->getId());
 
 		try {
-			$stmt = $this->_conn->prepare ( 'UPDATE sha_articles SET art_name = :name, art_description = :description, art_image = :image, art_usr_id = :art_usr_id WHERE art_id = :id' );
-						
+			$stmt = $this->_conn->prepare ( 'REPLACE INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
+	
+				
 			$stmt->bindParam ( ':id', $article->getId () );
 			$stmt->bindParam ( ':name', $article->getName () );
 			$stmt->bindParam ( ':description', $article->getDescription () );
@@ -212,13 +205,14 @@ class DBAccess {
 		}
 	}	
 
-	public function deleteArticle($id) {
+	public function deleteArticle($article) {
 		$success = false;
+		$id = $article->getId();
 		$this->deleteCategoryRelation($id);
 		try {
 			$stmt = $this->_conn->prepare ( 'DELETE FROM sha_articles WHERE art_id = :id' );
 	
-	
+			
 			$stmt->bindParam ( ':id', $id );
 	
 			$success = $stmt->execute ();
@@ -287,7 +281,6 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
-	
 	
 	// ------------------------ Category ---------------------------- //
 	public function findCategoryById($id) {
@@ -368,6 +361,26 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
+	
+	private function findCategoriesByArticle($id) {
+		try {
+
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_art_cat_rel WHERE art_id=:id' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+		
+			$stmt->execute ();
+				
+			$categories = array();
+			$index = 0;
+			while ( $row = $stmt->fetch () ) {
+				$categories[$index++] = $this->findCategoryById($row->cat_id);
+			}
+			return $categories;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}		
+	}
 	// ------------------------ Location ---------------------------- //
 	public function findLocationById($id) {
 		try {
@@ -386,14 +399,13 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 	}
-	
 
 	public function findLocationByPostCode($postcode) {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_postcode=:postcode' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':postcode', $postcode );
-	
+		
 			$stmt->execute ();
 			$locations = array();
 			while ( $row = $stmt->fetch () ) {
@@ -402,7 +414,7 @@ class DBAccess {
 			return $locations;
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
-		}
+		}		
 	}
 	
 	public function findLocationNearBy($lng, $lat) {
@@ -410,7 +422,7 @@ class DBAccess {
 			$lngFrom = $lng - 0.07;
 			$lngTo = $lng + 0.07;
 			$latFrom = $lat - 0.07;
-			$latTo = $lat + 0.07;
+			$latTo = $lat + 0.07;			
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_mapLng BETWEEN :lngFrom AND :lngTo AND loc_mapLat BETWEEN :latFrom AND :latTo ' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':lngFrom', $lngFrom );
@@ -425,14 +437,13 @@ class DBAccess {
 			return $locations;
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
-		}
+		}		
 	}
 	
 	
 	public function saveLocation($location) {
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_location VALUES(:id, :street, :postcode, :town, :mapLat, :mapLng)' );
-			
 			$stmt->execute ( array (
 					':id' => $location->getId (),
 					':street' => $location->getStreet(),
@@ -441,6 +452,7 @@ class DBAccess {
 					':mapLat' => $location->getMapLat(),
 					':mapLng' => $location->getMapLng() 
 			) );
+			return $this->_conn->lastInsertId();
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
 		}
@@ -530,17 +542,17 @@ class DBAccess {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_user WHERE usr_loc_id=:locid' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':locid', $locid );
-	
+		
 			$stmt->execute ();
 			$row = $stmt->fetch ();
-	
+		
 			if ($row != null) {
 				return $this->createUserFromDatabaseRow($row);
 			}
 			return null;
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
-		}
+		}		
 	}
 	
 	/**
@@ -551,13 +563,14 @@ class DBAccess {
 	public function saveUser(User $user)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt) VALUES (:username, :password, :email, :salt)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt, usr_loc_id) VALUES (:username, :password, :email, :salt, :usr_loc_id)' );
 		
 			$stmt->execute ( array (
 					':username' => $user->getUsername(),
 					':password' => $user->getPassword(),
 					':email' => $user->getEmail(),
-					':salt' => $user->getSalt()
+					':salt' => $user->getSalt(),
+					':usr_loc_id' => $user->getLocId()
 			) );
 		} catch ( \PDOException $e ) {
 			echo 'Error: ' . $e->getMessage ();
@@ -571,18 +584,10 @@ class DBAccess {
 	 * @return User
 	 */
 	private function createUserFromDatabaseRow($row) {
-		$user = User::create()->setId($row->usr_id)->setUsername($row->usr_username)->setPassword($row->usr_password)->setEmail($row->usr_email);
+		$user = User::create()->setId($row->usr_id)->setUsername($row->usr_username)->setPassword($row->usr_password)->setEmail($row->usr_email)->setLocationId($row->usr_loc_id);
 		return $user;
 	}
 	
-	// ------------------------ Session ---------------------------- //
-	
-	/**
-	 * Retrieves session by its session id.
-	 * 
-	 * @param string $id
-	 * @return \Application\Models\Db\Session|NULL
-	 */
 	public function findSessionById($id)
 	{
 		try {
@@ -638,263 +643,5 @@ class DBAccess {
 			->setUserId($row->session_usr_id);
 		return $session;
 	}
-	
-	
-	// ------------------------ Exchange ---------------------------- //
-	
-	public function findExchangeById($id)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-					'SELECT * FROM sha_exchange'
-					.' WHERE exchange_id = :id'
-			);
-			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
-			$stmt->bindParam ( ':id', $id );
-	
-			$stmt->execute ();
-			$row = $stmt->fetch();
-			
-			if ($row != null) {
-				return $this->createExchangeFromDatabaseRow( $row );
-			}
-			return null;
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-	}
-	
-	public function findExchangeByUser($userId)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-				'SELECT * FROM sha_exchange'
-				.' WHERE answering_user = :id OR requesting_user = :id'
-			);
-			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
-			$stmt->bindParam ( ':id', $userId );
-		
-			$stmt->execute ();
-			
-			$exchanges = array();
-			if ($stmt->rowCount() > 0) {
-				while (($row = $stmt->fetch()) != null) {
-					$exchanges[] = $this->createExchangeFromDatabaseRow( $row );
-				}
-			}
-			return $exchanges;
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-	}
-	
-	public function findActiveExchangeByArticleAndUser($userId, $articleId)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-				'SELECT e.* FROM sha_exchange AS e JOIN ('
-					.' SELECT s.exchange_id FROM sha_exchange_step AS s JOIN sha_exchange_step_item AS i '
-					.' ON (i.step_id = s.step_id AND i.art_id = :articleId) ) AS si '
-				.' ON (e.exchange_id = si.exchange_id AND e.requesting_user = :userId AND state = 0)'
-			);
-			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
-			$stmt->bindParam ( ':userId', $userId );
-			$stmt->bindParam ( ':articleId', $articleId );
-		
-			$stmt->execute ();
-			$row = $stmt->fetch ();
-		
-			if ($row != null) {
-				return $this->createExchangeFromDatabaseRow( $row );
-			}
-			return null;
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-	}
-	
-	public function findExchangeStepsByExchange($exchangeId)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-					'SELECT * FROM sha_exchange_step'
-					.' WHERE exchange_id = :id ORDER BY step_created DESC'
-			);
-			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
-			$stmt->bindParam ( ':id', $exchangeId );
-	
-			$stmt->execute ();
-				
-			$steps = array();
-			if ($stmt->rowCount() > 0) {
-				while (($row = $stmt->fetch()) != null) {
-					$steps[] = $this->createExchangeStepFromDatabaseRow( $row );
-				}
-			}
-			return $steps;
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-	}
-	
-
-	public function findArticlesIdByExchangeStep($stepId)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-					'SELECT a.* FROM sha_articles AS a JOIN sha_exchange_step_item AS es'
-					.' ON (a.art_id = es.art_id AND es.step_id = :id)'
-			);
-			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
-			$stmt->bindParam ( ':id', $stepId );
-		
-			$stmt->execute ();
-		
-			$articles = array();
-			if ($stmt->rowCount() > 0) {
-				while (($row = $stmt->fetch()) != null) {
-					$articles[] = $this->createArticleFromDatabaseRow( $row );
-				}
-			}
-			return $articles;
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-	}
-	
-	/**
-	 * Saves an exchange based on the given Exchange object.
-	 *
-	 * @param Exchange $exchange
-	 * @return int The insert id.
-	 */
-	public function saveExchange(Exchange $exchange)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-					'INSERT INTO sha_exchange'
-					. ' (exchange_id, requesting_user, answering_user, requesting_rating, answering_rating, state)'
-					. ' VALUES (:id, :requestingUser, :answeringUser, :requestingRating, :answeringRating, :state)' );
-	
-			$stmt->execute ( array (
-					':id' => $exchange->getId(),
-					':requestingUser' => $exchange->getRequestingUser()->getId(),
-					':answeringUser' => $exchange->getAnsweringUser()->getId(),
-					':requestingRating' => $exchange->getRequestingRating(),
-					':answeringRating' => $exchange->getAnsweringRating(),
-					':state' => $exchange->getState()
-			) );
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-		return $this->_conn->lastInsertId();
-	}
-	
-	/**
-	 * Updates an exchange based on the given Exchange object.
-	 *
-	 * @param Exchange $exchange
-	 */
-	public function modifyExchange(Exchange $exchange)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-					'UPDATE sha_exchange SET'
-					.' requesting_rating = :requestingRating,'
-					.' answering_rating = :answeringRating, state = :state'
-					.' WHERE exchange_id = :id ' 
-			);
-	
-			$stmt->execute ( array (
-					':id' => $exchange->getId(),
-					':requestingRating' => $exchange->getRequestingRating(),
-					':answeringRating' => $exchange->getAnsweringRating(),
-					':state' => $exchange->getState()
-			) );
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-	}
-	
-	/**
-	 * Saves an exchange step based on the given ExchangeStep object.
-	 *
-	 * @param ExchangeStep $step
-	 * @return int The last insert id.
-	 */
-	public function saveExchangeStep(ExchangeStep $step)
-	{
-		try {
-			$stmt = $this->_conn->prepare ( 
-					'REPLACE INTO sha_exchange_step' 
-					. ' (exchange_id, step_created, step_remark, step_type)' 
-					. ' VALUES (:exchangeId, :created, :remark, :type)' );
-	
-			$stmt->execute ( array (
-					':exchangeId' => $step->getExchangeId(),
-					':created' => $step->getCreated(),
-					':remark' => $step->getRemark(),
-					':type' => $step->getType()
-			) );
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-		return $this->_conn->lastInsertId();
-	}
-	
-	/**
-	 * Saves the items of an exchange step based on the given ExchangeStep object.
-	 *
-	 * @param ExchangeStep $step
-	 * @param int $articleId
-	 */
-	public function saveExchangeStepArticles(ExchangeStep $step, $articleId)
-	{
-		try {
-			$stmt = $this->_conn->prepare (
-					'INSERT INTO sha_exchange_step_item'
-					. ' (step_id, art_id)'
-					. ' VALUES (:stepId, :artId)' );
-		
-			$stmt->execute ( array (
-					':stepId' => $step->getId(),
-					':artId' => $articleId,
-			) );
-		} catch ( \PDOException $e ) {
-			echo 'Error: ' . $e->getMessage ();
-		}
-	}
-	
-	/**
-	 * Creates an Exchange object from a database row.
-	 *
-	 * @param \stdClass $row
-	 * @return Exchange
-	 */
-	private function createExchangeFromDatabaseRow($row) {
-		$exchange = Exchange::create()
-		->setId($row->exchange_id)
-		->setRequestingUser($row->requesting_user)
-		->setAnsweringUser($row->answering_user)
-		->setRequestingRating($row->requesting_rating)
-		->setAnsweringRating($row->answering_rating)
-		->setState($row->state);
-		return $exchange;
-	}
-	
-	/**
-	 * Creates an ExchangeStep object from a database row.
-	 *
-	 * @param \stdClass $row
-	 * @return ExchangeStep
-	 */
-	private function createExchangeStepFromDatabaseRow($row) {
-		$step = ExchangeStep::create()
-		->setId($row->step_id)
-		->setExchangeId($row->exchange_id)
-		->setCreated($row->step_created)
-		->setRemark($row->step_remark)
-		->setType($row->step_type);
-		return $step;
-	}
 }
+?>
