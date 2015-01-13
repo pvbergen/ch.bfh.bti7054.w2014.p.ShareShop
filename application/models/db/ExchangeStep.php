@@ -40,8 +40,10 @@ class ExchangeStep {
 	{
 		$this->_stepId = DBAccess::getInstance()->saveExchangeStep($this);
 		
-		foreach ($this->_articles as $article) {
-			DBAccess::getInstance()->saveExchangeStepArticles($this, $article);
+		if (count($this->_articles) > 0) {
+			foreach ($this->_articles as $article) {
+				DBAccess::getInstance()->saveExchangeStepArticles($this, $article);
+			}
 		}
 	}
 	
@@ -78,6 +80,7 @@ class ExchangeStep {
 	public function addArticle($id)
 	{
 		$this->_articles[] = $id;
+		return $this;
 	}
 	
 	public function getId()
@@ -105,6 +108,11 @@ class ExchangeStep {
 		return $this->_type;
 	}
 	
+	/**
+	 * Returns the articles to this step.
+	 * 
+	 * @return multitype:Article
+	 */
 	public function getArticles()
 	{
 		if (count($this->_articles) == 0) {

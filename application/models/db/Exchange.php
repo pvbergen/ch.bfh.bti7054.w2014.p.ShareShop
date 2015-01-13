@@ -25,6 +25,17 @@ class Exchange {
 	}
 
 	/**
+	 * Returns the exchange by the given id.
+	 *
+	 * @param int $id			The exchange id.
+	 * @return Exchange			The exchange or null.
+	 */
+	public static function findById($id)
+	{
+		return DBAccess::getInstance()->findExchangeById($id);
+	}
+	
+	/**
 	 * 
 	 * Returns an active Exchange for the article and the user,
 	 * where the given article is requested and the given user is the requesting user 
@@ -58,8 +69,12 @@ class Exchange {
 	}
 
 	public function save() {
-		$this->_exchangeId = DBAccess::getInstance()->saveExchange($this);
-		
+		if ($this->_exchangeId > 0) {
+			DBAccess::getInstance()->modifyExchange($this);
+		} else {
+			$this->_exchangeId = DBAccess::getInstance()->saveExchange($this);
+		}
+	
 		foreach($this->_steps as $step) {
 			$step->setExchangeId($this->_exchangeId);
 			$step->save();
@@ -146,9 +161,9 @@ class Exchange {
 	}
 	
 	/**
-	 * Returns all initiated steps of this exchange.
-	 * 
-	 * @return ExchangeStep[]
+	 * Returns all completed steps of this exchange.
+	 *  
+	 * @return multitype:\Application\Models\Db\ExchangeStep
 	 */
 	public function getSteps() {
 		if (count($this->_steps) == 0) {

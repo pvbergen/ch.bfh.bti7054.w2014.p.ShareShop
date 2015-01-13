@@ -31,7 +31,7 @@ class Location {
 	*
 	*  @param integer $intId the id of the location to find.
 	*
-	*  @return Location A Location object or null if not found.
+	*  @return a Location object or null if not found.
 	*
 	* */
 	public static function findById($intId) {

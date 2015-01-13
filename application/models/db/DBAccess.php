@@ -195,9 +195,8 @@ class DBAccess {
 		$this->deleteCategoryRelation($article->getId());
 
 		try {
-			$stmt = $this->_conn->prepare ( 'REPLACE INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
-	
-				
+			$stmt = $this->_conn->prepare ( 'UPDATE sha_articles SET art_name = :name, art_description = :description, art_image = :image, art_usr_id = :art_usr_id WHERE art_id = :id' );
+						
 			$stmt->bindParam ( ':id', $article->getId () );
 			$stmt->bindParam ( ':name', $article->getName () );
 			$stmt->bindParam ( ':description', $article->getDescription () );
@@ -388,6 +387,48 @@ class DBAccess {
 		}
 	}
 	
+
+	public function findLocationByPostCode($postcode) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_postcode=:postcode' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':postcode', $postcode );
+	
+			$stmt->execute ();
+			$locations = array();
+			while ( $row = $stmt->fetch () ) {
+				$locations [] = $this->createLocationFromDatabaseRow ( $row );
+			}
+			return $locations;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	public function findLocationNearBy($lng, $lat) {
+		try {
+			$lngFrom = $lng - 0.07;
+			$lngTo = $lng + 0.07;
+			$latFrom = $lat - 0.07;
+			$latTo = $lat + 0.07;
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location WHERE loc_mapLng BETWEEN :lngFrom AND :lngTo AND loc_mapLat BETWEEN :latFrom AND :latTo ' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':lngFrom', $lngFrom );
+			$stmt->bindParam ( ':lngTo', $lngTo );
+			$stmt->bindParam ( ':latFrom', $latFrom );
+			$stmt->bindParam ( ':latTo', $latTo );
+			$stmt->execute ();
+			$locations = array();
+			while ( $row = $stmt->fetch () ) {
+				$locations [] = $this->createLocationFromDatabaseRow ( $row );
+			}
+			return $locations;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	
 	public function saveLocation($location) {
 		try {
 			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_location VALUES(:id, :street, :postcode, :town, :mapLat, :mapLng)' );
@@ -471,6 +512,24 @@ class DBAccess {
 			$stmt = $this->_conn->prepare ( 'SELECT u.* FROM sha_session AS s JOIN sha_user AS u ON (session_id=:id AND u.usr_id == s.session_usr_id) ORDER BY create_time DESC LIMIT 1' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+			$row = $stmt->fetch ();
+	
+			if ($row != null) {
+				return $this->createUserFromDatabaseRow($row);
+			}
+			return null;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	public function findUserByLocId($locid) {
+		try {
+			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_user WHERE usr_loc_id=:locid' );
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':locid', $locid );
 	
 			$stmt->execute ();
 			$row = $stmt->fetch ();
@@ -583,6 +642,28 @@ class DBAccess {
 	
 	// ------------------------ Exchange ---------------------------- //
 	
+	public function findExchangeById($id)
+	{
+		try {
+			$stmt = $this->_conn->prepare (
+					'SELECT * FROM sha_exchange'
+					.' WHERE exchange_id = :id'
+			);
+			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
+			$stmt->bindParam ( ':id', $id );
+	
+			$stmt->execute ();
+			$row = $stmt->fetch();
+			
+			if ($row != null) {
+				return $this->createExchangeFromDatabaseRow( $row );
+			}
+			return null;
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
 	public function findExchangeByUser($userId)
 	{
 		try {
@@ -682,7 +763,7 @@ class DBAccess {
 	}
 	
 	/**
-	 * Saves or updates an exchange based on the given Exchange object.
+	 * Saves an exchange based on the given Exchange object.
 	 *
 	 * @param Exchange $exchange
 	 * @return int The insert id.
@@ -691,7 +772,7 @@ class DBAccess {
 	{
 		try {
 			$stmt = $this->_conn->prepare (
-					'REPLACE INTO sha_exchange'
+					'INSERT INTO sha_exchange'
 					. ' (exchange_id, requesting_user, answering_user, requesting_rating, answering_rating, state)'
 					. ' VALUES (:id, :requestingUser, :answeringUser, :requestingRating, :answeringRating, :state)' );
 	
@@ -707,6 +788,32 @@ class DBAccess {
 			echo 'Error: ' . $e->getMessage ();
 		}
 		return $this->_conn->lastInsertId();
+	}
+	
+	/**
+	 * Updates an exchange based on the given Exchange object.
+	 *
+	 * @param Exchange $exchange
+	 */
+	public function modifyExchange(Exchange $exchange)
+	{
+		try {
+			$stmt = $this->_conn->prepare (
+					'UPDATE sha_exchange SET'
+					.' requesting_rating = :requestingRating,'
+					.' answering_rating = :answeringRating, state = :state'
+					.' WHERE exchange_id = :id ' 
+			);
+	
+			$stmt->execute ( array (
+					':id' => $exchange->getId(),
+					':requestingRating' => $exchange->getRequestingRating(),
+					':answeringRating' => $exchange->getAnsweringRating(),
+					':state' => $exchange->getState()
+			) );
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
 	}
 	
 	/**

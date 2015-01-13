@@ -103,6 +103,11 @@ form input, form select, form textarea {
 	height: 3em;
 }
 
+form input[type="radio"] {
+	width:auto;
+	height:auto;
+}
+
 form label, form input, form select {
     display: inline-block;
 }
@@ -349,6 +354,10 @@ form label {
 
 .exchangeSelection:nth-child(2n) {
 	margin-right:0;
+}
+
+.exchangeSelectionInput {
+	display:none;
 }
 
 .product:nth-child(5n), .exchange:nth-child(5n) {

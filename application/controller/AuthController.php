@@ -59,14 +59,15 @@ class AuthController extends \Shareshop\Controller {
 						if ($postData['password'] == $postData['passwordRepeat']) {
 							$userDB = User::findByUsername($postData['username']);
 							if ($userDB == null || $userDB->getUsername() != strtolower($postData['username'])) {
-								$salt = $this->generateString(10);
-								$password = $this->createHash($postData['password']);//, $salt);
-								User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setState(0)->save();
 								$address = split(',',$postData['adresse']);
 								$street = trim($address[0]);
 								$plz = split(' ', trim($address[1]))[0];
-								$town = split(' ', trim($address[1]))[1];
-								Location::create()->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($postData['adresse_lat'])->setMapLng($postData['adresse_lng'])->save();
+								$town = split(' ', trim($address[1]))[1];								
+								$location = Location::create()->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($postData['adresse_lat'])->setMapLng($postData['adresse_lng'])->save();
+								$salt = $this->generateString(10);
+								$password = $this->createHash($postData['password']);//, $salt);
+								User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setState(0)->setLocationId($location->getId())->save();
+								
 								$viewData['success'] = 'Erfolgreich registriert!';
 							} else {
 								$viewData['error'] = 'Dieser Username existiert bereits.';

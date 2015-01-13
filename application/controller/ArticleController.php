@@ -147,7 +147,7 @@ class ArticleController extends \Shareshop\Controller {
 		}
 		$article = Article::findById($params['item']);
 		$user = User::findById($article->getUserId());
-		$location = Location::findById($user->getId());
+		$location = Location::findById($user->getLocId());
 		$this->view->register('article/show', array('article' => $article, 'location' => $location, 'user' => $user));
 		$this->view->render();
 	}

@@ -1,0 +1,199 @@
+<?php 
+$exchange = $data['exchange'];
+$step = $data['currentStep'];
+$user = $data['currentUser'];
+$isRequesting = false;
+if ($exchange->getRequestingUser()->getId() == $user->getId()) {
+	$isRequesting = true;
+	$partnerName = $exchange->getAnsweringUser()->getUsername();
+} else {
+	$partnerName = $exchange->getRequestingUser()->getUsername();
+}
+
+$requestedArticle = $exchange->getSteps()[0]->getArticles()[0];
+if (isset($exchange->getSteps()[1])) {
+	$offeredArticle = $exchange->getSteps()[1]->getArticles()[0];
+}
+?>
+
+<div class="exchange-detail">
+<div>
+	<div class="formLeft">
+		<h1>
+		<?php $l->e("Verhandlung mit ");
+			echo $partnerName;
+		?>
+		</h1>
+	</div>
+</div>
+<div>
+	<div class="formLeft">
+		<h2><?php $l->e("Angefragtes Produkt"); ?></h2>
+		<div class="exchangeProduct">
+			<div class="formLeft">
+				<img src="<?php echo $requestedArticle->getImage(); ?>" style="width:100%" />
+			</div>
+			<div class="formRight">
+				<h3><?php echo $requestedArticle->getName(); ?></h3>
+				<div class="decription">
+					<?php echo $requestedArticle->getDescription(); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="formRight">
+		<h2><?php $l->e("Gegenwert"); ?></h2>
+		<?php if (isset($offeredArticle)) { ?>
+			<div class="exchangeProduct">
+				<div class="formLeft">
+					<img src="<?php echo $offeredArticle->getImage(); ?>" style="width:100%" />
+				</div>
+				<div class="formRight">
+					<h3><?php echo $offeredArticle->getName(); ?></h3>
+					<div class="decription">
+						<?php echo $offeredArticle->getDescription(); ?>
+					</div>
+				</div>
+			</div>
+		<?php } else { ?>
+			<h4><?php $l->e("Noch kein Gegenwert gewählt."); ?></h4>
+		<?php } ?>
+	</div>
+</div>
+<div>
+	<div class="formLeft">
+		<h2><?php $l->e("Aktion"); ?></h2>
+		<?php 
+			switch ($step->getType()) {
+				case ($data['request_key']):
+					if ($isRequesting) {
+						$l->e("Warte auf Antwort.");
+					} else {
+				?>
+				<h3><?php $l->e("Gegenangebot wählen"); ?></h3>
+				<?php 
+					foreach($data['articles'] as $article) {
+				?>
+					
+					<div class="exchangeSelection" data-id="<?php echo $article->getId(); ?>">
+						<div class="exchangeImage" style="background-image:url('<?php echo $article->getImage(); ?>')">
+						</div>
+						<div>
+							<?php echo $article->getName(); ?>
+						</div>
+					</div>
+					
+				<?php 
+						}
+				?>
+					<form action="" method="post">
+						<div class="formLeft input-wrapper">
+							<input type="hidden" name="exchangeSelection" value="" class="exchangeSelectionInput" />
+							<input type="submit" class="singleButton" name="counterOfferSubmit" value="<?php $l->e("Speichern"); ?>">
+							<input type="submit" class="singleButton" name="exchangeCancel" value="<?php $l->e("Ablehnen"); ?>">
+						</div>
+					</form>
+				<?php
+					}
+					break;
+		 		case ($data['pick_key']):
+			 		if ($isRequesting) {
+			 	?>
+			 			<form action="" method="post">
+				 			<div class="formLeft input-wrapper">
+					 			<input type="submit" class="singleButton" name="exhangeSubmit" value="<?php $l->e("Austauschen"); ?>">
+					 			<input type="submit" class="singleButton" name="exchangeCancel" value="<?php $l->e("Ablehnen"); ?>">
+				 			</div>
+			 			</form>
+			 	<?php 
+			 		} else {
+			 			$l->e("Warte auf Antwort.");
+			 		}
+			 			break;
+		 		case ($data['reoffer_key']):
+		 			if ($isRequesting) {
+		 				$l->e("Warte auf Antwort.");
+		 			} else {
+		 				echo "SELECT PRODUCT";
+		 			}
+		 			break;
+ 				case ($data['exchange_key']):
+ 				?>
+ 					<h3><?php $l->e("Bewerte diesen Austausch")?></h3>
+ 					<form action="" method="post">
+			 			<div class="formLeft input-wrapper">
+			 				<?php $l->e("Bewertung"); ?>:
+			 				<input type="radio" name="rating" value="1" /> 1
+			 				<input type="radio" name="rating" value="2" /> 2
+			 				<input type="radio" name="rating" value="3" checked="checked" /> 3
+			 				<input type="radio" name="rating" value="4" /> 4
+			 				<input type="radio" name="rating" value="5" /> 5<br />
+			 			</div>
+			 			<div class="formLeft input-wrapper">
+				 			<input type="submit" class="singleButton" name="exhangeRate" value="<?php $l->e("Absenden"); ?>">
+			 			</div>
+		 			</form>
+ 				<?php 
+		 			break;
+		 	}
+		?>
+	</div>
+	<div class="formRight">
+			<h2><?php $l->e("Ablauf"); ?></h2>
+			<?php foreach ($exchange->getSteps() as $s) { ?>
+			 	<?php 
+			 	switch ($s->getType()) {
+			 		case ($data['request_key']):
+			 			$actingUser = ($isRequesting) ? $user->getUsername() :  $partnerName;
+			 		?>
+			 			<h3>
+			 		<?php 
+			 			$l->e("Erstanfrage");
+			 		?>
+			 			</h3>
+			 		<?php
+			 			break;
+			 		case ($data['pick_key']):
+			 			$actingUser = ($isRequesting) ? $partnerName : $user->getUsername();
+			 		?>
+			 			<h3>
+			 		<?php 
+			 			$l->e("Gegenwert");
+			 		?>
+			 			</h3>
+			 		<?php 
+			 			break;
+			 		case ($data['reoffer_key']):
+			 			$actingUser = ($isRequesting) ? $user->getUsername() :  $partnerName;
+			 		?>
+			 			<h3>
+			 		<?php 
+			 			$l->e("Gegenvorschlag");
+			 		?>
+			 			</h3>
+			 		<?php 
+			 			break;
+		 			case ($data['exchange_key']):
+		 				$actingUser = ($isRequesting) ? $partnerName : $user->getUsername();
+			 		?>
+			 			<h3>
+			 		<?php 
+		 				$l->e("Abschluss");
+			 		?>
+			 			</h3>
+			 		<?php 
+			 			break;
+			 	}
+		 		?>
+		 		<div style="margin-left:20px;">
+			 		<span><?php $l->e("Nutzer"); ?>: <?php echo $actingUser; ?></span>
+			 		<span>
+			 		<?php 
+			 			$s->getRemark();
+		 			?>
+			 		</span>
+		 		</div>	
+			<?php } ?>
+		</div>
+	</div>
+</div>

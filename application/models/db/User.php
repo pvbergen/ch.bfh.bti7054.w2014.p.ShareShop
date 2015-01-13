@@ -26,11 +26,11 @@ class User {
 	}
 	
 	/**
-	 * Find a user by its unique database id.
+	 * Find a location by its unique database id.
 	*
 	*  @param integer $intId the id of the location to find.
 	*
-	*  @return User A user object or null if not found.
+	*  @return a Location object or null if not found.
 	*
 	* */
 	public static function findById($intId) {

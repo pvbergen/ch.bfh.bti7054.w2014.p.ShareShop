@@ -12,31 +12,36 @@ $user = $data['currentUser'];
 				$exchange = $info['exchange'];
 				$step = $info['currentStep'];
 		?>
-		<div class="exchange" data-id="<?php echo $exchange->getId(); ?>" style="background-image:url('<?php echo $step->getArticles()[0]->getImage(); ?>')">
+		<div class="exchange" data-id="<?php echo $exchange->getId(); ?>">
+			<div class="exchangeImage" style="background-image:url('<?php echo $exchange->getSteps()[0]->getArticles()[0]->getImage(); ?>')">
+			</div>
 			<div class="exchangeinfo">
 				<div class="name">
+					<?php $l->e("Nutzer");?>:
+						<br />
 					<?php 
-						$l->e("Nutzer: ");
 						if ($exchange->getRequestingUser()->getId() == $user->getId()) {
 							echo $exchange->getAnsweringUser()->getUsername(); 
-					?>
+						?>
+							<br /><br />
+						<?php $l->e("Status"); ?>:
 							<br />
-					<?php 
-							$l->e("Status: ");
+						<?php 
 							if ($step->getType() == $data['pick_key']) {
 								$l->e("Angebot oder Gegenangebot vorhanden.");
 							} else {
-								$l->e("Warte auf Gegenantwort.");
+								$l->e("Warte auf Antwort.");
 							}
 						 } else {
 						 	echo $exchange->getRequestingUser()->getUsername();
-				 	?>
+				 		?>
 				 			<br />
-	 				<?php 
+	 					<?php $l->e("Status"); ?>:
+	 					<?php 
 						 	if ($step->getType() == $data['request_key'] || $step->getType() == $data['reoffer_key']) {
 						 		$l->e("Angebot oder Gegenangebot vorhanden.");
 						 	} else {
-						 		$l->e("Warte auf Gegenantwort.");
+						 		$l->e("Warte auf Antwort.");
 						 	}
 						 }
 					?>
@@ -63,7 +68,9 @@ $user = $data['currentUser'];
 				$exchange = $info['exchange'];
 				$step = $info['currentStep'];
 		?>
-		<div class="exchange" data-id="<?php echo $exchange->getId(); ?>" style="background-image:url('<?php echo $step->getArticles()[0]->getImage(); ?>')">
+		<div class="exchange" data-id="<?php echo $exchange->getId(); ?>">
+			<div class="exchangeImage" style="background-image:url('<?php echo $exchange->getSteps()[0]->getArticles()[0]->getImage(); ?>')">
+			</div>
 			<div class="exchangeinfo">
 				<div class="name">
 					<?php 
@@ -97,7 +104,9 @@ $user = $data['currentUser'];
 				$exchange = $info['exchange'];
 				$step = $info['currentStep'];
 		?>
-		<div class="exchange" data-id="<?php echo $exchange->getId(); ?>" style="background-image:url('<?php echo $step->getArticles()[0]->getImage(); ?>')">
+		<div class="exchange" data-id="<?php echo $exchange->getId(); ?>">
+			<div class="exchangeImage" style="background-image:url('<?php echo $exchange->getSteps()[0]->getArticles()[0]->getImage(); ?>')">
+			</div>
 			<div class="exchangeinfo">
 				<div class="name">
 					<?php 
