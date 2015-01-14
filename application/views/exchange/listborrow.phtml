@@ -1,0 +1,134 @@
+<?php 
+$exchanges = $data['exchanges'];
+$user = $data['currentUser']; 
+?>
+
+<h2><?php $l->e("Offene Anfragen"); ?></h2>
+<div class="exchange-list">
+	<?php 
+		if (count($exchanges[$data['active_key']]) > 0) {
+			
+			foreach ($exchanges[$data['active_key']] as $info) {
+				$exchange = $info['exchange'];
+				$step = $info['currentStep'];
+		?>
+		<div class="exchange showborrow" data-id="<?php echo $exchange->getId(); ?>">
+			<div class="exchangeImage" style="background-image:url('<?php echo $exchange->getSteps()[0]->getArticles()[0]->getImage(); ?>')">
+			</div>
+			<div class="exchangeinfo">
+				<div class="name">
+					<?php $l->e("Nutzer");?>:
+						<br />
+					<?php 
+						if ($exchange->getRequestingUser()->getId() == $user->getId()) {
+							echo $exchange->getAnsweringUser()->getUsername(); 
+						?>
+							<br /><br />
+						<?php $l->e("Status"); ?>:
+							<br />
+						<?php 
+							if ($step->getType() == $data['borrow_key']) {
+								$l->e("Warte auf Antwort.");
+							} else {
+								$l->e("Anfrage vorhanden.");
+							}
+						 } else {
+						 	echo $exchange->getRequestingUser()->getUsername();
+				 		?>
+				 			<br />
+	 					<?php $l->e("Status"); ?>:
+	 					<?php 
+						 	if ($step->getType() == $data['borrow_key']) {
+						 		$l->e("Anfrage vorhanden.");
+						 	} else {
+						 		$l->e("Warte auf Antwort.");
+						 	}
+						 }
+					?>
+				</div>
+			</div>
+		</div>
+		<?php 
+			}
+		?>
+		<div class="clearfix"></div>
+	<?php 
+		} else {
+	?>
+		<h3><?php $l->e("Keine Anfragen."); ?></h3>
+	<?php
+		}
+	?>	
+</div>
+<h2><?php $l->e("Abgebrochene Anfragen")?></h2>
+<div class="exchange-list">
+	<?php 
+		if (count($exchanges[$data['cancelled_key']]) > 0) {
+			foreach ($exchanges[$data['cancelled_key']] as $info) {
+				$exchange = $info['exchange'];
+				$step = $info['currentStep'];
+		?>
+		<div class="exchange showborrow" data-id="<?php echo $exchange->getId(); ?>">
+			<div class="exchangeImage" style="background-image:url('<?php echo $exchange->getSteps()[0]->getArticles()[0]->getImage(); ?>')">
+			</div>
+			<div class="exchangeinfo">
+				<div class="name">
+					<?php 
+						$l->e("Nutzer: ");
+						if ($exchange->getRequestingUser()->getId() == $user->getId()) {
+							echo $exchange->getAnsweringUser()->getUsername(); 
+						} else {
+							echo $exchange->getRequestingUser()->getUsername();
+						}
+					?>
+				</div>
+			</div>
+		</div>
+		<?php 
+			}
+		?>
+		<div class="clearfix"></div>
+	<?php 
+		} else {
+	?>
+		<h3><?php $l->e("Keine Anfragen."); ?></h3>
+	<?php
+		}
+	?>
+</div>
+<h2><?php $l->e("Abgeschlossene Anfragen")?></h2>
+<div class="exchange-list">
+	<?php
+		if (count($exchanges[$data['completed_key']]) > 0) {	
+			foreach ($exchanges[$data['completed_key']] as $info) {
+				$exchange = $info['exchange'];
+				$step = $info['currentStep'];
+		?>
+		<div class="exchange showborrow" data-id="<?php echo $exchange->getId(); ?>">
+			<div class="exchangeImage" style="background-image:url('<?php echo $exchange->getSteps()[0]->getArticles()[0]->getImage(); ?>')">
+			</div>
+			<div class="exchangeinfo">
+				<div class="name">
+					<?php 
+						$l->e("Nutzer: ");
+						if ($exchange->getRequestingUser()->getId() == $user->getId()) {
+							echo $exchange->getAnsweringUser()->getUsername(); 
+						} else {
+							echo $exchange->getRequestingUser()->getUsername();
+						}
+					?>
+				</div>
+			</div>
+		</div>
+		<?php 
+			}
+		?>
+		<div class="clearfix"></div>
+	<?php 
+		} else {
+	?>
+		<h3><?php $l->e("Keine Anfragen."); ?></h3>
+	<?php
+		}
+	?>
+</div>

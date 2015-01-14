@@ -1,0 +1,126 @@
+<?php 
+$exchange = $data['exchange'];
+$step = $data['currentStep'];
+$user = $data['currentUser'];
+$isRequesting = false;
+if ($exchange->getRequestingUser()->getId() == $user->getId()) {
+	$isRequesting = true;
+	$partnerName = $exchange->getAnsweringUser()->getUsername();
+} else {
+	$partnerName = $exchange->getRequestingUser()->getUsername();
+}
+
+$requestedArticle = $exchange->getSteps()[0]->getArticles()[0];
+?>
+
+<div class="exchange-detail">
+<div>
+	<div class="formLeft">
+		<h1>
+		<?php $l->e("Ausleihe von ");
+			echo $partnerName;
+		?>
+		</h1>
+	</div>
+</div>
+<div>
+	<div class="formLeft">
+		<h2><?php $l->e("Angefragtes Produkt"); ?></h2>
+		<div class="exchangeProduct">
+			<div class="formLeft">
+				<img src="<?php echo $requestedArticle->getImage(); ?>" style="width:100%" />
+			</div>
+			<div class="formRight">
+				<h3><?php echo $requestedArticle->getName(); ?></h3>
+				<div class="decription">
+					<?php echo $requestedArticle->getDescription(); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="formRight">
+	</div>
+</div>
+<div>
+	<div class="formLeft">
+		<h2><?php $l->e("Aktion"); ?></h2>
+		<?php 
+			switch ($step->getType()) {
+				case ($data['borrow_key']):
+					if ($isRequesting) {
+						$l->e("Warte auf Antwort.");
+					} else {
+				?>
+			 			<form action="" method="post">
+				 			<div class="formLeft input-wrapper">
+				 				<textarea name="exchangeRemark" placeholder="<?php $l->e("Bemerkung"); ?>" style="height:60px;"></textarea>
+					 			<input type="submit" class="singleButton" name="exhangeSubmit" value="<?php $l->e("Ausleihen"); ?>">
+					 			<input type="submit" class="singleButton" name="exchangeCancel" value="<?php $l->e("Ablehnen"); ?>">
+				 			</div>
+			 			</form>
+			 	<?php 
+					}
+			 		break;
+ 				case ($data['exchange_key']):
+ 					if ($isRequesting && $exchange->getRequestingRating() < 1 || !$isRequesting && $exchange->getAnsweringRating() < 1) {
+	 					
+	 				?>
+	 					<h3><?php $l->e("Bewerte diese Ausleihe")?></h3>
+	 					<form action="" method="post">
+				 			<div class="formLeft input-wrapper">
+				 				<?php $l->e("Bewertung"); ?>:
+				 				<input type="radio" name="rating" value="1" /> 1
+				 				<input type="radio" name="rating" value="2" /> 2
+				 				<input type="radio" name="rating" value="3" checked="checked" /> 3
+				 				<input type="radio" name="rating" value="4" /> 4
+				 				<input type="radio" name="rating" value="5" /> 5<br />
+				 			</div>
+				 			<div class="formLeft input-wrapper">
+					 			<input type="submit" class="singleButton" name="exhangeRate" value="<?php $l->e("Absenden"); ?>">
+				 			</div>
+			 			</form>
+	 				<?php 
+ 					}
+		 			break;
+		 	}
+		?>
+	</div>
+	<div class="formRight">
+			<h2><?php $l->e("Ablauf"); ?></h2>
+			<?php foreach ($exchange->getSteps() as $s) { ?>
+			 	<?php 
+			 	switch ($s->getType()) {
+			 		case ($data['borrow_key']):
+			 			$actingUser = ($isRequesting) ? $user->getUsername() :  $partnerName;
+			 		?>
+			 			<h3>
+			 		<?php 
+			 			$l->e("Erstanfrage");
+			 		?>
+			 			</h3>
+			 		<?php
+			 			break;
+		 			case ($data['exchange_key']):
+		 				$actingUser = ($isRequesting) ? $partnerName : $user->getUsername();
+			 		?>
+			 			<h3>
+			 		<?php 
+		 				$l->e("Abschluss");
+			 		?>
+			 			</h3>
+			 		<?php 
+			 			break;
+			 	}
+		 		?>
+		 		<div style="margin-left:20px;">
+			 		<span><?php $l->e("Nutzer"); ?>: <?php echo $actingUser; ?></span>
+			 		<span>
+			 		<?php 
+			 			$s->getRemark();
+		 			?>
+			 		</span>
+		 		</div>	
+			<?php } ?>
+		</div>
+	</div>
+</div>

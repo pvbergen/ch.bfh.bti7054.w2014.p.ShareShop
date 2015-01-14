@@ -7,6 +7,7 @@ class ExchangeStep {
 	const TYPE_PICK = 2;
 	const TYPE_REOFFER = 4;
 	const TYPE_EXCHANGE = 8;
+	const TYPE_BORROW = 16;
 	
 	protected $_stepId = -1;
 	protected $_exchangeId = -1;

@@ -12,7 +12,7 @@ $user = $data['currentUser'];
 				$exchange = $info['exchange'];
 				$step = $info['currentStep'];
 		?>
-		<div class="exchange" data-id="<?php echo $exchange->getId(); ?>">
+		<div class="exchange showexchange" data-id="<?php echo $exchange->getId(); ?>">
 			<div class="exchangeImage" style="background-image:url('<?php echo $exchange->getSteps()[0]->getArticles()[0]->getImage(); ?>')">
 			</div>
 			<div class="exchangeinfo">

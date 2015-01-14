@@ -28,6 +28,15 @@ $user = $data['user'];
 			
 		</ul>
 		<?php } ?>
+		<h2><?php $l->e("Tauschen oder Ausleihen")?></h2>
+		<div class="exchangeContainer">
+			<form action="" method="post" id="exchangeForm">	
+				<textarea style="height:60px;" name="exchangeRemark" placeholder="<?php $l->e("Bemerkung"); ?>"></textarea>
+				<input type="submit" class="singleButton" name="exchangeBorrow" id="exchangeBorrowButton" value="<?php $l->e("Ausleihen") ?>" />
+				<input type="submit" class="singleButton" name="exchangeExchange" id="exchangeExchangeButton" value="<?php $l->e("Tauschen") ?>" />
+				<input type="hidden" name="exchangeArticle" value="<?php echo $article->getId(); ?>" />
+			</form>
+		</div>
 	</div>
 	<div class="formRight">
 		<div class="imageContainer">

@@ -159,8 +159,7 @@ $(document).ready(
 				}
 
 			});
-			
-			
+						
 			// ********* Search Type Toggle *******
 			
 			$('.searchTypeToggle').click(function() {
@@ -222,6 +221,68 @@ $(document).ready(
 				$('#searchForm .search').prepend('<input class="searchfield" type="text" name="search" placeholder="Produktsuche">');
 			}
 			
+			
+
+			// ************* Exchange *************
+			// Ajax send primary request
+			$("#exchangeForm").submit(function(e) {
+				e.preventDefault();
+				return false;
+			});
+			$('#exchangeBorrowButton').click(function(e) {
+				console.log("Sending form");
+				$.post("/exchange/propose/type/borrow", $("#exchangeForm").serialize()).done(function(data){
+					$('.exchangeContainer').html(data);
+				});
+				e.preventDefault();
+				return false;
+			});
+			$('#exchangeExchangeButton').click(function(e) {
+				$.post("/exchange/propose/type/exchange", $("#exchangeForm").serialize()).done(function(data){
+					$('.exchangeContainer').html(data);
+				});
+				e.preventDefault();
+				return false;
+			});
+			
+			// Ajax inject exchange details
+			$(".showborrow").click(
+			function() {
+				var id = $(this).data('id');
+				$.get("/exchange/showborrow/item/" + id).done(
+						function(htmlContent) {
+							$('#content').html('');
+							$('#content').append(htmlContent);
+							window.history.pushState({}, "",
+									"/exchange/showborrow/item/" + id);
+						});
+			});
+			
+			$(".showexchange").click(
+					function() {
+						var id = $(this).data('id');
+						$.get("/exchange/showexchange/item/" + id).done(
+								function(htmlContent) {
+									$('#content').html('');
+									$('#content').append(htmlContent);
+									window.history.pushState({}, "",
+											"/exchange/showexchange/item/" + id);
+								});
+					});
+			
+			// Mark selected counter offer
+			$(".exchangeSelection").click(
+				function() {
+					if ($(this).hasClass("selected")) {
+						$(this).removeClass("selected");
+						$(".exchangeSelectionInput").val("");
+					} else {
+						$(this).addClass("selected");
+						$(".exchangeSelectionInput").val($(this).attr("data-id"));
+					}
+					$(this).siblings().removeClass("selected");
+				});
+	
 
 			
 
