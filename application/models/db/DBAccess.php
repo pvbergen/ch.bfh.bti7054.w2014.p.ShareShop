@@ -371,7 +371,6 @@ class DBAccess {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_art_cat_rel WHERE art_id=:id' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':id', $id );
-		
 			$stmt->execute ();
 				
 			$categories = array();
