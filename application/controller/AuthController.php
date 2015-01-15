@@ -54,7 +54,9 @@ class AuthController extends \Shareshop\Controller {
 						$street = trim($address[0]);
 						$plz = split(' ', trim($address[1]))[0];
 						$town = split(' ', trim($address[1]))[1];
-						$location->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($postData['adresse_lat'])->setMapLng($postData['adresse_lng'])->save();
+						$mapLat = $postData['adresse_lat'] != null ? $postData['adresse_lat'] : '0.0' ;
+						$mapLng = $postData['adresse_lng'] != null ? $postData['adresse_lat'] : '0.0' ;
+						$location->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($mapLat)->setMapLng($mapLng)->save();
 						$user->setEmail($postData['email'])->setLanguage($postData['language'])->save();
 						$viewData['success'] = 'Erfolgreich geändert!';
 					} else {
@@ -67,7 +69,7 @@ class AuthController extends \Shareshop\Controller {
 		}
 		
 		$address = $location->getStreet() . ', ' . $location->getPostcode() . ' ' . $location->getTown();
-		$viewData['form'] = array('language' => $user->getLanguage(), 'email' => $user->getEmail(), 'adresse' => $address);
+		$viewData['form'] = array('language' => $user->getLanguage(), 'email' => $user->getEmail(), 'adresse' => $address, 'adresse_lat' => $mapLat, 'adresse_lng' => $mapLng);
 		$this->view->register('navigation/staticSubnavigation', array('profile' => true), 'subnavigation');
 		$this->view->register('auth/profile', $viewData);
 		$this->view->render();
@@ -136,7 +138,9 @@ class AuthController extends \Shareshop\Controller {
 								$street = trim($address[0]);
 								$plz = split(' ', trim($address[1]))[0];
 								$town = split(' ', trim($address[1]))[1];
-								$location = Location::create()->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($postData['adresse_lat'])->setMapLng($postData['adresse_lng'])->save();
+								$mapLat = $postData['adresse_lat'] != null ? $postData['adresse_lat'] : '0.0' ;
+								$mapLng = $postData['adresse_lng'] != null ? $postData['adresse_lat'] : '0.0' ;
+								$location = Location::create()->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($mapLat)->setMapLng($mapLng)->save();
 								$salt = $this->generateString(10);
 								$password = $this->createHash($postData['password'], $salt);
 								User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setLanguage($postData['language'])->setState(0)->setLocationId($location->getId())->save();
