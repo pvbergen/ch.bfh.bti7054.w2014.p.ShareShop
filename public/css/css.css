@@ -112,7 +112,7 @@ form label, form input, form select {
     display: inline-block;
 }
 
-form select, form textarea {
+form select.multiple, form textarea {
 	height: 7em;
 }
 

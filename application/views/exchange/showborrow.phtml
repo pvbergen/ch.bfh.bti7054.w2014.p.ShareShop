@@ -113,14 +113,33 @@ $requestedArticle = $exchange->getSteps()[0]->getArticles()[0];
 			 	}
 		 		?>
 		 		<div style="margin-left:20px;">
-			 		<span><?php $l->e("Nutzer"); ?>: <?php echo $actingUser; ?></span>
+			 		<span><?php $l->e("Nutzer"); ?>: <?php echo $actingUser; ?></span><br />
 			 		<span>
 			 		<?php 
-			 			$s->getRemark();
+			 			echo $s->getRemark();
 		 			?>
 			 		</span>
-		 		</div>	
+		 		</div>
 			<?php } ?>
+			
+			<?php
+			 if ($isRequesting) { 
+				if ($exchange->getAnsweringRating() > 0) {
+				?>
+				<h3><?php $l->e("Du wurdest bewertet"); ?></h3>
+				<span><?php echo $exchange->getAnsweringRating(); ?></span>
+				<?php 
+				}
+			} else {
+				if ($exchange->getRequestingRating() > 0) {
+				?>
+				<h3><?php $l->e("Du wurdest bewertet"); ?></h3>
+				<span><?php echo $exchange->getRequestingRating(); ?></span>
+				<?php 
+				}
+			}
+			?>
+			</h3>
 		</div>
 	</div>
 </div>

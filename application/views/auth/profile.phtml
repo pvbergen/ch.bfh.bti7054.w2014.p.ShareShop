@@ -1,5 +1,5 @@
 <div class="product-upload">
-	<h1><?php $l->e("Registrierung"); ?></h1>
+	<h1><?php $l->e("Profil anpassen"); ?></h1>
 	<h3 class="error">
 		<?php echo $data['error']; ?>
 	</h3>
@@ -7,23 +7,8 @@
 	<h3 class="success">
 		<?php echo $data['success']; ?>
 	</h3>
-	<?php } else { ?>
-	<h2>
-		<?php $l->e("Jetzt hier registrieren"); ?>
-	</h2>
-	<form action="/auth/register" method="post" accept-charset="utf-8" id="registerForm">
-		<div class="input-wrapper">
-			<label for="username"><?php $l->e("Benutzername"); ?></label>
-			<input type="text" id="username" name="username" placeholder="<?php $l->e("Benutzername"); ?>" value="<?php echo $data['form']['username']; ?>"/>
-		</div>
-		<div class="input-wrapper">
-			<label for="password"><?php $l->e("Passwort"); ?></label>
-			<input type="password" id="password" name="password" placeholder="<?php $l->e("Passwort"); ?>">
-		</div>
-		<div class="input-wrapper">
-			<label for="passwordRepeat"><?php $l->e("Passwort wiederholen"); ?></label>
-			<input type="password" id="passwordRepeat" name="passwordRepeat" placeholder="<?php $l->e("Passwort wiederholen"); ?>">
-		</div>
+	<?php } ?>
+	<form action="/auth/profile" method="post" accept-charset="utf-8" id="registerForm">
 		<div class="input-wrapper">
 			<label for="language"><?php $l->e("Sprache"); ?></label>
 			<select name="language">
@@ -39,16 +24,16 @@
 			<label for="adresse" onkeyup="codeAddress()"><?php $l->e("Adresse"); ?></label>
 			<input type="text" id="adresse" name="adresse" placeholder="Mustergasse 3, 1000 Musterstadt" value="<?php echo $data['form']['adresse']; ?>">
 		</div>
-		
+		<script type="text/javascript">
+			console.log('inline js');
+			codeAddress();
+		</script>
 		<div id="map-canvas" ></div>
 		<input id="adresse_lat" name="adresse_lat" value="<?php echo $data['form']['adresse_lat']; ?>" type="hidden">
 		<input id="adresse_lng" name="adresse_lng" value="<?php echo $data['form']['adresse_lng']; ?>" type="hidden">
 		
-		
 		<div class="input-wrapper">
-			<input type="submit" class="singleButton" name="submitRegister" value="<?php $l->e("Registrieren"); ?>">
+			<input type="submit" class="singleButton" name="submitRegister" value="<?php $l->e("Absenden"); ?>">
 		</div>
 	</form>
-
-	<?php } ?>
 </div>

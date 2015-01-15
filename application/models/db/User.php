@@ -11,6 +11,7 @@ class User {
 	private $password;
 	private $salt;
 	private $email;
+	private $language;
 	private $state;
 	private $locId;
 	
@@ -22,7 +23,11 @@ class User {
 	}
 	
 	public function save() {
-		DBAccess::getInstance()->saveUser($this);
+		if ($this->id == 0) {
+			DBAccess::getInstance()->saveUser($this);
+		} else {
+			DBAccess::getInstance()->modifyUser($this);
+		}
 	}
 	
 	/**
@@ -30,7 +35,7 @@ class User {
 	*
 	*  @param integer $intId the id of the location to find.
 	*
-	*  @return a Location object or null if not found.
+	*  @return User Object or null if not found.
 	*
 	* */
 	public static function findById($intId) {
@@ -71,6 +76,10 @@ class User {
 		return $this->email;
 	}
 	
+	public function getLanguage () {
+		return $this->language;
+	}
+	
 	public function getState () {
 		return $this->state;
 	}
@@ -102,6 +111,11 @@ class User {
 	
 	public function setEmail ($strEmail) {
 		$this->email=$strEmail;
+		return $this;
+	}
+	
+	public function setLanguage ($language) {
+		$this->language=$language;
 		return $this;
 	}
 	

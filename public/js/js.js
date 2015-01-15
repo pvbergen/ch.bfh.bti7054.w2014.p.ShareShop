@@ -29,7 +29,7 @@ $(document).ready(
 
 			String.prototype.replaceAll = function(find, replace) {
 				  return this.replace(new RegExp(find, 'g'), replace);
-			}
+			};
 			
 			/*
 			 * Content Elements resize
@@ -108,9 +108,10 @@ $(document).ready(
 										$('#content').append(htmlContent);
 										window.history.pushState({}, "",
 												"/article/show/item/" + id);
+										captureExchangeForm();
 									});
 						});
-			}
+			};
 
 			defineClickOnProduct();
 			// ********* Upload **************
@@ -213,37 +214,21 @@ $(document).ready(
 					}
 				});
 				return false;
-			}
+			};
 			
 			var removeNearBySearch = function() {
 				$('#searchForm').removeAttr('onsubmit');
 				$('input.googleSearch').remove();
 				$('#searchForm .search').prepend('<input class="searchfield" type="text" name="search" placeholder="Produktsuche">');
-			}
+			};
 			
 			
 
 			// ************* Exchange *************
 			// Ajax send primary request
-			$("#exchangeForm").submit(function(e) {
-				e.preventDefault();
-				return false;
-			});
-			$('#exchangeBorrowButton').click(function(e) {
-				console.log("Sending form");
-				$.post("/exchange/propose/type/borrow", $("#exchangeForm").serialize()).done(function(data){
-					$('.exchangeContainer').html(data);
-				});
-				e.preventDefault();
-				return false;
-			});
-			$('#exchangeExchangeButton').click(function(e) {
-				$.post("/exchange/propose/type/exchange", $("#exchangeForm").serialize()).done(function(data){
-					$('.exchangeContainer').html(data);
-				});
-				e.preventDefault();
-				return false;
-			});
+			
+			
+			
 			
 			// Ajax inject exchange details
 			$(".showborrow").click(
@@ -267,21 +252,10 @@ $(document).ready(
 									$('#content').append(htmlContent);
 									window.history.pushState({}, "",
 											"/exchange/showexchange/item/" + id);
+									selectCounterOffer();
 								});
 					});
 			
-			// Mark selected counter offer
-			$(".exchangeSelection").click(
-				function() {
-					if ($(this).hasClass("selected")) {
-						$(this).removeClass("selected");
-						$(".exchangeSelectionInput").val("");
-					} else {
-						$(this).addClass("selected");
-						$(".exchangeSelectionInput").val($(this).attr("data-id"));
-					}
-					$(this).siblings().removeClass("selected");
-				});
 	
 
 			
@@ -308,49 +282,89 @@ $(document).ready(
 						codeAddress();
 					});
 			
-			var geocoder;
-			var map;
 
-			function initialize() {
-				geocoder = new google.maps.Geocoder();
-				var latlng = new google.maps.LatLng(-34.397, 150.644);
-				var mapOptions = {
-					zoom : 16,
-					center : latlng
-				}
-				map = new google.maps.Map(
-						document.getElementById('map-canvas'), mapOptions);
-			}
-
-			function codeAddress() {
-				codeAddress.counter = codeAddress.counter || 1;
-				var address = document.getElementById('adresse').value;
-				
-				if (address.length >= 10 && codeAddress.counter >= 5) {
-				initialize();
-				geocoder.geocode({
-					'address' : address
-				}, function(results, status) {
-					if (status == google.maps.GeocoderStatus.OK) {
-						map.setCenter(results[0].geometry.location);
-						var marker = new google.maps.Marker({
-							map : map,
-							position : results[0].geometry.location
-						});
-						document.getElementById('adresse_lat').value = results[0].geometry.location.lat();
-						document.getElementById('adresse_lng').value = results[0].geometry.location.lng();
-					}
-				});
-				codeAddress.counter = 0;
-				} else {
-					codeAddress.counter++;
-				}
-			}
-			
-			google.maps.event.addDomListener(window, 'load', initialize);
+			initialize();
+			captureExchangeForm();
+			selectCounterOffer();
 		});
 
 
+var geocoder;
+var map;
 
+function initialize() {
+	geocoder = new google.maps.Geocoder();
+	var latlng = new google.maps.LatLng(-34.397, 150.644);
+	var mapOptions = {
+		zoom : 16,
+		center : latlng
+	};
+	map = new google.maps.Map(
+			document.getElementById('map-canvas'), mapOptions);
+}
+
+function codeAddress() {
+	codeAddress.counter = codeAddress.counter || 1;
+	var address = document.getElementById('adresse').value;
+	
+	if (address.length >= 10 && codeAddress.counter >= 5) {
+	initialize();
+	geocoder.geocode({
+		'address' : address
+	}, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			map.setCenter(results[0].geometry.location);
+			marker = new google.maps.Marker({
+				map : map,
+				position : results[0].geometry.location
+			});
+			document.getElementById('adresse_lat').value = results[0].geometry.location.lat();
+			document.getElementById('adresse_lng').value = results[0].geometry.location.lng();
+		}
+	});
+	codeAddress.counter = 0;
+	} else {
+		codeAddress.counter++;
+	}
+}
+
+function captureExchangeForm()
+{
+	$("#exchangeForm").submit(function(e) {
+		e.preventDefault();
+		return false;
+	});
+	
+	$('#exchangeBorrowButton').click(function(e) {
+		console.log("Sending form");
+		$.post("/exchange/propose/type/borrow", $("#exchangeForm").serialize()).done(function(data){
+			$('.exchangeContainer').html(data);
+		});
+		e.preventDefault();
+		return false;
+	});
+	$('#exchangeExchangeButton').click(function(e) {
+		$.post("/exchange/propose/type/exchange", $("#exchangeForm").serialize()).done(function(data){
+			$('.exchangeContainer').html(data);
+		});
+		e.preventDefault();
+		return false;
+	});
+}
+
+function selectCounterOffer() {
+	console.log('select counter offer');
+	$(".exchangeSelection").click(
+	function() {
+		if ($(this).hasClass("selected")) {
+			$(this).removeClass("selected");
+			$(".exchangeSelectionInput").val("");
+		} else {
+			$(this).addClass("selected");
+			$(".exchangeSelectionInput").val($(this).attr("data-id"));
+		}
+		$(this).siblings().removeClass("selected");
+	});
+}
 
 

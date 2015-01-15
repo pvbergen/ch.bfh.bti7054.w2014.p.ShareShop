@@ -21,8 +21,13 @@ class Location {
 	}
 	
 	public function save() {
-		$id = DBAccess::getInstance()->saveLocation($this);
-		$this->setId($id);
+		if ($this->id == 0) {
+			$id = DBAccess::getInstance()->saveLocation($this);
+			$this->setId($id);
+		} else {
+			DBAccess::getInstance()->modifyLocation($this);
+		}
+		
 		return $this;
 	}
 	
@@ -31,7 +36,7 @@ class Location {
 	*
 	*  @param integer $intId the id of the location to find.
 	*
-	*  @return a Location object or null if not found.
+	*  @return Location Object or null if not found.
 	*
 	* */
 	public static function findById($intId) {

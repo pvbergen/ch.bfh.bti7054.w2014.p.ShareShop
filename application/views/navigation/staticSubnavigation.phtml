@@ -20,6 +20,18 @@
 		</a>
 	</li>
 	<li>
+		<a href="/auth/profile">
+			<span><?php echo $l->e('Mein Profil');?></span>
+		</a>
+		<ul class="level-2" <?php if ($data['profile']) { ?>style="display:block;"<?php }?>>
+			<li>
+				<a href="/auth/password">
+					<span><?php echo $l->e('Passwort ändern');?></span>
+				</a>
+			</li>	
+		</ul>
+	</li>
+	<li>
 		<a href="/auth/logout/">
 			<span><?php echo $l->e('Abmelden');?></span>
 		</a>

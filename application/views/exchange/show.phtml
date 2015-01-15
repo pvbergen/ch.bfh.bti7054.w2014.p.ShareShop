@@ -118,22 +118,24 @@ if (isset($exchange->getSteps()[1])) {
 		 			}
 		 			break;
  				case ($data['exchange_key']):
- 				?>
- 					<h3><?php $l->e("Bewerte diesen Austausch")?></h3>
- 					<form action="" method="post">
-			 			<div class="formLeft input-wrapper">
-			 				<?php $l->e("Bewertung"); ?>:
-			 				<input type="radio" name="rating" value="1" /> 1
-			 				<input type="radio" name="rating" value="2" /> 2
-			 				<input type="radio" name="rating" value="3" checked="checked" /> 3
-			 				<input type="radio" name="rating" value="4" /> 4
-			 				<input type="radio" name="rating" value="5" /> 5<br />
-			 			</div>
-			 			<div class="formLeft input-wrapper">
-				 			<input type="submit" class="singleButton" name="exhangeRate" value="<?php $l->e("Absenden"); ?>">
-			 			</div>
-		 			</form>
- 				<?php 
+ 					if ($isRequesting && $exchange->getRequestingRating() < 1 || !$isRequesting && $exchange->getAnsweringRating() < 1) {
+	 				?>
+	 					<h3><?php $l->e("Bewerte diese Ausleihe")?></h3>
+	 					<form action="" method="post">
+				 			<div class="formLeft input-wrapper">
+				 				<?php $l->e("Bewertung"); ?>:
+				 				<input type="radio" name="rating" value="1" /> 1
+				 				<input type="radio" name="rating" value="2" /> 2
+				 				<input type="radio" name="rating" value="3" checked="checked" /> 3
+				 				<input type="radio" name="rating" value="4" /> 4
+				 				<input type="radio" name="rating" value="5" /> 5<br />
+				 			</div>
+				 			<div class="formLeft input-wrapper">
+					 			<input type="submit" class="singleButton" name="exhangeRate" value="<?php $l->e("Absenden"); ?>">
+				 			</div>
+			 			</form>
+	 				<?php 
+ 					}
 		 			break;
 		 	}
 		?>
@@ -163,18 +165,8 @@ if (isset($exchange->getSteps()[1])) {
 			 			</h3>
 			 		<?php 
 			 			break;
-			 		case ($data['reoffer_key']):
-			 			$actingUser = ($isRequesting) ? $user->getUsername() :  $partnerName;
-			 		?>
-			 			<h3>
-			 		<?php 
-			 			$l->e("Gegenvorschlag");
-			 		?>
-			 			</h3>
-			 		<?php 
-			 			break;
 		 			case ($data['exchange_key']):
-		 				$actingUser = ($isRequesting) ? $partnerName : $user->getUsername();
+		 				$actingUser = ($isRequesting) ? $user->getUsername() : $partnerName;
 			 		?>
 			 			<h3>
 			 		<?php 
@@ -194,6 +186,24 @@ if (isset($exchange->getSteps()[1])) {
 			 		</span>
 		 		</div>	
 			<?php } ?>
+			
+			<?php
+			 if ($isRequesting) { 
+				if ($exchange->getAnsweringRating() > 0) {
+				?>
+				<h3><?php $l->e("Du wurdest bewertet"); ?></h3>
+				<span><?php echo $exchange->getAnsweringRating(); ?></span>
+				<?php 
+				}
+			} else {
+				if ($exchange->getRequestingRating() > 0) {
+				?>
+				<h3><?php $l->e("Du wurdest bewertet"); ?></h3>
+				<span><?php echo $exchange->getRequestingRating(); ?></span>
+				<?php 
+				}
+			}
+			?>
 		</div>
 	</div>
 </div>

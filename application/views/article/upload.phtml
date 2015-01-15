@@ -26,7 +26,7 @@
 				<input type="file" id="picture" name="picture">
 			</div>
 			<div class="input-wrapper"><label for="productCategory"><?php echo $l->e('Oberkategorie')?></label>
-				<select name="productCategory[]" id="productCategory" multiple="multiple">
+				<select name="productCategory[]" id="productCategory" multiple="multiple" class="multiple">
 				<?php
 					foreach ($data['categories'] as $category)
 					{
@@ -39,7 +39,7 @@
 			</div>
 			<div class="input-wrapper">
 				<label for="productSubCategory"><?php echo $l->e('Unterkategorie');?></label>
-				<select name="productSubCategory[]" id="productSubCategory" multiple="multiple">
+				<select name="productSubCategory[]" id="productSubCategory" multiple="multiple" class="multiple">
 				<?php foreach($preDefined['categories'] as $cat) { ?>
 					<option value="<?php echo($cat->getId()); ?>" selected="selected"><?php echo($cat->getName()); ?></option>
 				<?php }?>

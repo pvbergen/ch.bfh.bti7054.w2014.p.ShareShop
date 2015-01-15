@@ -26,7 +26,7 @@ trait Authorization {
 		$hash = $pass;
 		for($i=0; $i < $this->_iter; $i++) {
 			$hash = hash($this->_alg, $hash.$salt);	
-		}		
+		}
 		return $hash;
 	}
 	

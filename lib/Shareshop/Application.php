@@ -52,12 +52,23 @@ class Application {
 	protected static $_pluginManager = null;
 	
 	/**
+	 * The browser language.
+	 * 
+	 * @var string
+	 */
+	public $_language = "de_de";
+	
+	/**
 	 * Constructs a new Application object,
 	 * parses request URI, determines requested route and
 	 * initializes request and view object.
 	 */	
 	protected function __construct() 
 	{		
+		$this->_language = strtolower(str_replace("-", "_", substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5)));
+		if ($this->_language != 'de_de') {
+			$this->_language = 'en_us';
+		}
 		$bootstrapClass = Application::getConfig()->bootstrap;
 		if (is_string($bootstrapClass)) {
 			$bootstrap = new $bootstrapClass();
@@ -129,6 +140,11 @@ class Application {
 			self::$_pluginManager = new PluginManager();
 		}
 		return self::$_pluginManager;
+	}
+	
+	public static function getLanguage()
+	{
+		return strtolower(str_replace("-", "_", substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5)));
 	}
 	
 	/**

@@ -34,14 +34,19 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 			return;
 		}
 		session_name('shareshop');
+		session_set_cookie_params("86400");
 		session_start();
 		$sessionId = session_id();
 		$request = Application::getPluginManager()->getState()['request'];
+		Auth::$_session = Session::create()->findById($sessionId);
+		if(Auth::$_session->getState() == 1) {
+			Auth::$_session->save();
+		} else {
+			Auth::$_session = null;
+		}
 		if ($this->isAuthPath($request)) {
-			Auth::$_session = Session::create()->findById($sessionId);
 			$postData = $request->getPost();
 			if (isset($postData['submitLogin'])) {
-				
 				$user = $this->authorize($request);
 				if ($user != null) {
 					Auth::$_session = Session::create()->setUserId($user->getId())->setState(1)->setId($sessionId);
@@ -50,13 +55,6 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 			} elseif (Auth::$_session == null) {
 				$request->setController('Auth');
 				$request->setAction('index');
-			} else {
-				if(Auth::$_session->getState() != 1) {
-					$request->setController('Auth');
-					$request->setAction('index');
-				} else {
-					Auth::$_session->save();
-				}
 			}
 		} 	
 	}
@@ -79,6 +77,7 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 				$user = User::create()->findByUsername($postData['username']);
 				if ($user !== null) {
 					if ($user->getPassword() !== $this->createHash($postData['password'], $user->getSalt())) {
+						print_r($user);
 						$user = null;
 						$request->setError("Password incorrect");
 					}		
@@ -105,10 +104,13 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 		$paths = $this->_config->noauth->paths;
 		if ($paths instanceof Nothing) {
 			return true;
-		}
+		}	
 		$paths = $paths->getArray();
 		if (!in_array($request->getController(), array_keys($paths))) {
 			return true;
+		}
+		if (empty($paths[$request->getController()]))  {
+			return false;	
 		}
 		$actions = $paths[$request->getController()]->getArray();
 		if (!in_array($request->getAction(), $actions)) {

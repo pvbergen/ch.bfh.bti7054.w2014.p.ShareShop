@@ -14,7 +14,7 @@ class ExchangeController extends Controller {
 	public function proposeAction()
 	{
 		$type = $this->request->getParameters()['type'];
-		$type = ($type == 'borrow' || type == 'exchange') ? $type : "exchange";
+		$type = ($type == 'borrow' || $type == 'exchange') ? $type : "exchange";
 		$postData = $this->request->getPost();
 		
 		$exchangeType = ExchangeStep::TYPE_BORROW;
@@ -31,7 +31,7 @@ class ExchangeController extends Controller {
 			$step = ExchangeStep::create();
 			$step->
 				setCreated(time())->
-				setRemark($postData['exchangeRemark'])->
+				setRemark("")->
 				setType($exchangeType)->
 				addArticle($article->getId());
 			
@@ -128,7 +128,7 @@ class ExchangeController extends Controller {
 		if (isset($postData['counterOfferSubmit'])) {
 			$this->_saveCounterSelection($exchange, $postData['exchangeSelection']);
 		} elseif (isset($postData['exhangeSubmit'])) {
-			$this->_submitExchange($exchange);
+			$this->_submitExchange($exchange, "");
 		} elseif (isset($postData['exhangeCancel'])) {
 			$this->_cancelExchange($exchange);
 		} elseif (isset($postData['exhangeRate'])) {
@@ -149,9 +149,7 @@ class ExchangeController extends Controller {
 				)
 			) {
 			$data['articles'] = Article::findArticlesByUserId($exchange->getRequestingUser()->getId());
-			//$data['articles'] = array_merge($data['articles'], $data['articles']);
 		}
-		
 		
 		$data['request_key'] = ExchangeStep::TYPE_REQUEST;
 		$data['pick_key'] = ExchangeStep::TYPE_PICK;
@@ -172,7 +170,7 @@ class ExchangeController extends Controller {
 	
 		$postData = $this->request->getPost();
 		if (isset($postData['exhangeSubmit'])) {
-			$this->_terminateExchange($exchange);
+			$this->_terminateExchange($exchange, $postData['exchangeRemark']);
 		} elseif (isset($postData['exhangeCancel'])) {
 			$this->_cancelExchange($exchange);
 		} elseif (isset($postData['exhangeRate'])) {
@@ -211,10 +209,10 @@ class ExchangeController extends Controller {
 		$step = ExchangeStep::create();
 		$step->setExchangeId($exchange->getId())->setType(ExchangeStep::TYPE_PICK)->addArticle($article->getId())->setRemark("")->setCreated(time());
 		$step->save();
-		$exchange->addStep($step);
+		$exchange->getSteps();
 	}
 	
-	protected function _submitExchange(Exchange $exchange)
+	protected function _submitExchange(Exchange $exchange, $remark)
 	{
 		$steps = $exchange->getSteps();
 		$requestedArticle = $steps[0]->getArticles()[0];
@@ -225,15 +223,15 @@ class ExchangeController extends Controller {
 		$offeredArticle->setUserId($exchange->getAnsweringUser()->getId());
 		$offeredArticle->modify();
 
-		$this->_terminateExchange($exchange);
+		$this->_terminateExchange($exchange, $remark);
 	}
 	
-	protected function _terminateExchange(Exchange $exchange)
+	protected function _terminateExchange(Exchange $exchange, $remark)
 	{	
 		$step = ExchangeStep::create();
-		$step->setType(ExchangeStep::TYPE_EXCHANGE)->setExchangeId($exchange->getId())->setRemark("")->setCreated(time());
+		$step->setType(ExchangeStep::TYPE_EXCHANGE)->setExchangeId($exchange->getId())->setRemark($remark)->setCreated(time());
 		$step->save();
-		$exchange->addStep($step);
+		$exchange->getSteps();
 	}
 	
 	protected function _cancelExchange(Exchange $exchange)

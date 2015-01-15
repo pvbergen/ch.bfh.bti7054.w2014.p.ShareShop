@@ -187,7 +187,7 @@ class DBAccess {
 		$this->deleteCategoryRelation($article->getId());
 
 		try {
-			$stmt = $this->_conn->prepare ( 'REPLACE INTO sha_articles VALUES(:id, :name, :description, :image, :art_usr_id, null)' );
+			$stmt = $this->_conn->prepare ( 'UPDATE sha_articles SET art_name = :name, art_description = :description, art_image = :image, art_usr_id = :art_usr_id WHERE art_id = :id' );
 	
 				
 			$stmt->bindParam ( ':id', $article->getId () );
@@ -458,6 +458,23 @@ class DBAccess {
 		}
 	}
 	
+	public function modifyLocation($location) {
+		try {
+			$stmt = $this->_conn->prepare ( 'UPDATE sha_location SET loc_street = :street, loc_postcode = :postcode, loc_town = :town, loc_mapLat = :mapLat, loc_mapLng = :mapLng WHERE loc_id = :id' );
+			$stmt->execute ( array (
+					':id' => $location->getId (),
+					':street' => $location->getStreet(),
+					':postcode' => $location->getPostcode(),
+					':town' => $location->getTown(),
+					':mapLat' => $location->getMapLat(),
+					':mapLng' => $location->getMapLng()
+			) );
+			return $this->_conn->lastInsertId();
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
 	public function findAllLocations() {
 		try {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_location' );
@@ -521,7 +538,7 @@ class DBAccess {
 	public function findUserBySession($id)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'SELECT u.* FROM sha_session AS s JOIN sha_user AS u ON (session_id=:id AND u.usr_id == s.session_usr_id) ORDER BY create_time DESC LIMIT 1' );
+			$stmt = $this->_conn->prepare ( 'SELECT u.* FROM sha_session AS s JOIN sha_user AS u ON (session_id=:id AND u.usr_id = s.session_usr_id) ORDER BY session_create_time DESC LIMIT 1' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':id', $id );
 	
@@ -556,20 +573,44 @@ class DBAccess {
 	}
 	
 	/**
-	 * Saves or updates a user based on the given User object.
+	 * Saves a user based on the given User object.
 	 * 
 	 * @param User $user
 	 */
 	public function saveUser(User $user)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt, usr_loc_id) VALUES (:username, :password, :email, :salt, :usr_loc_id)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt, usr_language, usr_loc_id) VALUES (:username, :password, :email, :salt, :langauge, :usr_loc_id)' );
 		
 			$stmt->execute ( array (
 					':username' => $user->getUsername(),
 					':password' => $user->getPassword(),
 					':email' => $user->getEmail(),
 					':salt' => $user->getSalt(),
+					':language' => $user->getLanguage(),
+					':usr_loc_id' => $user->getLocId()
+			) );
+		} catch ( \PDOException $e ) {
+			echo 'Error: ' . $e->getMessage ();
+		}
+	}
+	
+	/**
+	 * Updates a user based on the given User object.
+	 *
+	 * @param User $user
+	 */
+	public function modifyUser(User $user)
+	{
+		try {
+			$stmt = $this->_conn->prepare ( 'UPDATE sha_user SET usr_password = :password, usr_salt = :salt, usr_email = :email, usr_language = :language, usr_loc_id = :usr_loc_id WHERE usr_id = :id' );
+	
+			$stmt->execute ( array (
+					':id' => $user->getId(),
+					':password' => $user->getPassword(),
+					':salt' => $user->getSalt(),
+					':email' => $user->getEmail(),
+					':language' => $user->getLanguage(),
 					':usr_loc_id' => $user->getLocId()
 			) );
 		} catch ( \PDOException $e ) {
@@ -584,7 +625,7 @@ class DBAccess {
 	 * @return User
 	 */
 	private function createUserFromDatabaseRow($row) {
-		$user = User::create()->setId($row->usr_id)->setUsername($row->usr_username)->setPassword($row->usr_password)->setEmail($row->usr_email)->setLocationId($row->usr_loc_id);
+		$user = User::create()->setId($row->usr_id)->setUsername($row->usr_username)->setPassword($row->usr_password)->setSalt($row->usr_salt)->setEmail($row->usr_email)->setLanguage($row->usr_language)->setLocationId($row->usr_loc_id);
 		return $user;
 	}
 	

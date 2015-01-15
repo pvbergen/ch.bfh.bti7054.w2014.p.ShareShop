@@ -8,6 +8,7 @@ use Application\Models\Db\Location;
 use Application\Models\Db\SearchParameter;
 use Application\Plugin\Auth;
 use Application\Models\Db\User;
+use Application\Models\Db\Exchange;
 
 class ArticleController extends \Shareshop\Controller {
 	
@@ -21,8 +22,7 @@ class ArticleController extends \Shareshop\Controller {
 			$article = $this->modifyArticle($get['id'], $post, $files);
 		} else {
 			$article = $this->insertArticle($post, $files);
-		}
-		
+		}	
 
 		$this->insertUserName();
 		$user = User::findById($article->getUserId());
@@ -33,9 +33,8 @@ class ArticleController extends \Shareshop\Controller {
 		
 	}
 	
-
-	
 	public function searchAction() {
+		$this->insertUserName();
 		$params = $this->request->getParameters();
 		
 		$articles = array();
@@ -73,8 +72,6 @@ class ArticleController extends \Shareshop\Controller {
 	
 	public function getbycategoryAction() {
 		$params = $this->request->getParameters();
-		
-
 		$catId = $params['category'];
 
 		$articles = $this->getArticlesByCategory($catId);
@@ -123,6 +120,7 @@ class ArticleController extends \Shareshop\Controller {
 	
 	public function listAction()
 	{	
+		$this->insertUserName();
 		$articles = Article::findAll();
 		$categories = Category::findAll();
 		$final = $this->prepareCategoriesHirarchy($categories);
@@ -148,8 +146,51 @@ class ArticleController extends \Shareshop\Controller {
 		$article = Article::findById($params['item']);
 		$user = User::findById($article->getUserId());
 		$location = Location::findById($user->getLocId());
+		
+		$showExchange = false;
+		if (Auth::getSession() != null) {
+			if ($user->getId() != User::findBySessionId(Auth::getSession()->getId())->getId()) {
+				$showExchange = true;
+			}
+		}
+
+		$data = array('article' => $article, 'location' => $location, 'user' => $user, 'exchange' => $showExchange);
+		
+		if ($showExchange) {
+			$exchanges = Exchange::findByUser($user);
+			$rating = 0;
+			$duration = 0;
+			$countRatings = 0;
+			$countDurations = 0;
+			foreach ($exchanges as $exchange) {
+				if ($user->getId() == $exchange->getAnsweringUser()->getId() && $exchange->getRequestingRating() > 0) {
+					$rating += $exchange->getRequestingRating();
+					$countRatings += 1;
+				}
+				if ($user->getId() == $exchange->getRequestingUser()->getId() && $exchange->getAnsweringRating() > 0) {
+					$rating += $exchange->getRequestingRating();
+					$countRatings += 1;
+				}
+				$previous = 0;
+				foreach ($exchange->getSteps() as $step) {
+					if ($previous != 0) {
+						//if ($user->getId() == $exchange->getRequestingUser()->getId() && $step->getType() == )
+						$gap = $step->getCreated() - $previous;	
+					}
+					$previous = $step->getCreated();
+				}
+			}
+			if ($rating > 0) {
+				$data['ratingData']['numeric'] = $rating/$countRatings;
+			}
+			
+// 			if ($avgDuration > 0) {
+// 				$data['ratingData']['avgDuration'] = $rating/$countRatings;
+// 			}
+		}
+		
 		$this->view->register('navigation/staticSubnavigation', null, 'subnavigation');
-		$this->view->register('article/show', array('article' => $article, 'location' => $location, 'user' => $user));
+		$this->view->register('article/show', $data);
 		$this->view->render();
 	}
 	
@@ -389,7 +430,11 @@ class ArticleController extends \Shareshop\Controller {
 	}
 	
 	private function insertUserName() {
-		$user = User::findById(Auth::getSession()->getUserId());
-		$this->view->register('auth/username', array('username' => $user->getUsername()), 'username');
+		if (Auth::getSession() != null) {
+			$user = User::findById(Auth::getSession()->getUserId());
+			if ($user != null) {
+				$this->view->register('auth/username', array('username' => $user->getUsername()), 'username');
+			}	
+		}
 	}
 }
