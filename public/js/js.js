@@ -371,4 +371,5 @@ function removeNearBySearch() {
 	$('#searchFormButton').off('click').on('click', function(e){
 		return $('#searchForm').submit();
 	});
+	$('input.searchfield').replaceWith($('input.searchfield').clone(false));
 };
