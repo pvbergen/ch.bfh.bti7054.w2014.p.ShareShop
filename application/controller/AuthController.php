@@ -8,6 +8,7 @@ use Application\Plugin\Auth;
 use Shareshop\Authorization;
 use Application\Models\Db\User;
 use Application\Models\Db\Location;
+use Shareshop\Language;
 
 class AuthController extends \Shareshop\Controller {
 	use Authorization;
@@ -36,6 +37,7 @@ class AuthController extends \Shareshop\Controller {
 	
 	public function profileAction()
 	{
+		$language = new Language();
 		$user = User::findBySessionId(Auth::getSession()->getId());
 		$location = Location::findById($user->getLocId());
 		$viewData = array('error' => '', 'success' => '', 'form' => array('email' => '', 'adresse' => '','adresse_lat' => '', 'adresse_lng' => '', 'language' => 'de_de' ));
@@ -46,7 +48,7 @@ class AuthController extends \Shareshop\Controller {
 					empty($postData['adresse']) || 
 					empty($postData['language'])
 			) {
-				$viewData['error'] = 'Bitte alle Felder ausfüllen.';
+				$viewData['error'] = 'Bitte alle Felder ausfüllen';
 			} else {
 				if (preg_match('/[^@]{1,63}@[^\.]{1,63}\.[a-zA-Z0-9]{2,63}/', $postData['email'])) {
 					if ($this->checkAddress($postData['adresse'])) {
@@ -58,16 +60,18 @@ class AuthController extends \Shareshop\Controller {
 						$mapLng = $postData['adresse_lng'] != null ? $postData['adresse_lat'] : '0.0' ;
 						$location->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($mapLat)->setMapLng($mapLng)->save();
 						$user->setEmail($postData['email'])->setLanguage($postData['language'])->save();
-						$viewData['success'] = 'Erfolgreich geändert!';
+						$viewData['success'] = 'Erfolgreich geändert';
 					} else {
-						$viewData['error'] = 'Bitte Adresse im folgenden Format eingeben: Strasse, PLZ Ort.';
+						$viewData['error'] = 'Bitte Adresse im folgenden Format eingeben: Strasse, PLZ Ort';
 					}
 				} else {
-					$viewData['error'] = 'Ungültige E-Mail-Adresse.';
+					$viewData['error'] = 'Ungültige E-Mail-Adresse';
 				}
 			}
 		}
 		
+		if (!isset($mapLat)) $mapLat = '0.0';
+		if (!isset($mapLng)) $mapLng = '0.0';
 		$address = $location->getStreet() . ', ' . $location->getPostcode() . ' ' . $location->getTown();
 		$viewData['form'] = array('language' => $user->getLanguage(), 'email' => $user->getEmail(), 'adresse' => $address, 'adresse_lat' => $mapLat, 'adresse_lng' => $mapLng);
 		$this->view->register('navigation/staticSubnavigation', array('profile' => true), 'subnavigation');
@@ -89,7 +93,7 @@ class AuthController extends \Shareshop\Controller {
 					empty($postData['password']) ||
 					empty($postData['passwordRepeat'])
 			) {
-				$viewData['error'] = 'Bitte alle Felder ausfüllen.';
+				$viewData['error'] = 'Bitte alle Felder ausfüllen';
 			} else {
 				$auth = new Auth();
 				if ($auth->createHash($postData['oldPassword'], $user->getSalt()) == $user->getPassword()) {
@@ -97,12 +101,12 @@ class AuthController extends \Shareshop\Controller {
 						$salt = $this->generateString(10);
 						$password = $this->createHash($postData['password'], $salt);
 						$user->setPassword($password)->setSalt($salt)->save();
-						$viewData['success'] = 'Erfolgreich geändert!';
+						$viewData['success'] = 'Erfolgreich geändert';
 					} else {
-						$viewData['error'] = 'Passwörter stimmen nicht überein.';
+						$viewData['error'] = 'Passwörter stimmen nicht überein';
 					}
 				} else {
-					$viewData['error'] = 'Das alte Passwort ist nicht korrekt.';
+					$viewData['error'] = 'Das alte Passwort ist nicht korrekt';
 				}
 			}
 		}		

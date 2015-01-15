@@ -1,11 +1,11 @@
 <div class="product-upload">
 	<h1><?php $l->e("Profil anpassen"); ?></h1>
 	<h3 class="error">
-		<?php echo $data['error']; ?>
+		<?php $l->e($data['error']); ?>
 	</h3>
 	<?php if (!empty($data['success'])) { ?>
 	<h3 class="success">
-		<?php echo $data['success']; ?>
+		<?php $l->e($data['success']); ?>
 	</h3>
 	<?php } ?>
 	<form action="/auth/profile" method="post" accept-charset="utf-8" id="registerForm">
