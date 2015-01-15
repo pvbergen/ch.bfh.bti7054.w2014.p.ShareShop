@@ -29,8 +29,8 @@ $user = $data['user'];
 				<li><?php $l->e("Rating")?>: <?php echo $data['ratingData']['numeric']; ?></li>
 			<?php } ?>
 		</ul>
-		<?php } 
-		if ($data['exchange']) {
+		<?php }
+		if (array_key_exists('exchange', $data)) {
 		?>
 		<h3><?php $l->e("Aktion")?></h3>
 		<div class="exchangeContainer">
