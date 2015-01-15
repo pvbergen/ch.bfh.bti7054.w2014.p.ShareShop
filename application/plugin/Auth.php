@@ -39,7 +39,7 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 		$sessionId = session_id();
 		$request = Application::getPluginManager()->getState()['request'];
 		Auth::$_session = Session::create()->findById($sessionId);
-		if(Auth::$_session->getState() == 1) {
+		if(Auth::$_session != null && Auth::$_session->getState() == 1) {
 			Auth::$_session->save();
 		} else {
 			Auth::$_session = null;
@@ -77,7 +77,6 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 				$user = User::create()->findByUsername($postData['username']);
 				if ($user !== null) {
 					if ($user->getPassword() !== $this->createHash($postData['password'], $user->getSalt())) {
-						print_r($user);
 						$user = null;
 						$request->setError("Password incorrect");
 					}		

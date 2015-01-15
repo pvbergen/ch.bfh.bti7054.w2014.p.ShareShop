@@ -78,8 +78,10 @@ if (isset($exchange->getSteps()[1])) {
 					<div class="exchangeSelection" data-id="<?php echo $article->getId(); ?>">
 						<div class="exchangeImage" style="background-image:url('<?php echo $article->getImage(); ?>')">
 						</div>
-						<div>
-							<?php echo $article->getName(); ?>
+						<div class="exchangeinfo">
+							<div class="name">
+								<?php echo $article->getName(); ?>
+							</div>
 						</div>
 					</div>
 					
