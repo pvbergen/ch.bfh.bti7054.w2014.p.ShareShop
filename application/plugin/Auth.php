@@ -22,7 +22,7 @@ class Auth extends \Shareshop\Plugin\AbstractPlugin {
 	protected static $_session = null;
 	
 	public function __construct($algorithm = 'md5', $iterations = 1)
-	{
+	{	
 		$this->_alg = $algorithm;
 		$this->_iter = $iterations;
 	}

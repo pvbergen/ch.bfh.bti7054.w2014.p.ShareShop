@@ -17,8 +17,8 @@ $requestedArticle = $exchange->getSteps()[0]->getArticles()[0];
 <div>
 	<div class="formLeft">
 		<h1>
-		<?php $l->e("Ausleihe von ");
-			echo $partnerName;
+		<?php $l->e("Ausleihe von");
+			echo " " . $partnerName;
 		?>
 		</h1>
 	</div>
@@ -48,7 +48,7 @@ $requestedArticle = $exchange->getSteps()[0]->getArticles()[0];
 			switch ($step->getType()) {
 				case ($data['borrow_key']):
 					if ($isRequesting) {
-						$l->e("Warte auf Antwort.");
+						$l->e("Warte auf Antwort");
 					} else {
 				?>
 			 			<form action="" method="post">

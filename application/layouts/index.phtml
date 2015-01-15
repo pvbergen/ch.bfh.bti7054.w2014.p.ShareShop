@@ -17,11 +17,11 @@
 				<a href="/">Sharely</a>
 			</div>
 			<div class="dynamic clearfix">
-				<input type="button" data-type="1" class="button searchTypeToggle" value="Produktsuche">
+				<input type="button" data-type="1" data-string1="<?php $l->e("Produktsuche"); ?>" data-string2="<?php $l->e("Umkreissuche"); ?>" data-string3="<?php $l->e("Postleitzahl"); ?>" class="button searchTypeToggle" value="<?php $l->e("Produktsuche"); ?>">
 				<form id="searchForm" action="/Article/search/" method="get" accept-charset="utf-8">
 					<div class="search">
-							<input class="searchfield" type="text" name="search" placeholder="Produktsuche, z.B. Toaster, Schnautzbart">
-							<span onclick="document.getElementById('searchForm').submit();" class="searchbutton glyph-search" value="send">
+							<input class="searchfield" type="text" name="search" data-placeholder1="<?php $l->e("Begriff, Kategorie"); ?>" data-placeholder2="<?php $l->e("Mustergasse 3, 1000 Musterstadt"); ?>" data-placeholder3="<?php $l->e("3000"); ?>" placeholder="<?php $l->e("Suche"); ?>">
+							<span id="searchFormButton" class="searchbutton glyph-search" value="send">
 					</div>
 				</form>
 				<div class="navigation">

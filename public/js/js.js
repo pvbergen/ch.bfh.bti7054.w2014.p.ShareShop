@@ -150,86 +150,54 @@ $(document).ready(
 					});
 			$('#toggleCatSubmitDisplay').click(function() {
 				if ($(this).data('visible')) {
-					$(this).attr('value', 'Erstellen');
+					$(this).attr('value', $(this).data('stringenabled'));
 					$('#input-Category-Submit').addClass('invisible');
 					$(this).data('visible', false);
 				} else {
-					$(this).prop('value', 'Ausblenden');
+					$(this).prop('value', $(this).data('stringdisabled'));
 					$('#input-Category-Submit').removeClass('invisible');
 					$(this).data('visible', true);
 				}
 
 			});
+							
+			// ********* Search *******
+			// Activate glass
+			$('#searchFormButton').on('click', function(){
+				$('#searchForm').submit();
+			});
 						
 			// ********* Search Type Toggle *******
-			
 			$('.searchTypeToggle').click(function() {
 				var type = $(this).data('type');
 				
 				switch (type) {
 				case 1: 
-					$(this).data('type', 2);
-					$(this).attr('value', 'Umkreissuche');
 					prepareNearBySearch();
+					$(this).data('type', 2);
+					$(this).attr('value', $(this).data('string2'));
+					$('input.searchfield').attr('placeholder', $('input.searchfield').data("placeholder2"));
 					$('#searchForm').attr('action', '/Article/nearbysearch/');
 					break;
 				case 2: 
 					removeNearBySearch();
+					
 					$(this).data('type', 3);
-					$(this).attr('value', 'Postleitzahl');
-					$('input.searchfield').attr('placeholder', 'PLZ');
+					$(this).attr('value', $(this).data('string3'));
+					$('input.searchfield').attr('placeholder', $('input.searchfield').data("placeholder3"));
 					$('#searchForm').attr('action', '/Article/plzsearch/');
+					
 					break;					
 				case 3: 
 					$(this).data('type', 1);
-					$(this).attr('value', 'Produktsuche');
-					$('input.searchfield').attr('placeholder', 'Produktsuche');
+					$(this).attr('value', $(this).data('string1'));
+					$('input.searchfield').attr('placeholder', $('input.searchfield').data("placeholder1"));
 					$('#searchForm').attr('action', '/Article/search/');
 					break;	
 				}
 			});
-			var prepareNearBySearch = function() {
-				$('input.searchfield').remove();
-				$('#searchForm .search').prepend('<input class="googleSearch searchfield" type="text" name="search" placeholder="Adresse">');
-				$('#searchForm').attr('onsubmit','return searchBeforeSubmit();');
-				$('input.googleSearch').each(function(i, el) {
-					var options = {};
-					window.autocomplete = new google.maps.places.Autocomplete(el, options);	
-				});				
-			};  
 			
-			window.searchBeforeSubmit = function() {
-				var lat;
-				var lng;
-				//var address = $('input.googleSearch').val().replaceAll(' ', '+');
-				address = encodeURIComponent($('input.googleSearch').val());
-				$.get('http://maps.googleapis.com/maps/api/geocode/json?address='+ address).done(function(json) {
-					if (json.status === 'OK') {
-						lat  = json.results[0].geometry.location.lat;
-						lng = json.results[0].geometry.location.lng;
-						$('#searchForm .search').prepend('<input type="hidden" name="lat" value="'+ lat + '">');
-						$('#searchForm .search').prepend('<input type="hidden" name="lng" value="'+ lng	 + '">');
-						$('#searchForm').removeAttr('onsubmit');
-						document.getElementById('searchForm').submit();
-					}
-				});
-				return false;
-			};
-			
-			var removeNearBySearch = function() {
-				$('#searchForm').removeAttr('onsubmit');
-				$('input.googleSearch').remove();
-				$('#searchForm .search').prepend('<input class="searchfield" type="text" name="search" placeholder="Produktsuche">');
-			};
-			
-			
-
-			// ************* Exchange *************
-			// Ajax send primary request
-			
-			
-			
-			
+			// ********* Exchange *******
 			// Ajax inject exchange details
 			$(".showborrow").click(
 			function() {
@@ -367,4 +335,40 @@ function selectCounterOffer() {
 	});
 }
 
+function prepareNearBySearch() {
+	$('#searchForm').on('submit', function(e) { return searchBeforeSubmit(e); });
+	$('#searchFormButton').off('click').on('click', function(e){
+		return searchBeforeSubmit(e);
+	});
+	$('input.searchfield').each(function(i, el) {
+		var options = {};
+		window.autocomplete = new google.maps.places.Autocomplete(el, options);	
+	});	
+};  
 
+function searchBeforeSubmit(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	var lat;
+	var lng;
+	//var address = $('input.googleSearch').val().replaceAll(' ', '+');
+	address = encodeURIComponent($('input.searchfield').val());
+	$.get('http://maps.googleapis.com/maps/api/geocode/json?address='+ address).done(function(json) {
+		if (json.status === 'OK') {
+			lat  = json.results[0].geometry.location.lat;
+			lng = json.results[0].geometry.location.lng;
+			$('#searchForm .search').prepend('<input type="hidden" name="lat" value="'+ lat + '">');
+			$('#searchForm .search').prepend('<input type="hidden" name="lng" value="'+ lng	 + '">');
+			$('#searchForm').off('submit');
+			$('#searchForm').submit();
+		}
+	});
+	return false;
+};
+
+function removeNearBySearch() {
+	$('#searchForm').off('submit');
+	$('#searchFormButton').off('click').on('click', function(e){
+		return $('#searchForm').submit();
+	});
+};

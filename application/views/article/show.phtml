@@ -19,7 +19,7 @@ $user = $data['user'];
 		<?php }?>
 		</ul>
 		<?php if ($location != null) { ?>
-		<h2><?php echo $l->e('Infos Besitzer');?></h2>
+		<h2><?php echo $l->e('Besitzerinformationen');?></h2>
 		<ul>
 			<li><?php echo $l->e('Benutzer');?>: <?php echo $user->getUsername();?></li>
 			<li><?php echo $l->e('Strasse');?>: <?php echo $location->getStreet();?></li>
@@ -32,7 +32,7 @@ $user = $data['user'];
 		<?php } 
 		if ($data['exchange']) {
 		?>
-		<h2></h2>
+		<h3><?php $l->e("Aktion")?></h3>
 		<div class="exchangeContainer">
 			<form action="" method="post" id="exchangeForm">	
 				<input type="submit" class="singleButton" name="exchangeBorrow" id="exchangeBorrowButton" value="<?php $l->e("Ausleihen") ?>" />

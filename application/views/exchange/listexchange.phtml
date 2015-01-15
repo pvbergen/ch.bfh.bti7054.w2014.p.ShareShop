@@ -3,7 +3,7 @@ $exchanges = $data['exchanges'];
 $user = $data['currentUser']; 
 ?>
 
-<h2><?php $l->e("Offene Verhandlungen"); ?></h2>
+<h2><?php $l->e("Offene Tausche"); ?></h2>
 <div class="exchange-list">
 	<?php 
 		if (count($exchanges[$data['active_key']]) > 0) {
@@ -28,9 +28,9 @@ $user = $data['currentUser'];
 							<br />
 						<?php 
 							if ($step->getType() == $data['pick_key']) {
-								$l->e("Angebot oder Gegenangebot vorhanden.");
+								$l->e("Angebot oder Gegenangebot vorhanden");
 							} else {
-								$l->e("Warte auf Antwort.");
+								$l->e("Warte auf Antwort");
 							}
 						 } else {
 						 	echo $exchange->getRequestingUser()->getUsername();
@@ -39,9 +39,9 @@ $user = $data['currentUser'];
 	 					<?php $l->e("Status"); ?>:
 	 					<?php 
 						 	if ($step->getType() == $data['request_key'] || $step->getType() == $data['reoffer_key']) {
-						 		$l->e("Angebot oder Gegenangebot vorhanden.");
+						 		$l->e("Angebot oder Gegenangebot vorhanden");
 						 	} else {
-						 		$l->e("Warte auf Antwort.");
+						 		$l->e("Warte auf Antwort");
 						 	}
 						 }
 					?>
@@ -55,12 +55,12 @@ $user = $data['currentUser'];
 	<?php 
 		} else {
 	?>
-		<h3><?php $l->e("Keine Verhandlungen."); ?></h3>
+		<h3><?php $l->e("Keine Tausche"); ?></h3>
 	<?php
 		}
 	?>	
 </div>
-<h2><?php $l->e("Abgebrochene Verhandlungen")?></h2>
+<h2><?php $l->e("Abgebrochene Tausche")?></h2>
 <div class="exchange-list">
 	<?php 
 		if (count($exchanges[$data['cancelled_key']]) > 0) {
@@ -74,7 +74,8 @@ $user = $data['currentUser'];
 			<div class="exchangeinfo">
 				<div class="name">
 					<?php 
-						$l->e("Nutzer: ");
+						$l->e("Nutzer");
+						?>: <?php 
 						if ($exchange->getRequestingUser()->getId() == $user->getId()) {
 							echo $exchange->getAnsweringUser()->getUsername(); 
 						} else {
@@ -91,12 +92,12 @@ $user = $data['currentUser'];
 	<?php 
 		} else {
 	?>
-		<h3><?php $l->e("Keine Verhandlungen."); ?></h3>
+		<h3><?php $l->e("Keine Tausche"); ?></h3>
 	<?php
 		}
 	?>
 </div>
-<h2><?php $l->e("Abgeschlossene Verhandlungen")?></h2>
+<h2><?php $l->e("Abgeschlossene Tausche")?></h2>
 <div class="exchange-list">
 	<?php
 		if (count($exchanges[$data['completed_key']]) > 0) {	
@@ -110,7 +111,8 @@ $user = $data['currentUser'];
 			<div class="exchangeinfo">
 				<div class="name">
 					<?php 
-						$l->e("Nutzer: ");
+						$l->e("Nutzer");
+						?>: <?php
 						if ($exchange->getRequestingUser()->getId() == $user->getId()) {
 							echo $exchange->getAnsweringUser()->getUsername(); 
 						} else {
@@ -127,7 +129,7 @@ $user = $data['currentUser'];
 	<?php 
 		} else {
 	?>
-		<h3><?php $l->e("Keine Verhandlungen."); ?></h3>
+		<h3><?php $l->e("Keine Tausche"); ?></h3>
 	<?php
 		}
 	?>

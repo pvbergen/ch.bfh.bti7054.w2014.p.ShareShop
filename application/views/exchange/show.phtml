@@ -20,8 +20,8 @@ if (isset($exchange->getSteps()[1])) {
 <div>
 	<div class="formLeft">
 		<h1>
-		<?php $l->e("Verhandlung mit ");
-			echo $partnerName;
+		<?php $l->e("Tausch mit");
+			echo " " . $partnerName;
 		?>
 		</h1>
 	</div>
@@ -56,7 +56,7 @@ if (isset($exchange->getSteps()[1])) {
 				</div>
 			</div>
 		<?php } else { ?>
-			<h4><?php $l->e("Noch kein Gegenwert gewählt."); ?></h4>
+			<h4><?php $l->e("Noch kein Gegenwert gewählt"); ?></h4>
 		<?php } ?>
 	</div>
 </div>

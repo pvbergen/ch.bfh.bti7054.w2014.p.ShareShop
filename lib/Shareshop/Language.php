@@ -6,7 +6,7 @@ class Language {
 	
 	protected $_data = null;
 	
-	public function __construct($lang = "de_ch", $path = "") {
+	public function __construct($lang = "de_de", $path = "") {
 		if (empty($path)) {
 			$path = APPLICATION_PATH . '/translation/strings.ini';
 		}

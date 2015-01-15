@@ -1,29 +1,29 @@
 <div class="product-upload">
-	<h1>Anmeldung erforderlich</h1>
+	<h1><?php $l->e("Anmeldung erforderlich"); ?></h1>
 	<h3 class="error">
-		<?php echo $data['error']; ?>
+		<?php $l->e($data['error']); ?>
 	</h3>
 	<div class="formLeft">
 		<h2>
-			Bitte melde dich an.
+			<?php $l->e("Bitte melde dich an"); ?>.
 		</h2>
 		<form method="post" accept-charset="utf-8">
 			<div class="input-wrapper">
-				<label for="username">Benutzername</label>
-				<input type="text" id="username" name="username" placeholder="Benutzername" />
+				<label for="username"><?php $l->e("Benutzername"); ?></label>
+				<input type="text" id="username" name="username" placeholder="<?php $l->e("Benutzername"); ?>" />
 			</div>
 			<div class="input-wrapper">
-				<label for="password">Passwort</label>
-				<input type="password" id="password" name="password" placeholder="Passwort">
+				<label for="password"><?php $l->e("Passwort"); ?></label>
+				<input type="password" id="password" name="password" placeholder="<?php $l->e("Passwort"); ?>">
 			</div>
 			<div class="input-wrapper">
-				<input type="submit" class="singleButton" name="submitLogin" value="Anmelden">
+				<input type="submit" class="singleButton" name="submitLogin" value="<?php $l->e("Anmelden"); ?>">
 			</div>
 		</form>	
 	</div>
 	<div class="formRight">
 		<h2>
-			<?php $l->e("Noch nicht registriert?"); ?>
+			<?php $l->e("Noch nicht registriert"); ?>?
 		</h2>
 		<a href="/auth/register"><?php $l->e("Jetzt hier registrieren")?></a>
 	</div>

@@ -1,11 +1,11 @@
 <div class="product-upload">
 	<h1><?php $l->e("Registrierung"); ?></h1>
 	<h3 class="error">
-		<?php echo $data['error']; ?>
+		<?php $l->e($data['error']); ?>
 	</h3>
 	<?php if (!empty($data['success'])) { ?>
 	<h3 class="success">
-		<?php echo $data['success']; ?>
+		<?php $l->e($data['success']); ?>
 	</h3>
 	<?php } else { ?>
 	<h2>
@@ -37,7 +37,7 @@
 		</div>
 		<div class="input-wrapper">
 			<label for="adresse" onkeyup="codeAddress()"><?php $l->e("Adresse"); ?></label>
-			<input type="text" id="adresse" name="adresse" placeholder="Mustergasse 3, 1000 Musterstadt" value="<?php echo $data['form']['adresse']; ?>">
+			<input type="text" id="adresse" name="adresse" placeholder="<?php $l->e("Mustergasse 3, 1000 Musterstadt"); ?>" value="<?php echo $data['form']['adresse']; ?>">
 		</div>
 		
 		<div id="map-canvas" ></div>

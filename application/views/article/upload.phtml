@@ -5,7 +5,7 @@
 	<?php if ($preDefined['isEdit']) {
 		$l->e('Produkt bearbeiten');
 	} else { 
-		$l->e('Neues Produkt hinzuf&uuml;gen');
+		$l->e('Neues Produkt hinzufügen');
 	}
 	?>
 	</h1>
@@ -17,7 +17,7 @@
 			</div>
 			<div class="input-wrapper">
 				<label for="productDescription"><?php echo $l->e('Beschreibung');?></label>
-				<textarea id="productDescription" name="productDescription" placeholder="Beschreibung" /><?php echo $preDefined['description']; ?></textarea>
+				<textarea id="productDescription" name="productDescription" placeholder="<?php echo $l->e('Beschreibung');?>" /><?php echo $preDefined['description']; ?></textarea>
 			</div>
 		</div>
 		<div class="formRight">
@@ -46,10 +46,10 @@
 				</select>
 			</div>
 			<div class="input-wrapper">
-				<input type="button" data-visible="false" id="toggleCatSubmitDisplay" class="button subButton" value="Erstellen">
+				<input type="button" data-visible="false" id="toggleCatSubmitDisplay" class="button subButton" data-stringdisabled="<?php $l->e("Ausblenden"); ?>" data-stringenabled="<?php $l->e("Erstellen"); ?>" value="<?php $l->e("Erstellen"); ?>">
 			</div>			
 			<div id="input-Category-Submit" class="input-wrapper invisible">
-				<label for="newSubCategory"><?php echo $l->e('Neue Unterkategorie hinzuf&uuml;gen');?></label>
+				<label for="newSubCategory"><?php echo $l->e('Neue Unterkategorie hinzufügen');?></label>
 				<div class="input-wrapper">
 					<label for="categoryForSub"><?php echo $l->e('In Hauptklasse');?></label>
 					<select name="categoryForSub" id="categoryForSub" class="smaller-input">
@@ -65,14 +65,14 @@
 				</div>
 				<div class="input-wrapper">
 					<label for="newSubCategory"><?php echo $l->e('Unterkategorie');?></label>
-					<input type="text" id="newSubCategory" name="newSubCategory" placeholder="Name z.B . Stricksocken" />
+					<input type="text" id="newSubCategory" name="newSubCategory" placeholder="<?php echo $l->e('Name z.B . Stricksocken')?>" />
 				</div>							
-				<input type="button" id="newSubCategorySubmit" class="button subButton" value="Hinzuf&uuml;gen">
+				<input type="button" id="newSubCategorySubmit" class="button subButton" value="<?php $l->e("Hinzufügen"); ?>">
 			</div>
 		</div>
 		<div class="clearFix">
 			<div class="input-wrapper">
-				<input type="submit" class="button" name="submit" value="Speichern">
+				<input type="submit" class="button" name="submit" value="<?php $l->e("Speichern"); ?>">
 			</div>
 		</div>
 		<div class="clearFix">

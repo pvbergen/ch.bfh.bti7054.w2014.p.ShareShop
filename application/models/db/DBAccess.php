@@ -580,7 +580,7 @@ class DBAccess {
 	public function saveUser(User $user)
 	{
 		try {
-			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt, usr_language, usr_loc_id) VALUES (:username, :password, :email, :salt, :langauge, :usr_loc_id)' );
+			$stmt = $this->_conn->prepare ( 'INSERT INTO sha_user (usr_username, usr_password, usr_email, usr_salt, usr_language, usr_loc_id) VALUES (:username, :password, :email, :salt, :language, :usr_loc_id)' );
 		
 			$stmt->execute ( array (
 					':username' => $user->getUsername(),

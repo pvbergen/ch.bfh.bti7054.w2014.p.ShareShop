@@ -115,7 +115,7 @@ class AuthController extends \Shareshop\Controller {
 		if ($session != null && $session->getState() == 1) {
 			die('already logged in');
 		}
-		$viewData = array('error' => '', 'success' => '', 'form' => array('username' => '', 'email' => '', 'adresse' => '','adresse_lat' => '', 'adresse_lng' => '', 'language' => 'de_de' ));
+		$viewData = array('error' => '', 'success' => '', 'form' => array('username' => '', 'email' => '', 'adresse' => '','adresse_lat' => '', 'adresse_lng' => '', 'language' => Application::getLanguage() ));
 		$postData = $this->request->getPost();
 		if (isset($postData['submitRegister'])) {
 			if (
@@ -125,7 +125,7 @@ class AuthController extends \Shareshop\Controller {
 					empty($postData['email']) ||
 					empty($postData['adresse'])
 			) {
-				$viewData['error'] = 'Bitte alle Felder ausfüllen.';
+				$viewData['error'] = 'Bitte alle Felder ausfüllen';
 			} else {
 				if (preg_match('/[^@]{1,63}@[^\.]{1,63}\.[a-zA-Z0-9]{2,63}/', $postData['email'])) {
 					if ($this->checkAddress($postData['adresse'])) {
@@ -139,24 +139,29 @@ class AuthController extends \Shareshop\Controller {
 								$location = Location::create()->setStreet($street)->setPostcode($plz)->setTown($town)->setMapLat($postData['adresse_lat'])->setMapLng($postData['adresse_lng'])->save();
 								$salt = $this->generateString(10);
 								$password = $this->createHash($postData['password'], $salt);
-								User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setState(0)->setLocationId($location->getId())->save();
+								User::create()->setUsername($postData['username'])->setPassword($password)->setEmail($postData['email'])->setSalt($salt)->setLanguage($postData['language'])->setState(0)->setLocationId($location->getId())->save();
 		
-								$viewData['success'] = 'Erfolgreich registriert!';
+								$viewData['success'] = 'Erfolgreich registriert';
 							} else {
-								$viewData['error'] = 'Dieser Username existiert bereits.';
+								$viewData['error'] = 'Dieser Username existiert bereits';
 							}
 						} else {
-							$viewData['error'] = 'Passwörter stimmen nicht überein.';
+							$viewData['error'] = 'Passwörter stimmen nicht überein';
 						}
 					} else {
-						$viewData['error'] = 'Bitte Adresse im folgenden Format eingeben: Strasse, PLZ Ort.';
+						$viewData['error'] = 'Bitte Adresse im folgenden Format eingeben: Strasse, PLZ Ort';
 					}
 						
 				} else {
-					$viewData['error'] = 'Ungültige E-Mail-Adresse.';
+					$viewData['error'] = 'Ungültige E-Mail-Adresse';
 				}
-		
 			}
+		}
+		if (!empty($viewData['error'])) {
+			$viewData['form']['username'] = $postData['username'];
+			$viewData['form']['email'] = $postData['email'];
+			$viewData['form']['adresse'] = $postData['adresse'];
+			$viewData['form']['language'] = $postData['language'];
 		}
 		
 		$this->view->register('auth/subnavigation', array(), 'subnavigation');

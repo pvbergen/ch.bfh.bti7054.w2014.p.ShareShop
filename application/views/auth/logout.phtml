@@ -1,7 +1,7 @@
 <div class="product-upload">
-	<h1>Du hast dich erfolgreich abgemeldet</h1>
+	<h1><?php $l->e("Du hast dich erfolgreich abgemeldet"); ?>.</h1>
 	<h3 class="error">
-		<?php echo $data['error']; ?>
+		<?php $l->e($data['error']); ?>
 	</h3>
-	<a href="/">Zur Startseite</a>
+	<a href="/"><?php $l->e("Zur Startseite"); ?></a>
 </div>

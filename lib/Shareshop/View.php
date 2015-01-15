@@ -100,7 +100,7 @@ class View {
 	 */
 	public function register($view, $data, $location = self::DEFAULT_COMPONENT)
 	{
-		$singleView = new Component($this->_path, $view, $data, $this->_language);
+		$singleView = new Component($this->_path, $view, $data);
 		$this->_registeredViews[$location] = $singleView;
 	}
 	
@@ -110,15 +110,16 @@ class View {
 	 */
 	public function render()
 	{
-		Application::getPluginManager()->inform(self::VIEW_PRERENDER);
+		Application::getPluginManager()->inform(self::VIEW_PRERENDER, array('view' => $this));
 		if ($this->_isAjax) {
-			echo $this->_registeredViews[self::DEFAULT_COMPONENT]->render();
+			echo $this->_registeredViews[self::DEFAULT_COMPONENT]->render($this->_language);
 			return;
 		}
 		$components = array();
 		foreach($this->_registeredViews as $location => $singleView) {
-			$components[$location] = $singleView->render();
+			$components[$location] = $singleView->render($this->_language);
 		}
+		$l = $this->_language;
 		include_once $this->_path . '/layouts/' . $this->_layout;
 		Application::getPluginManager()->inform(self::VIEW_POSTRENDER);
 	}
@@ -151,5 +152,15 @@ class View {
 	public function redirect($controller, $action) 
 	{
 		header('Location: /' . strtolower($controller) . '/' . strtolower($action));
+	}
+	
+	/**
+	 * Set language object.
+	 * 
+	 * @param Language $language
+	 */
+	public function setLanguage(Language $language)
+	{
+		$this->_language = $language;	
 	}
 }
