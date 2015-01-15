@@ -230,6 +230,11 @@ $(document).ready(
 
 			// ********* Google Maps **************
 			
+			$('input#adresse').blur(
+					function() {
+						codeAddress();
+					});
+
 			$('input#adresse').click(
 					function() {
 						codeAddress();
@@ -239,18 +244,12 @@ $(document).ready(
 					function() {
 						codeAddress();
 					});
-			
-			$('input#adresse').focusout(
-					function() {
-						codeAddress();
-					});
-			
+					
 			$('input#adresse').change(
 					function() {
 						codeAddress();
 					});
 			
-
 			initialize();
 			captureExchangeForm();
 			selectCounterOffer();
@@ -275,7 +274,7 @@ function codeAddress() {
 	codeAddress.counter = codeAddress.counter || 1;
 	var address = document.getElementById('adresse').value;
 	
-	if (address.length >= 10 && codeAddress.counter >= 5) {
+	if (address.length >= 3 && codeAddress.counter >= 5) {
 	initialize();
 	geocoder.geocode({
 		'address' : address
