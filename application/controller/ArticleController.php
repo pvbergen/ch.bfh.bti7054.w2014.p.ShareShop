@@ -240,7 +240,7 @@ class ArticleController extends \Shareshop\Controller {
 			$users[$index++] = User::findByLocId($loc->getId());
 		}		
 		foreach($users as $user) {
-			$articles = $this->helpArrayMerge($articles, Article::findArticlesByUserId($user->getId()));
+			if (isset($user)) $articles = $this->helpArrayMerge($articles, Article::findArticlesByUserId($user->getId()));
 		}	
 
 		$categories = $this->fetchFromArticles($articles);
