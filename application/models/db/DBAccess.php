@@ -322,6 +322,7 @@ class DBAccess {
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->execute ();
 			
+			$categories = array();
 			while ( $row = $stmt->fetch () ) {
 				$categories [] = $this->createCategoryFromDatabaseRow ( $row );
 			}
@@ -335,7 +336,8 @@ class DBAccess {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_parent_id IS NULL' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->execute ();
-				
+			
+			$categories = array();
 			while ( $row = $stmt->fetch () ) {
 				$categories [] = $this->createCategoryFromDatabaseRow ( $row );
 			}
@@ -351,8 +353,9 @@ class DBAccess {
 			$stmt = $this->_conn->prepare ( 'SELECT * FROM sha_categories WHERE cat_parent_id=:id' );
 			$stmt->setFetchMode ( \PDO::FETCH_OBJ );
 			$stmt->bindParam ( ':id', $id );
-	
 			$stmt->execute ();
+			
+			$categories = array();
 			while ( $row = $stmt->fetch () ) {
 				$categories [] = $this->createCategoryFromDatabaseRow ( $row );
 			}
