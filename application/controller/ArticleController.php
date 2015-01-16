@@ -247,7 +247,8 @@ class ArticleController extends \Shareshop\Controller {
 		$catParents = array();
 		$index = 0;
 		foreach($categories as $cat) {
-			$catParents[$index++] = Category::findById($cat->getParentId());
+			$arrToMerge[0] = Category::findById($cat->getParentId());
+			$catParents = $this->helpArrayMerge($catParents, $arrToMerge);
 		}
 		$final[0] = $catParents;
 		$final[1] = $categories;
